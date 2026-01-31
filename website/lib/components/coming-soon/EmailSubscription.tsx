@@ -18,7 +18,7 @@ export function EmailSubscription() {
     setError('');
 
     try {
-      const response = await fetch('/api/subscribe', {
+      const response = await fetch('/subscribe.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export function EmailSubscription() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-              شكراً لك! سنتواصل معك قريباً ✓
+            شكراً لك! سنتواصل معك قريباً ✓
           </motion.p>
         )}
 
