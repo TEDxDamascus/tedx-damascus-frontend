@@ -1,13 +1,13 @@
-import { useTranslations } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 type Props = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
-export default function BlogPage({ params: { locale } }: Props) {
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params;
   setRequestLocale(locale);
-  const t = useTranslations('Blog');
+  const t = await getTranslations('Blog');
 
   return (
     <main className="min-h-screen">

@@ -4,14 +4,10 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
-    formats: ['image/avif', 'image/webp'],
+    unoptimized: true,
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],

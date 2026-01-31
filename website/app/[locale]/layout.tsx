@@ -1,6 +1,7 @@
 import { Inter, Cairo } from 'next/font/google';
 import { routing } from '@/proxy';
 import { NextIntlClientProvider } from 'next-intl';
+import { setRequestLocale } from 'next-intl/server';
 import { ReactNode } from 'react';
 import '../../styles/globals.css';
 
@@ -19,6 +20,7 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const messages = (await import(`@/messages/${locale}.json`)).default;
 
   return (
