@@ -1,0 +1,75 @@
+{
+  "HomePage": {
+    "title": "TEDxDamascus",
+    "description": "أفكار تستحق الانتشار",
+    "hero": {
+      "subtitle": "انضم إلينا للاستماع إلى محادثات ملهمة وأفكار مبتكرة"
+    }
+  },
+  "Navigation": {
+    "home": "الرئيسية",
+    "about": "عن TEDx",
+    "speakers": "المتحدثون",
+    "events": "الفعاليات",
+    "blog": "المدونة",
+    "volunteer": "تطوع",
+    "contact": "اتصل بنا"
+  },
+  "Speakers": {
+    "title": "متحدثونا",
+    "featured": "المتحدثون المميزون",
+    "all": "جميع المتحدثين",
+    "viewProfile": "عرض الملف الشخصي",
+    "watchTalk": "شاهد المحاضرة"
+  },
+  "Events": {
+    "title": "الفعاليات",
+    "upcoming": "الفعاليات القادمة",
+    "past": "الفعاليات السابقة",
+    "details": "تفاصيل الفعالية",
+    "date": "التاريخ",
+    "location": "الموقع"
+  },
+  "Blog": {
+    "title": "المدونة",
+    "readMore": "اقرأ المزيد",
+    "author": "الكاتب",
+    "publishedOn": "نُشر في",
+    "categories": "التصنيفات",
+    "tags": "الوسوم"
+  },
+  "Volunteer": {
+    "title": "كن متطوعاً",
+    "description": "انضم إلى فريقنا وساعد في نجاح TEDxDamascus",
+    "form": {
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "message": "لماذا تريد أن تتطوع؟",
+      "submit": "إرسال الطلب"
+    }
+  },
+  "Contact": {
+    "title": "اتصل بنا",
+    "description": "تواصل مع فريق TEDxDamascus"
+  },
+  "Footer": {
+    "about": "عن TEDxDamascus",
+    "description": "TEDxDamascus هو حدث TED محلي منظم بشكل مستقل يجمع ألمع العقول من دمشق وخارجها.",
+    "followUs": "تابعنا",
+    "rights": "جميع الحقوق محفوظة"
+  },
+  "Common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "retry": "إعادة المحاولة",
+    "learnMore": "اعرف المزيد",
+    "viewAll": "عرض الكل"
+  },
+  "Gallery": {
+    "title": "معرض الصور",
+    "subtitle": "لحظات لا تُنسى من رحلة TEDxDamascus",
+    "viewImage": "عرض الصورة",
+    "closeImage": "إغلاق"
+  }
+}
