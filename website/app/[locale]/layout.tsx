@@ -3,9 +3,14 @@ import { routing } from '@/proxy';
 import { NextIntlClientProvider } from 'next-intl';
 import { ReactNode } from 'react';
 import '../../styles/globals.css';
+import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const cairo = Cairo({ subsets: ['arabic', 'latin'], variable: '--font-cairo' });
+
+export const metadata: Metadata = {
+  title: 'TEDx Damascus',
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

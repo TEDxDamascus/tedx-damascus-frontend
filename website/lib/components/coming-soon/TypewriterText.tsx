@@ -46,7 +46,7 @@ export function TypewriterText({ onComplete }: TypewriterTextProps) {
 
     const timeout = setTimeout(() => {
       setDisplayedText(fullText.substring(0, displayedText.length + 1));
-    }, 100);
+    }, 150);
 
     return () => clearTimeout(timeout);
   }, [displayedText, isComplete, isPaused, onComplete]);
@@ -55,12 +55,12 @@ export function TypewriterText({ onComplete }: TypewriterTextProps) {
 
   return (
     <motion.div
-      className="text-center mb-8"
+      className="text-center mb-8 px-4"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
     >
-      <p className="text-2xl md:text-3xl lg:text-4xl text-white min-h-[4rem] flex items-center justify-center whitespace-nowrap font-alamani font-normal">
+      <p className="text-2xl md:text-3xl lg:text-4xl text-white min-h-[4rem] flex items-center justify-center md:whitespace-nowrap font-alamani font-normal leading-relaxed">
         {displayedText}
         <motion.span
           className="inline-block w-1 h-8 md:h-10 lg:h-12 bg-tedx-red mr-2"
