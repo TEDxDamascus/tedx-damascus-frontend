@@ -1,11 +1,12 @@
 import _ from 'lodash';
+import { defaultLocaleValue } from '../../../../shared-components/locale-input';
 
 const SpeakerModel = (data) =>
   _.defaults(data || {}, {
     id: _.uniqueId('speaker-'),
-    name: '',
-    bio: '',
-    title: '',
+    name: defaultLocaleValue(),
+    bio: defaultLocaleValue(),
+    title: defaultLocaleValue(),
     company: '',
     email: '',
     phone: '',
