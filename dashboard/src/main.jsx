@@ -1,11 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './app/App';
-import '@mock-api';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { CustomDialog } from "./app/shared-components/Dialog/DialogProvider";
+import App from "./app/App";
+import "@mock-api";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <CustomDialog>
+      <App />
+    </CustomDialog>
+  </React.StrictMode>,
 );

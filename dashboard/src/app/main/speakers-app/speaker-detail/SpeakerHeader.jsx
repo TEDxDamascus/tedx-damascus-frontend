@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 import { ArrowBack, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
+
 function SpeakerHeader({ onSave, isNew, isSaving }) {
   const navigate = useNavigate();
 
