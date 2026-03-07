@@ -1,8 +1,10 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser, logout as logoutAction } from './store/userSlice';
 import { useSnackbar } from 'notistack';
+import { tokenService } from '../services/tokenService';
+import { login as authLogin } from '../services/authService';
+import { setUser, logout as logoutAction } from './store/userSlice';
 
 const AuthContext = createContext();
 
@@ -11,32 +13,28 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    const handleForcedLogout = () => {
+      dispatch(logoutAction());
+      navigate('/sign-in', { replace: true });
+    };
+    window.addEventListener('auth:logout', handleForcedLogout);
+    return () => window.removeEventListener('auth:logout', handleForcedLogout);
+  }, [dispatch, navigate]);
+
   const signIn = async (email, password) => {
-    if (email && password) {
-      const mockUser = {
-        id: '1',
-        name: 'Admin User',
-        email: email,
-        role: 'admin'
-      };
-
-      const mockToken = 'mock-jwt-token-' + Date.now();
-
-      localStorage.setItem('tedx_token', mockToken);
-      localStorage.setItem('tedx_user', JSON.stringify(mockUser));
-
-      dispatch(setUser(mockUser));
-      enqueueSnackbar('Login successful!', { variant: 'success' });
-      navigate('/dashboard');
-      return true;
-    }
-    return false;
+    const { data } = await authLogin(email, password);
+    const { access_token, refresh_token, user } = data;
+    tokenService.setTokens({ access_token, refresh_token });
+    dispatch(setUser(user));
+    navigate('/dashboard');
   };
 
   const logout = () => {
+    tokenService.clearTokens();
     dispatch(logoutAction());
-    enqueueSnackbar('Logged out successfully', { variant: 'info' });
-    navigate('/sign-in');
+    enqueueSnackbar('Logged out', { variant: 'info' });
+    navigate('/sign-in', { replace: true });
   };
 
   return (
@@ -48,8 +46,6 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };

@@ -1,27 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { tokenService } from '../../services/tokenService';
+
+const storedUser = tokenService.getUserFromToken();
 
 const initialState = {
-  user: null,
-  isAuthenticated: false
+  data: storedUser,
+  isAuthenticated: !!storedUser
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser: (state, action) => {
-      state.user = action.payload;
+    setUser(state, { payload }) {
+      state.data = payload;
       state.isAuthenticated = true;
     },
-    logout: (state) => {
-      state.user = null;
+    logout(state) {
+      state.data = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('tedx_token');
     }
   }
 });
 
 export const { setUser, logout } = userSlice.actions;
-export const selectUser = (state) => state.user.user;
+
+export const selectUser = (state) => state.user.data;
 export const selectIsAuthenticated = (state) => state.user.isAuthenticated;
+export const selectUserRole = (state) => state.user.data?.role ?? null;
+export const selectUserPermissions = (state) => state.user.data?.permissions ?? [];
+
 export default userSlice.reducer;
