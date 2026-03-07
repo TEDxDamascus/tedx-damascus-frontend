@@ -1,6 +1,5 @@
-import React from 'react';
 import ReactQuill from 'react-quill-new';
-import "react-quill-new/dist/quill.snow.css";
+import 'react-quill-new/dist/quill.snow.css';
 
 export default function RichTextEditor({ value, onChange, placeholder }) {
   return (
@@ -8,7 +7,7 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
       value={value}
       onChange={onChange}
       theme="snow"
-      placeholder={placeholder || "Write something..."}
+      placeholder={placeholder || 'Write something...'}
       modules={{
         toolbar: [
           [{ header: [1, 2, false] }],
@@ -20,9 +19,14 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
       }}
       formats={[
         'header',
-        'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet',
-        'link', 'image',
+        'bold',
+        'italic',
+        'underline',
+        'strike',
+        'list',
+        'bullet',
+        'link',
+        'image',
       ]}
     />
   );

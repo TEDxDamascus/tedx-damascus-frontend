@@ -1,17 +1,12 @@
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-  TextField,
-  Button,
-  Typography,
-  Box
-} from '@mui/material';
+import { TextField, Button, Typography, Box } from '@mui/material';
 import { useAuth } from '../../auth/AuthContext';
 
 const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 function SignInPage() {
@@ -20,13 +15,13 @@ function SignInPage() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: 'admin@tedxdamascus.com',
-      password: 'password'
-    }
+      password: 'password',
+    },
   });
 
   const onSubmit = async (data) => {
@@ -38,7 +33,7 @@ function SignInPage() {
       sx={{
         display: 'flex',
         minHeight: '100vh',
-        width: '100%'
+        width: '100%',
       }}
     >
       <Box
@@ -49,7 +44,7 @@ function SignInPage() {
           justifyContent: 'center',
           alignItems: 'center',
           p: { xs: 3, sm: 6, md: 8 },
-          backgroundColor: '#fff'
+          backgroundColor: '#fff',
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 480 }}>
@@ -69,7 +64,7 @@ function SignInPage() {
               sx={{
                 fontWeight: 600,
                 color: '#1a1a1a',
-                mt: 2
+                mt: 2,
               }}
             >
               Dashboard Login
@@ -78,7 +73,7 @@ function SignInPage() {
               variant="body2"
               sx={{
                 color: '#666',
-                mt: 1
+                mt: 1,
               }}
             >
               Sign in to manage your TEDx Damascus content
@@ -150,7 +145,7 @@ function SignInPage() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   textTransform: 'none',
-                  mt: 2
+                  mt: 2,
                 }}
               >
                 {isSubmitting ? 'Signing In...' : 'Sign In'}
@@ -183,7 +178,7 @@ function SignInPage() {
             right: 0,
             bottom: 0,
             backgroundColor: 'rgba(235, 0, 40, 0.1)',
-          }
+          },
         }}
       />
     </Box>

@@ -16,7 +16,7 @@ function flatten(obj, prefix = '') {
 
 export const messages = {
   ar: flatten(ar),
-  en: flatten(en)
+  en: flatten(en),
 };
 export const locales = ['ar', 'en'];
 export const defaultLocale = 'en';

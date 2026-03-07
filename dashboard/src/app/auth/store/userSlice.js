@@ -5,7 +5,7 @@ const storedUser = tokenService.getUserFromToken();
 
 const initialState = {
   data: storedUser,
-  isAuthenticated: !!storedUser
+  isAuthenticated: !!storedUser,
 };
 
 const userSlice = createSlice({
@@ -19,8 +19,8 @@ const userSlice = createSlice({
     logout(state) {
       state.data = null;
       state.isAuthenticated = false;
-    }
-  }
+    },
+  },
 });
 
 export const { setUser, logout } = userSlice.actions;

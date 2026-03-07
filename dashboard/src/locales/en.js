@@ -8,22 +8,22 @@ export default {
     edit: 'Edit',
     create: 'Create',
     search: 'Search',
-    loading: 'Loading...'
+    loading: 'Loading...',
   },
   nav: {
     dashboard: 'Dashboard',
     speakers: 'Speakers',
     events: 'Events',
-    settings: 'Settings'
+    settings: 'Settings',
   },
   auth: {
     signIn: 'Sign In',
     email: 'Email',
     password: 'Password',
-    welcomeBack: 'Welcome back'
+    welcomeBack: 'Welcome back',
   },
   localeInput: {
     tabAr: 'عربي',
-    tabEn: 'English'
-  }
+    tabEn: 'English',
+  },
 };

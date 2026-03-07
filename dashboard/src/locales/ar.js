@@ -8,22 +8,22 @@ export default {
     edit: 'تعديل',
     create: 'إنشاء',
     search: 'بحث',
-    loading: 'جاري التحميل...'
+    loading: 'جاري التحميل...',
   },
   nav: {
     dashboard: 'لوحة التحكم',
     speakers: 'المتحدثون',
     events: 'الفعاليات',
-    settings: 'الإعدادات'
+    settings: 'الإعدادات',
   },
   auth: {
     signIn: 'تسجيل الدخول',
     email: 'البريد الإلكتروني',
     password: 'كلمة المرور',
-    welcomeBack: 'مرحباً بعودتك'
+    welcomeBack: 'مرحباً بعودتك',
   },
   localeInput: {
     tabAr: 'عربي',
-    tabEn: 'English'
-  }
+    tabEn: 'English',
+  },
 };

@@ -3,7 +3,7 @@ import { tokenService } from './tokenService';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json' },
 });
 
 axiosInstance.interceptors.request.use(
@@ -12,16 +12,14 @@ axiosInstance.interceptors.request.use(
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 let isRefreshing = false;
 let refreshQueue = [];
 
 function processQueue(error, token = null) {
-  refreshQueue.forEach(({ resolve, reject }) =>
-    error ? reject(error) : resolve(token)
-  );
+  refreshQueue.forEach(({ resolve, reject }) => (error ? reject(error) : resolve(token)));
   refreshQueue = [];
 }
 
@@ -33,11 +31,8 @@ function forceLogout() {
 function normalizeError(error) {
   return {
     status: error.response?.status,
-    message:
-      error.response?.data?.message ||
-      error.message ||
-      'An unexpected error occurred',
-    raw: error
+    message: error.response?.data?.message || error.message || 'An unexpected error occurred',
+    raw: error,
   };
 }
 
@@ -66,10 +61,9 @@ axiosInstance.interceptors.response.use(
       const refreshToken = tokenService.getRefreshToken();
       if (!refreshToken) throw new Error('No refresh token');
 
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL || '/api'}/auth/refresh`,
-        { refresh_token: refreshToken }
-      );
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL || '/api'}/auth/refresh`, {
+        refresh_token: refreshToken,
+      });
 
       const { access_token, refresh_token: newRefresh } = data.data;
       tokenService.setTokens({ access_token, refresh_token: newRefresh });
@@ -80,12 +74,17 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(original);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      forceLogout();
+      // Only force logout when the backend explicitly rejects the refresh token (401/403).
+      // Network errors, 404s, or mock-token failures should not end the session.
+      const status = refreshError?.response?.status;
+      if (status === 401 || status === 403) {
+        forceLogout();
+      }
       return Promise.reject(normalizeError(refreshError));
     } finally {
       isRefreshing = false;
     }
-  }
+  },
 );
 
 export default axiosInstance;

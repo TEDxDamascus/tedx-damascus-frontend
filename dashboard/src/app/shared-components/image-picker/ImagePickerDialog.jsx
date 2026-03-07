@@ -1,30 +1,49 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, Tabs, Tab, Box, Grid, Typography,
-  Skeleton, Pagination, IconButton, CircularProgress
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Tabs,
+  Tab,
+  Box,
+  Grid,
+  Typography,
+  Skeleton,
+  Pagination,
+  IconButton,
+  CircularProgress,
 } from '@mui/material';
-import { Check, Close, CloudUpload } from '@mui/icons-material';
-import { useGetMediaItemsQuery, useUploadMediaMutation } from '../../main/storage/StorageApi';
+import { Check, Close, CloudUpload, DeleteOutline } from '@mui/icons-material';
+import {
+  useGetMediaItemsQuery,
+  useUploadMediaMutation,
+  useDeleteMediaMutation,
+} from '../../main/storage/StorageApi';
+import ConfirmModal from '../confirm-modal';
 
 function formatBytes(bytes) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function ImageCard({ item, selected, onSelect }) {
+function ImageCard({ item, currentUrl, onSelect, onDelete }) {
+  const isActive = currentUrl === item.url;
+
   return (
     <Box
-      onClick={() => onSelect(selected ? '' : item.url)}
+      onClick={() => onSelect(item.url)}
       sx={{
         position: 'relative',
         cursor: 'pointer',
-        border: selected ? '2px solid #EB0028' : '2px solid transparent',
+        border: isActive ? '2px solid #EB0028' : '2px solid transparent',
         borderRadius: 1,
         overflow: 'hidden',
         aspectRatio: '1',
         bgcolor: '#f5f5f5',
-        '&:hover': { borderColor: '#EB0028' }
+        '&:hover': { borderColor: '#EB0028' },
+        '&:hover .delete-btn': { opacity: 1 },
       }}
     >
       <img
@@ -33,24 +52,69 @@ function ImageCard({ item, selected, onSelect }) {
         loading="lazy"
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       />
-      {selected && (
-        <Box sx={{
-          position: 'absolute', top: 6, right: 6,
-          bgcolor: '#EB0028', borderRadius: '50%',
-          width: 22, height: 22,
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
+
+      <IconButton
+        className="delete-btn"
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(item);
+        }}
+        sx={{
+          position: 'absolute',
+          top: 4,
+          left: 4,
+          bgcolor: 'rgba(0,0,0,0.55)',
+          opacity: 0,
+          transition: 'opacity .15s',
+          width: 26,
+          height: 26,
+          '&:hover': { bgcolor: 'rgba(220,38,38,0.9)' },
+        }}
+      >
+        <DeleteOutline sx={{ color: 'white', fontSize: 15 }} />
+      </IconButton>
+
+      {isActive && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            bgcolor: '#EB0028',
+            borderRadius: '50%',
+            width: 22,
+            height: 22,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Check sx={{ color: 'white', fontSize: 14 }} />
         </Box>
       )}
-      <Box sx={{
-        position: 'absolute', bottom: 0, left: 0, right: 0,
-        bgcolor: 'rgba(0,0,0,0.55)', px: 1, py: 0.5
-      }}>
-        <Typography variant="caption" sx={{
-          color: 'white', display: 'block',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-        }}>
+
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          bgcolor: 'rgba(0,0,0,0.55)',
+          px: 1,
+          py: 0.5,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'white',
+            display: 'block',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {item.basename}
         </Typography>
         <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.65)' }}>
@@ -61,12 +125,21 @@ function ImageCard({ item, selected, onSelect }) {
   );
 }
 
-function LibraryTab({ selectedUrl, onSelect }) {
+function LibraryTab({ currentUrl, onSelect }) {
   const [page, setPage] = useState(1);
+  const [confirmItem, setConfirmItem] = useState(null);
   const { data, isLoading, isFetching } = useGetMediaItemsQuery({ page, limit: 20 });
+  const [deleteMedia, { isLoading: isDeleting }] = useDeleteMediaMutation();
 
   const items = data?.data?.items ?? [];
   const totalPages = data?.data?.totalPages ?? 1;
+
+  const handleDeleteConfirm = async () => {
+    if (!confirmItem) return;
+    await deleteMedia(confirmItem.id);
+    if (currentUrl === confirmItem.url) onSelect('');
+    setConfirmItem(null);
+  };
 
   if (isLoading) {
     return (
@@ -89,129 +162,148 @@ function LibraryTab({ selectedUrl, onSelect }) {
   }
 
   return (
-    <Box sx={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity .2s' }}>
-      <Grid container spacing={1.5}>
-        {items.map((item) => (
-          <Grid item xs={6} sm={4} md={3} key={item.id}>
-            <ImageCard
-              item={item}
-              selected={selectedUrl === item.url}
-              onSelect={onSelect}
+    <>
+      <Box sx={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity .2s' }}>
+        <Grid container spacing={1.5}>
+          {items.map((item) => (
+            <Grid item xs={6} sm={4} md={3} key={item.id}>
+              <ImageCard
+                item={item}
+                currentUrl={currentUrl}
+                onSelect={onSelect}
+                onDelete={setConfirmItem}
+              />
+            </Grid>
+          ))}
+        </Grid>
+
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(_, val) => setPage(val)}
+              sx={{ '& .Mui-selected': { bgcolor: '#EB0028 !important', color: 'white' } }}
             />
-          </Grid>
-        ))}
-      </Grid>
-      {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(_, val) => setPage(val)}
-            sx={{ '& .Mui-selected': { bgcolor: '#EB0028 !important', color: 'white' } }}
-          />
-        </Box>
-      )}
-    </Box>
+          </Box>
+        )}
+      </Box>
+
+      <ConfirmModal
+        open={!!confirmItem}
+        onClose={() => setConfirmItem(null)}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleting}
+        title="Delete Image"
+        description={`Are you sure you want to delete "${confirmItem?.basename}"? This action cannot be undone.`}
+      />
+    </>
   );
 }
 
-function UploadTab({ onUploaded }) {
+function UploadTab({ onFileSelect, preview }) {
   const fileInputRef = useRef(null);
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState('');
-  const [uploadMedia, { isLoading }] = useUploadMediaMutation();
 
-  const handleFileChange = (e) => {
+  const handleChange = (e) => {
     const f = e.target.files?.[0];
-    if (!f) return;
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+    if (f) onFileSelect(f);
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    const result = await uploadMedia(formData);
-    if (result.data?.data?.url) {
-      onUploaded(result.data.data.url);
-    }
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0];
+    if (f?.type.startsWith('image/')) onFileSelect(f);
   };
 
   return (
     <Box>
       <Box
         onClick={() => fileInputRef.current?.click()}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
         sx={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', border: '2px dashed #ddd', borderRadius: 2,
-          p: 5, cursor: 'pointer', mb: 2,
-          '&:hover': { borderColor: '#EB0028', bgcolor: '#fff8f8' }
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '2px dashed #ddd',
+          borderRadius: 2,
+          p: preview ? 2 : 6,
+          cursor: 'pointer',
+          '&:hover': { borderColor: '#EB0028', bgcolor: '#fff8f8' },
         }}
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={handleFileChange}
-        />
-        <CloudUpload sx={{ fontSize: 44, color: '#bbb', mb: 1 }} />
-        <Typography variant="body2" color="text.secondary">Click to select an image</Typography>
-        <Typography variant="caption" color="text.secondary">PNG, JPG, WEBP — up to 10 MB</Typography>
-      </Box>
-
-      {preview && (
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+        <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleChange} />
+        {preview ? (
           <img
             src={preview}
             alt="preview"
-            style={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 8, border: '1px solid #eee' }}
+            style={{
+              width: '100%',
+              maxHeight: 280,
+              objectFit: 'contain',
+              borderRadius: 8,
+            }}
           />
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="body2" fontWeight={500}>{file?.name}</Typography>
-            <Typography variant="caption" color="text.secondary">{formatBytes(file?.size ?? 0)}</Typography>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={handleUpload}
-              disabled={isLoading}
-              sx={{ mt: 1.5, display: 'flex', bgcolor: '#EB0028', '&:hover': { bgcolor: '#c8001f' } }}
-              startIcon={isLoading ? <CircularProgress size={14} color="inherit" /> : null}
-            >
-              {isLoading ? 'Uploading…' : 'Upload'}
-            </Button>
-          </Box>
-        </Box>
-      )}
+        ) : (
+          <>
+            <CloudUpload sx={{ fontSize: 52, color: '#ccc', mb: 1.5 }} />
+            <Typography variant="body1" fontWeight={500} color="text.secondary">
+              Click or drag an image here
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+              PNG, JPG, WEBP — up to 10 MB
+            </Typography>
+          </>
+        )}
+      </Box>
     </Box>
   );
 }
 
 export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl = '' }) {
   const [tab, setTab] = useState(0);
-  const [selectedUrl, setSelectedUrl] = useState(currentUrl);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [pendingPreview, setPendingPreview] = useState('');
+  const [uploadMedia, { isLoading: isUploading }] = useUploadMediaMutation();
 
   useEffect(() => {
-    if (open) {
-      setSelectedUrl(currentUrl);
+    if (!open) {
+      setPendingFile(null);
+      setPendingPreview('');
       setTab(0);
     }
-  }, [open, currentUrl]);
+  }, [open]);
 
-  const handleConfirm = () => {
-    onSelect(selectedUrl);
+  const handleFileSelect = (file) => {
+    setPendingFile(file);
+    setPendingPreview(URL.createObjectURL(file));
+  };
+
+  // Library: clicking an image immediately inserts the URL and closes
+  const handleLibrarySelect = (url) => {
+    onSelect(url);
     onClose();
   };
 
-  const handleUploaded = (url) => {
-    setSelectedUrl(url);
-    setTab(0);
+  // Upload: triggered by footer button
+  const handleUpload = async () => {
+    if (!pendingFile) return;
+    const formData = new FormData();
+    formData.append('file', pendingFile);
+    const result = await uploadMedia(formData);
+    if (result.data?.data?.url) {
+      onSelect(result.data.data.url);
+      onClose();
+    }
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
+      <DialogTitle
+        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
+      >
         Media Library
         <IconButton onClick={onClose} size="small">
           <Close fontSize="small" />
@@ -224,7 +316,7 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
           onChange={(_, v) => setTab(v)}
           sx={{
             '& .MuiTab-root.Mui-selected': { color: '#EB0028' },
-            '& .MuiTabs-indicator': { bgcolor: '#EB0028' }
+            '& .MuiTabs-indicator': { bgcolor: '#EB0028' },
           }}
         >
           <Tab label="Library" />
@@ -233,40 +325,41 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
       </Box>
 
       <DialogContent sx={{ minHeight: 360 }}>
-        {tab === 0 && (
-          <LibraryTab selectedUrl={selectedUrl} onSelect={setSelectedUrl} />
-        )}
-        {tab === 1 && (
-          <UploadTab onUploaded={handleUploaded} />
-        )}
+        {tab === 0 && <LibraryTab currentUrl={currentUrl} onSelect={handleLibrarySelect} />}
+        {tab === 1 && <UploadTab onFileSelect={handleFileSelect} preview={pendingPreview} />}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider', gap: 1 }}>
-        {selectedUrl && (
-          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1, overflow: 'hidden' }}>
-            <img
-              src={selectedUrl}
-              alt=""
-              style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }}
-            />
+        {tab === 1 && pendingFile && (
+          <Box sx={{ flex: 1, overflow: 'hidden' }}>
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              sx={{
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
-              {selectedUrl}
+              {pendingFile.name} — {formatBytes(pendingFile.size)}
             </Typography>
           </Box>
         )}
-        <Button onClick={onClose} sx={{ flexShrink: 0 }}>Cancel</Button>
-        <Button
-          variant="contained"
-          onClick={handleConfirm}
-          disabled={!selectedUrl}
-          sx={{ bgcolor: '#EB0028', '&:hover': { bgcolor: '#c8001f' }, flexShrink: 0 }}
-        >
-          Select Image
+        <Button onClick={onClose} sx={{ flexShrink: 0 }}>
+          Cancel
         </Button>
+        {tab === 1 && (
+          <Button
+            variant="contained"
+            onClick={handleUpload}
+            disabled={!pendingFile || isUploading}
+            startIcon={isUploading ? <CircularProgress size={14} color="inherit" /> : null}
+            sx={{ bgcolor: '#EB0028', '&:hover': { bgcolor: '#c8001f' }, flexShrink: 0 }}
+          >
+            {isUploading ? 'Uploading…' : 'Upload Image'}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 const mock = new MockAdapter(Axios, { delayResponse: 300 });
 
-
 let speakersDB = [
   {
     id: '1',
@@ -19,12 +18,12 @@ let speakersDB = [
       linkedin: 'https://linkedin.com/in/ahmadhassan',
       twitter: 'https://twitter.com/ahmadhassan',
       facebook: '',
-      website: 'https://ahmadhassan.tech'
+      website: 'https://ahmadhassan.tech',
     },
     talks: ['The Future of AI in Syria', 'Building Tech Communities'],
     featured: true,
     active: true,
-    createdAt: '2025-01-15T10:00:00Z'
+    createdAt: '2025-01-15T10:00:00Z',
   },
   {
     id: '2',
@@ -39,12 +38,12 @@ let speakersDB = [
       linkedin: 'https://linkedin.com/in/laylam',
       twitter: '',
       facebook: 'https://facebook.com/laylam',
-      website: 'https://edtechsyria.org'
+      website: 'https://edtechsyria.org',
     },
     talks: ['Education Revolution in Crisis', 'Empowering Through Technology'],
     featured: true,
     active: true,
-    createdAt: '2025-01-16T11:30:00Z'
+    createdAt: '2025-01-16T11:30:00Z',
   },
   {
     id: '3',
@@ -59,12 +58,12 @@ let speakersDB = [
       linkedin: 'https://linkedin.com/in/omarkhalil',
       twitter: 'https://twitter.com/omarkhalil',
       facebook: '',
-      website: 'https://heritagearchitecture.com'
+      website: 'https://heritagearchitecture.com',
     },
     talks: ['Rebuilding Identity Through Design'],
     featured: false,
     active: true,
-    createdAt: '2025-01-17T09:15:00Z'
+    createdAt: '2025-01-17T09:15:00Z',
   },
   {
     id: '4',
@@ -79,12 +78,12 @@ let speakersDB = [
       linkedin: 'https://linkedin.com/in/sarahjaber',
       twitter: 'https://twitter.com/drsarahjaber',
       facebook: '',
-      website: ''
+      website: '',
     },
     talks: ['Understanding the Resilient Mind', 'Mental Health in Communities'],
     featured: true,
     active: true,
-    createdAt: '2025-01-18T14:20:00Z'
+    createdAt: '2025-01-18T14:20:00Z',
   },
   {
     id: '5',
@@ -99,13 +98,13 @@ let speakersDB = [
       linkedin: '',
       twitter: 'https://twitter.com/karimothman',
       facebook: 'https://facebook.com/karimothmanfilms',
-      website: 'https://syrianstories.com'
+      website: 'https://syrianstories.com',
     },
     talks: ['The Power of Storytelling'],
     featured: false,
     active: true,
-    createdAt: '2025-01-19T16:45:00Z'
-  }
+    createdAt: '2025-01-19T16:45:00Z',
+  },
 ];
 
 // GET /api/speakers
@@ -116,18 +115,21 @@ mock.onGet(/\/api\/speakers(\?.*)?/).reply((config) => {
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
 
-  return [200, {
-    data: speakersDB.slice(start, end),
-    total: speakersDB.length,
-    page,
-    pageSize
-  }];
+  return [
+    200,
+    {
+      data: speakersDB.slice(start, end),
+      total: speakersDB.length,
+      page,
+      pageSize,
+    },
+  ];
 });
 
 // GET /api/speakers/:id
 mock.onGet(/\/api\/speakers\/[^/?]+$/).reply((config) => {
   const id = config.url.split('/').pop();
-  const speaker = speakersDB.find(s => s.id === id);
+  const speaker = speakersDB.find((s) => s.id === id);
 
   if (speaker) {
     return [200, speaker];
@@ -140,7 +142,7 @@ mock.onPost('/api/speakers').reply((config) => {
   const newSpeaker = {
     ...JSON.parse(config.data),
     id: _.uniqueId('speaker-'),
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
   speakersDB.push(newSpeaker);
   return [201, newSpeaker];
@@ -149,12 +151,12 @@ mock.onPost('/api/speakers').reply((config) => {
 // PATCH /api/speakers/:id
 mock.onPatch(/\/api\/speakers\/[^/?]+$/).reply((config) => {
   const id = config.url.split('/').pop();
-  const index = speakersDB.findIndex(s => s.id === id);
+  const index = speakersDB.findIndex((s) => s.id === id);
 
   if (index !== -1) {
     speakersDB[index] = {
       ...speakersDB[index],
-      ...JSON.parse(config.data)
+      ...JSON.parse(config.data),
     };
     return [200, speakersDB[index]];
   }
@@ -164,7 +166,7 @@ mock.onPatch(/\/api\/speakers\/[^/?]+$/).reply((config) => {
 // DELETE /api/speakers/:id
 mock.onDelete(/\/api\/speakers\/[^/?]+$/).reply((config) => {
   const id = config.url.split('/').pop();
-  const index = speakersDB.findIndex(s => s.id === id);
+  const index = speakersDB.findIndex((s) => s.id === id);
 
   if (index !== -1) {
     speakersDB.splice(index, 1);

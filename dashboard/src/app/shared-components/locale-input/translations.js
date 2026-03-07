@@ -3,7 +3,7 @@
  */
 export const fieldLabels = {
   en: 'English',
-  ar: 'عربي'
+  ar: 'عربي',
 };
 
 /** @deprecated Use fieldLabels */

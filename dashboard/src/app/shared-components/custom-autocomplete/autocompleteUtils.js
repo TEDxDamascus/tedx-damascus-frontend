@@ -15,7 +15,7 @@ export function normalizeOption(option) {
   return {
     ...option,
     id: option.id ?? option.value,
-    label: option.label ?? option.name ?? option.title ?? String(option.id ?? option.value ?? '')
+    label: option.label ?? option.name ?? option.title ?? String(option.id ?? option.value ?? ''),
   };
 }
 

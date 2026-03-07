@@ -3,7 +3,7 @@ export {
   debounce,
   getOptionLabel,
   isOptionEqualToValue,
-  normalizeOption
+  normalizeOption,
 } from './autocompleteUtils';
 export {
   selectAutocompleteScope,
@@ -13,5 +13,5 @@ export {
   setError,
   resetScope,
   fetchOptionsThunk,
-  createDebouncedFetch
+  createDebouncedFetch,
 } from './autocompleteSlice';

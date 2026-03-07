@@ -29,8 +29,8 @@ export default function LocaleInput({
   const isMultiline = type === localeInputTypes.textFieldMultiple;
   const isEditor = type === localeInputTypes.editor;
   const multiline = isMultiline || isEditor;
-  const rows = multiline ? minRows ?? 3 : undefined;
-  const maxRowsCount = isEditor ? maxRows ?? 12 : undefined;
+  const rows = multiline ? (minRows ?? 3) : undefined;
+  const maxRowsCount = isEditor ? (maxRows ?? 12) : undefined;
 
   const sharedProps = {
     fullWidth: true,
@@ -39,7 +39,7 @@ export default function LocaleInput({
     minRows: rows,
     maxRows: maxRowsCount,
     error: !!error,
-    placeholder
+    placeholder,
   };
 
   return (
@@ -68,9 +68,7 @@ export default function LocaleInput({
         </Grid>
       </Grid>
       {helperText && error && (
-        <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5, mx: 1.5 }}>
-          {helperText}
-        </Box>
+        <Box sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5, mx: 1.5 }}>{helperText}</Box>
       )}
     </Box>
   );

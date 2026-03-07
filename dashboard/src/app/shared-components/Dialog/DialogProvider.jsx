@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
-import Dialog from "./Dialog";
+import { createContext, useContext, useState } from 'react';
+import Dialog from './Dialog';
 
 const DialogContext = createContext();
 

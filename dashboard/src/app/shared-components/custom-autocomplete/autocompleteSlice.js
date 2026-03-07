@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { debounce } from './autocompleteUtils';
 
 const initialState = {
-  byScope: {}
+  byScope: {},
 };
 
 function ensureScope(state, scope) {
@@ -11,7 +11,7 @@ function ensureScope(state, scope) {
       inputValue: '',
       options: [],
       loading: false,
-      error: null
+      error: null,
     };
   }
 }
@@ -45,11 +45,11 @@ const autocompleteSlice = createSlice({
           inputValue: '',
           options: [],
           loading: false,
-          error: null
+          error: null,
         };
       }
-    }
-  }
+    },
+  },
 });
 
 export const { setInputValue, setOptions, setLoading, setError, resetScope } =
@@ -67,7 +67,7 @@ export const fetchOptionsThunk = createAsyncThunk(
       const message = err?.message || err?.data?.message || 'Failed to load options';
       dispatch(setError({ scope, error: message }));
     }
-  }
+  },
 );
 
 export function createDebouncedFetch(dispatch) {
@@ -85,7 +85,7 @@ export const selectAutocompleteScope = (scope) => (state) =>
     inputValue: '',
     options: [],
     loading: false,
-    error: null
+    error: null,
   };
 
 export default autocompleteSlice.reducer;

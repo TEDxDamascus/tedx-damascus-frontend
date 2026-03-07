@@ -6,8 +6,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        'tedx-red': '#EB0028',
-        'tedx-dark': '#1a1a1a'
+        'tedx-red': 'var(--color-primary)',
+        'tedx-dark': 'var(--color-dark)',
+        'tedx-red-dark': 'var(--color-primary-dark)',
       }
     }
   },

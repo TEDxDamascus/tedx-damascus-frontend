@@ -7,7 +7,7 @@ function LoadingSpinner({ size = 40 }) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '200px'
+        minHeight: '200px',
       }}
     >
       <CircularProgress size={size} sx={{ color: '#EB0028' }} />

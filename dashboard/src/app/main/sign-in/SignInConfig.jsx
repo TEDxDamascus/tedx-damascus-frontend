@@ -4,9 +4,9 @@ const SignInConfig = {
   routes: [
     {
       path: '/sign-in',
-      element: <SignInPage />
-    }
-  ]
+      element: <SignInPage />,
+    },
+  ],
 };
 
 export default SignInConfig;

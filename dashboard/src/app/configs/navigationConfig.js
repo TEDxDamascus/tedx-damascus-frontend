@@ -6,29 +6,29 @@ const navigationConfig = [
     title: 'Dashboard',
     type: 'item',
     icon: Dashboard,
-    url: '/dashboard'
+    url: '/dashboard',
   },
   {
     id: 'speakers',
     title: 'Speakers',
     type: 'item',
     icon: People,
-    url: '/speakers'
+    url: '/speakers',
   },
   {
     id: 'events',
     title: 'Events',
     type: 'item',
     icon: Event,
-    url: '/events'
+    url: '/events',
   },
   {
     id: 'settings',
     title: 'Settings',
     type: 'item',
     icon: Settings,
-    url: '/settings'
-  }
+    url: '/settings',
+  },
 ];
 
 export default navigationConfig;

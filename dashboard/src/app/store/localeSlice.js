@@ -6,12 +6,14 @@ const getStoredLocale = () => {
   try {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored === 'ar' || stored === 'en') return stored;
-  } catch (_) {}
+  } catch {
+    /* storage unavailable */
+  }
   return 'en';
 };
 
 const initialState = {
-  locale: getStoredLocale()
+  locale: getStoredLocale(),
 };
 
 const localeSlice = createSlice({
@@ -24,9 +26,11 @@ const localeSlice = createSlice({
       state.locale = locale;
       try {
         localStorage.setItem(LOCALE_STORAGE_KEY, locale);
-      } catch (_) {}
-    }
-  }
+      } catch {
+        /* storage unavailable */
+      }
+    },
+  },
 });
 
 export const { setLocale } = localeSlice.actions;

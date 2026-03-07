@@ -15,12 +15,12 @@ const SpeakerModel = (data) =>
       linkedin: '',
       twitter: '',
       facebook: '',
-      website: ''
+      website: '',
     },
     talks: [],
     featured: false,
     active: true,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   });
 
 export default SpeakerModel;

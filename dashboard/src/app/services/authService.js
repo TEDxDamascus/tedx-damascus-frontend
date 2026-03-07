@@ -1,16 +1,14 @@
-import axiosInstance from './axiosInstance';
-
+// TODO: import axiosInstance from './axiosInstance' when switching to real API
 const MOCK_USER = {
   id: 'admin-001',
   email: 'admin@tedxdamascus.com',
   role: 'admin',
   permissions: [],
-  is_active: true
+  is_active: true,
 };
 
 function createMockJwt(payload) {
-  const enc = (str) =>
-    btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  const enc = (str) => btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   const header = enc(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = enc(JSON.stringify(payload));
   return `${header}.${body}.mock`;
@@ -27,7 +25,7 @@ function mockLogin(email, password) {
     role: MOCK_USER.role,
     permissions: MOCK_USER.permissions,
     iat: now,
-    exp: now + 60 * 60 * 24 * 30
+    exp: now + 60 * 60 * 24 * 30,
   });
   return { data: { access_token, refresh_token: 'mock-refresh-token', user: MOCK_USER } };
 }
