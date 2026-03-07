@@ -1,24 +1,45 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MaterialReactTable } from 'material-react-table';
 import { IconButton, Chip, Avatar, Box } from '@mui/material';
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useDeleteSpeakerMutation } from '../SpeakersApi';
 import { useSnackbar } from 'notistack';
+import ConfirmModal from '../../../shared-components/ConfirmModal';
 
 function SpeakersListTable({ speakers = [], isLoading }) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [deleteSpeaker] = useDeleteSpeakerMutation();
 
-  const handleDelete = async (speakerId) => {
-    if (window.confirm('Are you sure you want to delete this speaker?')) {
-      try {
-        await deleteSpeaker(speakerId).unwrap();
-        enqueueSnackbar('Speaker deleted successfully', { variant: 'success' });
-      } catch (error) {
-        enqueueSnackbar('Failed to delete speaker', { variant: 'error' });
-      }
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedSpeakerId, setSelectedSpeakerId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = (speakerId) => {
+    setSelectedSpeakerId(speakerId);
+    setOpenDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedSpeakerId) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteSpeaker(selectedSpeakerId).unwrap();
+
+      enqueueSnackbar('Speaker deleted successfully', {
+        variant: 'success',
+      });
+
+      setOpenDeleteModal(false);
+      setSelectedSpeakerId(null);
+    } catch (error) {
+      enqueueSnackbar('Failed to delete speaker', {
+        variant: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -68,7 +89,7 @@ function SpeakersListTable({ speakers = [], isLoading }) {
             color={row.original.featured ? 'primary' : 'default'}
             size="small"
             sx={{
-              backgroundColor: row.original.featured ? '#EB0028' : undefined,
+                           backgroundColor: row.original.featured ? '#EB0028' : undefined,
             }}
           />
         )
@@ -119,7 +140,7 @@ function SpeakersListTable({ speakers = [], isLoading }) {
               <Edit />
             </IconButton>
             <IconButton
-              onClick={() => handleDelete(row.original.id)}
+              onClick={() => handleDeleteClick(row.original.id)}
               color="error"
               size="small"
             >
@@ -145,6 +166,21 @@ function SpeakersListTable({ speakers = [], isLoading }) {
             fontWeight: 'bold',
           },
         }}
+      />
+
+      {/*  Confirm Delete Modal */}
+      <ConfirmModal
+        open={openDeleteModal}
+        onClose={() => {
+          if (!isDeleting) {
+            setOpenDeleteModal(false);
+            setSelectedSpeakerId(null);
+          }
+        }}
+        onConfirm={confirmDelete}
+        loading={isDeleting}
+        title="Delete Speaker"
+        description="Are you sure you want to delete this speaker? This action cannot be undone."
       />
     </div>
   );
