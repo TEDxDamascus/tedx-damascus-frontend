@@ -6,20 +6,21 @@ import {
   Grid,
   Box
 } from '@mui/material';
+import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
 
 function BasicInfoTab({ control, errors }) {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Controller
             name="name"
             control={control}
             render={({ field }) => (
-              <TextField
+              <LocaleInput
                 {...field}
+                type={localeInputTypes.textField}
                 label="Full Name"
-                fullWidth
                 required
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -51,10 +52,10 @@ function BasicInfoTab({ control, errors }) {
             name="title"
             control={control}
             render={({ field }) => (
-              <TextField
+              <LocaleInput
                 {...field}
+                type={localeInputTypes.textField}
                 label="Title"
-                fullWidth
                 error={!!errors.title}
                 helperText={errors.title?.message}
               />
@@ -115,12 +116,11 @@ function BasicInfoTab({ control, errors }) {
             name="bio"
             control={control}
             render={({ field }) => (
-              <TextField
+              <LocaleInput
                 {...field}
+                type={localeInputTypes.textFieldMultiple}
                 label="Biography"
-                fullWidth
-                multiline
-                rows={4}
+                minRows={4}
                 error={!!errors.bio}
                 helperText={errors.bio?.message}
               />

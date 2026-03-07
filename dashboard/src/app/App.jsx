@@ -7,6 +7,7 @@ import store from './store/store';
 import themeConfig from './configs/themeConfig';
 import AuthGuard from './auth/AuthGuard';
 import { AuthProvider } from './auth/AuthContext';
+import IntlProviderWrapper from './providers/IntlProviderWrapper';
 import MainLayout from './theme-layouts/MainLayout/MainLayout';
 import AuthLayout from './theme-layouts/AuthLayout/AuthLayout';
 import SignInConfig from './main/sign-in/SignInConfig';
@@ -18,7 +19,8 @@ function App() {
     <Provider store={store}>
       <ThemeProvider theme={themeConfig}>
         <CssBaseline />
-        <SnackbarProvider
+        <IntlProviderWrapper>
+          <SnackbarProvider
           maxSnack={3}
           anchorOrigin={{
             vertical: 'top',
@@ -63,6 +65,7 @@ function App() {
             </AuthProvider>
           </BrowserRouter>
         </SnackbarProvider>
+        </IntlProviderWrapper>
       </ThemeProvider>
     </Provider>
   );
