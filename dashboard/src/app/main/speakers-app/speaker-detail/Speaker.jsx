@@ -48,7 +48,7 @@ function Speaker() {
   const { enqueueSnackbar } = useSnackbar();
   const [currentTab, setCurrentTab] = useState(0);
 
-  const isNew = speakerId === 'new';
+  const isNew = speakerId === 'add';
 
   const { data: speaker, isLoading } = useGetSpeakerQuery(speakerId, {
     skip: isNew
