@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import { selectLocale } from '../store/localeSlice';
-import { messages } from '../../locales';
+import { messages, defaultLocale } from '../../locales';
 
 export default function IntlProviderWrapper({ children }) {
   const locale = useSelector(selectLocale);
@@ -10,11 +10,11 @@ export default function IntlProviderWrapper({ children }) {
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
-    root.setAttribute('lang', locale === 'ar' ? 'ar' : 'en');
+    root.setAttribute('lang', locale);
   }, [locale]);
 
   return (
-    <IntlProvider locale={locale} messages={messages[locale]} defaultLocale="ar">
+    <IntlProvider locale={locale} messages={messages[locale]} defaultLocale={defaultLocale}>
       {children}
     </IntlProvider>
   );

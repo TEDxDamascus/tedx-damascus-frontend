@@ -19,4 +19,4 @@ export const messages = {
   en: flatten(en)
 };
 export const locales = ['ar', 'en'];
-export const defaultLocale = 'ar';
+export const defaultLocale = 'en';

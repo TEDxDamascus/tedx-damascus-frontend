@@ -15,7 +15,6 @@ import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { selectUser } from '../../auth/store/userSlice';
 import { useAuth } from '../../auth/AuthContext';
-import LocaleSwitcher from '../../shared-components/LocaleSwitcher';
 
 function Header() {
   const user = useSelector(selectUser);
@@ -52,8 +51,6 @@ function Header() {
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
          
-          {/*<LocaleSwitcher />
-          */}
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             {user?.email || 'Admin'}
           </Typography>
