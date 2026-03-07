@@ -1,31 +1,18 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { selectIsAuthenticated, setUser } from './store/userSlice';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUserRole } from './store/userSlice';
 
-function AuthGuard({ children }) {
+function AuthGuard({ children, allowedRoles }) {
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const dispatch = useDispatch();
+  const role = useSelector(selectUserRole);
   const location = useLocation();
 
-  useEffect(() => {
-    const token = localStorage.getItem('tedx_token');
-    const userData = localStorage.getItem('tedx_user');
-
-    if (token && userData && !isAuthenticated) {
-      try {
-        dispatch(setUser(JSON.parse(userData)));
-      } catch (error) {
-        localStorage.removeItem('tedx_token');
-        localStorage.removeItem('tedx_user');
-      }
-    }
-  }, [dispatch, isAuthenticated]);
-
-  const token = localStorage.getItem('tedx_token');
-
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles?.length && !allowedRoles.includes(role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

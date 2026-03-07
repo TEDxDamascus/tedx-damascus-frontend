@@ -7,6 +7,16 @@ import {
   Box
 } from '@mui/material';
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
+import { CustomAutocomplete, normalizeOption } from '../../../../shared-components/custom-autocomplete';
+import { ImagePickerField } from '../../../../shared-components/image-picker';
+import axiosInstance from '@/app/services/axiosInstance';
+
+async function fetchTalkOptions(query) {
+  const res = await axiosInstance.get('/talks', {
+    params: query ? { q: query } : undefined
+  });
+  return res.data.data.map((t) => normalizeOption({ id: t.id, label: t.title }));
+}
 
 function BasicInfoTab({ control, errors }) {
   return (
@@ -95,17 +105,36 @@ function BasicInfoTab({ control, errors }) {
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <Controller
             name="image"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                label="Image URL"
-                fullWidth
+              <ImagePickerField
+                value={field.value}
+                onChange={field.onChange}
+                label="Image"
                 error={!!errors.image}
                 helperText={errors.image?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            name="talks"
+            control={control}
+            render={({ field }) => (
+              <CustomAutocomplete
+                {...field}
+                scope="speaker-talks"
+                fetchOptions={fetchTalkOptions}
+                multiple
+                label="Talks"
+                placeholder="Search talks..."
+                error={errors.talks}
+                helperText={errors.talks?.message}
               />
             )}
           />
