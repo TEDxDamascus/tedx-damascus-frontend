@@ -1,0 +1,75 @@
+{
+  "HomePage": {
+    "title": "TEDxDamascus",
+    "description": "Ideas Worth Spreading",
+    "hero": {
+      "subtitle": "Join us for inspiring talks and innovative ideas"
+    }
+  },
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "speakers": "Speakers",
+    "events": "Events",
+    "blog": "Blog",
+    "volunteer": "Volunteer",
+    "contact": "Contact"
+  },
+  "Speakers": {
+    "title": "Our Speakers",
+    "featured": "Featured Speakers",
+    "all": "All Speakers",
+    "viewProfile": "View Profile",
+    "watchTalk": "Watch Talk"
+  },
+  "Events": {
+    "title": "Events",
+    "upcoming": "Upcoming Events",
+    "past": "Past Events",
+    "details": "Event Details",
+    "date": "Date",
+    "location": "Location"
+  },
+  "Blog": {
+    "title": "Blog",
+    "readMore": "Read More",
+    "author": "Author",
+    "publishedOn": "Published on",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "Volunteer": {
+    "title": "Become a Volunteer",
+    "description": "Join our team and help make TEDxDamascus a success",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Why do you want to volunteer?",
+      "submit": "Submit Application"
+    }
+  },
+  "Contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with the TEDxDamascus team"
+  },
+  "Footer": {
+    "about": "About TEDxDamascus",
+    "description": "TEDxDamascus is a local, independently organized TED event bringing together the brightest minds from Damascus and beyond.",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "learnMore": "Learn More",
+    "viewAll": "View All"
+  },
+  "Gallery": {
+    "title": "Photo Gallery",
+    "subtitle": "Unforgettable moments from the TEDxDamascus journey",
+    "viewImage": "View Image",
+    "closeImage": "Close"
+  }
+}

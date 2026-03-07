@@ -14,12 +14,21 @@ import SpeakerHeader from './SpeakerHeader';
 import BasicInfoTab from './tabs/BasicInfoTab';
 import SocialLinksTab from './tabs/SocialLinksTab';
 import SpeakerModel from './models/SpeakerModel';
+import { ensureLocaleValue } from '../../../shared-components/locale-input';
+
+const localeObjectSchema = z.object({
+  ar: z.string(),
+  en: z.string()
+});
 
 const speakerSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: localeObjectSchema.refine(
+    (v) => (v?.en?.trim() || v?.ar?.trim()),
+    'Name is required'
+  ),
   email: z.string().email('Invalid email address'),
-  bio: z.string().optional(),
-  title: z.string().optional(),
+  bio: localeObjectSchema.optional(),
+  title: localeObjectSchema.optional(),
   company: z.string().optional(),
   phone: z.string().optional(),
   image: z.string().optional(),
@@ -39,7 +48,7 @@ function Speaker() {
   const { enqueueSnackbar } = useSnackbar();
   const [currentTab, setCurrentTab] = useState(0);
 
-  const isNew = speakerId === 'new';
+  const isNew = speakerId === 'add';
 
   const { data: speaker, isLoading } = useGetSpeakerQuery(speakerId, {
     skip: isNew
@@ -60,7 +69,12 @@ function Speaker() {
 
   useEffect(() => {
     if (speaker && !isNew) {
-      reset(speaker);
+      reset({
+        ...speaker,
+        name: ensureLocaleValue(speaker.name),
+        title: ensureLocaleValue(speaker.title),
+        bio: ensureLocaleValue(speaker.bio)
+      });
     }
   }, [speaker, isNew, reset]);
 

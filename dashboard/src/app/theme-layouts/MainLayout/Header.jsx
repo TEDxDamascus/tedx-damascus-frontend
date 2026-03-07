@@ -10,8 +10,9 @@ import {
   MenuItem,
   Avatar
 } from '@mui/material';
-import { AccountCircle, Logout } from '@mui/icons-material';
+import { Logout } from '@mui/icons-material';
 import { useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { selectUser } from '../../auth/store/userSlice';
 import { useAuth } from '../../auth/AuthContext';
 
@@ -45,10 +46,11 @@ function Header() {
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-          Dashboard
+          <FormattedMessage id="common.dashboard" defaultMessage="Dashboard" />
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+         
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             {user?.email || 'Admin'}
           </Typography>
@@ -76,7 +78,7 @@ function Header() {
           >
             <MenuItem onClick={handleLogout}>
               <Logout fontSize="small" sx={{ mr: 1 }} />
-              Logout
+              <FormattedMessage id="common.logout" defaultMessage="Logout" />
             </MenuItem>
           </Menu>
         </Box>
