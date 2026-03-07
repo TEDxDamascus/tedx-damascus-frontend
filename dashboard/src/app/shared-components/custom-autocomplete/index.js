@@ -1,5 +1,4 @@
 export { default as CustomAutocomplete } from './CustomAutocomplete';
-export { fetchSpeakerOptions, fetchVolunteerOptions } from './autocompleteMock';
 export {
   debounce,
   getOptionLabel,
