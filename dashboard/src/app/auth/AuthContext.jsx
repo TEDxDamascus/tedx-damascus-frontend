@@ -37,11 +37,7 @@ export function AuthProvider({ children }) {
     navigate('/sign-in', { replace: true });
   };
 
-  return (
-    <AuthContext.Provider value={{ signIn, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ signIn, logout }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {

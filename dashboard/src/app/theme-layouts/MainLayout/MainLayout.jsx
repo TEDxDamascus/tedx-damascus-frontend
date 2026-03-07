@@ -17,7 +17,7 @@ function MainLayout() {
             flexGrow: 1,
             mt: 8,
             backgroundColor: '#f5f5f5',
-            minHeight: 'calc(100vh - 64px)'
+            minHeight: 'calc(100vh - 64px)',
           }}
         >
           <Suspense
@@ -27,7 +27,7 @@ function MainLayout() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  minHeight: '400px'
+                  minHeight: '400px',
                 }}
               >
                 <CircularProgress sx={{ color: '#EB0028' }} />

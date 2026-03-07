@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -8,7 +7,7 @@ import {
   Box,
   Menu,
   MenuItem,
-  Avatar
+  Avatar,
 } from '@mui/material';
 import { Logout } from '@mui/icons-material';
 import { useState } from 'react';
@@ -41,7 +40,7 @@ function Header() {
         backgroundColor: 'white',
         color: '#1a1a1a',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        zIndex: (theme) => theme.zIndex.drawer + 1
+        zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -50,15 +49,10 @@ function Header() {
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-         
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             {user?.email || 'Admin'}
           </Typography>
-          <IconButton
-            size="large"
-            onClick={handleMenu}
-            color="inherit"
-          >
+          <IconButton size="large" onClick={handleMenu} color="inherit">
             <Avatar sx={{ width: 32, height: 32, backgroundColor: '#EB0028' }}>
               {user?.name?.charAt(0) || 'A'}
             </Avatar>
@@ -69,11 +63,11 @@ function Header() {
             onClose={handleClose}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right'
+              horizontal: 'right',
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'right'
+              horizontal: 'right',
             }}
           >
             <MenuItem onClick={handleLogout}>

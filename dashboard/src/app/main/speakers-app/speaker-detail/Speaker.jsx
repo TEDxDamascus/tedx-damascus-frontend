@@ -8,7 +8,7 @@ import { useSnackbar } from 'notistack';
 import {
   useGetSpeakerQuery,
   useCreateSpeakerMutation,
-  useUpdateSpeakerMutation
+  useUpdateSpeakerMutation,
 } from '../SpeakersApi';
 import SpeakerHeader from './SpeakerHeader';
 import BasicInfoTab from './tabs/BasicInfoTab';
@@ -18,28 +18,27 @@ import { ensureLocaleValue } from '../../../shared-components/locale-input';
 
 const localeObjectSchema = z.object({
   ar: z.string(),
-  en: z.string()
+  en: z.string(),
 });
 
 const speakerSchema = z.object({
-  name: localeObjectSchema.refine(
-    (v) => (v?.en?.trim() || v?.ar?.trim()),
-    'Name is required'
-  ),
+  name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
   email: z.string().email('Invalid email address'),
   bio: localeObjectSchema.optional(),
   title: localeObjectSchema.optional(),
   company: z.string().optional(),
   phone: z.string().optional(),
   image: z.string().optional(),
-  socialLinks: z.object({
-    linkedin: z.string().optional(),
-    twitter: z.string().optional(),
-    facebook: z.string().optional(),
-    website: z.string().optional()
-  }).optional(),
+  socialLinks: z
+    .object({
+      linkedin: z.string().optional(),
+      twitter: z.string().optional(),
+      facebook: z.string().optional(),
+      website: z.string().optional(),
+    })
+    .optional(),
   featured: z.boolean().optional(),
-  active: z.boolean().optional()
+  active: z.boolean().optional(),
 });
 
 function Speaker() {
@@ -51,7 +50,7 @@ function Speaker() {
   const isNew = speakerId === 'add';
 
   const { data: speaker, isLoading } = useGetSpeakerQuery(speakerId, {
-    skip: isNew
+    skip: isNew,
   });
 
   const [createSpeaker, { isLoading: isCreating }] = useCreateSpeakerMutation();
@@ -61,10 +60,10 @@ function Speaker() {
     control,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(speakerSchema),
-    defaultValues: SpeakerModel()
+    defaultValues: SpeakerModel(),
   });
 
   useEffect(() => {
@@ -73,7 +72,7 @@ function Speaker() {
         ...speaker,
         name: ensureLocaleValue(speaker.name),
         title: ensureLocaleValue(speaker.title),
-        bio: ensureLocaleValue(speaker.bio)
+        bio: ensureLocaleValue(speaker.bio),
       });
     }
   }, [speaker, isNew, reset]);
@@ -88,23 +87,23 @@ function Speaker() {
         enqueueSnackbar('Speaker updated successfully', { variant: 'success' });
       }
       navigate('/speakers');
-    } catch (error) {
+    } catch {
       enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} speaker`, {
-        variant: 'error'
+        variant: 'error',
       });
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex h-screen items-center justify-center">
         <CircularProgress sx={{ color: '#EB0028' }} />
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex h-full w-full flex-col">
       <SpeakerHeader
         onSave={handleSubmit(onSubmit)}
         isNew={isNew}
@@ -117,7 +116,7 @@ function Speaker() {
           sx={{
             border: '1px solid #e0e0e0',
             borderRadius: 2,
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           <Tabs
@@ -128,11 +127,11 @@ function Speaker() {
               borderColor: 'divider',
               px: 3,
               '& .MuiTab-root.Mui-selected': {
-                color: '#EB0028'
+                color: '#EB0028',
               },
               '& .MuiTabs-indicator': {
-                backgroundColor: '#EB0028'
-              }
+                backgroundColor: '#EB0028',
+              },
             }}
           >
             <Tab label="Basic Information" />

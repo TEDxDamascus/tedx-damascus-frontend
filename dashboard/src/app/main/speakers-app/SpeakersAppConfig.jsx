@@ -10,15 +10,15 @@ const SpeakersAppConfig = {
       children: [
         {
           path: '',
-          element: <SpeakersList />
+          element: <SpeakersList />,
         },
         {
           path: ':speakerId',
-          element: <Speaker />
-        }
-      ]
-    }
-  ]
+          element: <Speaker />,
+        },
+      ],
+    },
+  ],
 };
 
 export default SpeakersAppConfig;

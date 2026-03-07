@@ -6,7 +6,7 @@ function SpeakersListHeader() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="mb-6 flex items-center justify-between">
       <div>
         <h1 className="text-3xl font-bold text-tedx-dark">Speakers</h1>
         <p className="mt-2 text-gray-600">Manage your TEDx Damascus speakers</p>
@@ -15,10 +15,10 @@ function SpeakersListHeader() {
         variant="contained"
         color="primary"
         startIcon={<Add />}
-        onClick={() => navigate('/speakers/new')}
+        onClick={() => navigate('/speakers/add')}
         sx={{
-          backgroundColor: '#EB0028',
-          '&:hover': { backgroundColor: '#C00020' }
+          backgroundColor: 'var(--color-primary)',
+          '&:hover': { backgroundColor: 'var(--color-primary-dark)' },
         }}
       >
         Add New Speaker

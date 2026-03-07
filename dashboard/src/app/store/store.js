@@ -4,6 +4,7 @@ import apiService from './apiService';
 import userReducer from '../auth/store/userSlice';
 import localeReducer from './localeSlice';
 import autocompleteReducer from '../shared-components/custom-autocomplete/autocompleteSlice';
+import tableReducer from '../shared-components/custom-table/tableSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,9 +12,9 @@ export const store = configureStore({
     user: userReducer,
     locale: localeReducer,
     autocomplete: autocompleteReducer,
+    table: tableReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiService.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiService.middleware),
 });
 
 setupListeners(store.dispatch);

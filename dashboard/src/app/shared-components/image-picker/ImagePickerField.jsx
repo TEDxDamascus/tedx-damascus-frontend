@@ -9,19 +9,27 @@ export default function ImagePickerField({
   label = 'Image',
   error,
   helperText,
-  disabled
+  disabled,
 }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-        <Box sx={{
-          width: 56, height: 56, flexShrink: 0,
-          border: '1px solid #e0e0e0', borderRadius: 1,
-          overflow: 'hidden', bgcolor: '#fafafa',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
+        <Box
+          sx={{
+            width: 56,
+            height: 56,
+            flexShrink: 0,
+            border: '1px solid #e0e0e0',
+            borderRadius: 1,
+            overflow: 'hidden',
+            bgcolor: '#fafafa',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           {value ? (
             <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
@@ -49,7 +57,7 @@ export default function ImagePickerField({
                   Browse
                 </Button>
               </InputAdornment>
-            )
+            ),
           }}
         />
       </Box>

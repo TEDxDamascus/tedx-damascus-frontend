@@ -6,7 +6,7 @@ function AuthLayout() {
     <Box
       sx={{
         minHeight: '100vh',
-        width: '100%'
+        width: '100%',
       }}
     >
       <Outlet />

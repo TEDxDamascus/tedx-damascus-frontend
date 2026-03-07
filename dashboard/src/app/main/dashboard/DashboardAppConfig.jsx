@@ -4,9 +4,9 @@ const DashboardAppConfig = {
   routes: [
     {
       path: '/dashboard',
-      element: <DashboardPage />
-    }
-  ]
+      element: <DashboardPage />,
+    },
+  ],
 };
 
 export default DashboardAppConfig;

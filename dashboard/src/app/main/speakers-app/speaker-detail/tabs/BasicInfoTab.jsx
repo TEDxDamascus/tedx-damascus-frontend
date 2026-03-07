@@ -1,19 +1,16 @@
 import { Controller } from 'react-hook-form';
-import {
-  TextField,
-  FormControlLabel,
-  Switch,
-  Grid,
-  Box
-} from '@mui/material';
+import { TextField, FormControlLabel, Switch, Grid, Box } from '@mui/material';
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
-import { CustomAutocomplete, normalizeOption } from '../../../../shared-components/custom-autocomplete';
+import {
+  CustomAutocomplete,
+  normalizeOption,
+} from '../../../../shared-components/custom-autocomplete';
 import { ImagePickerField } from '../../../../shared-components/image-picker';
 import axiosInstance from '@/app/services/axiosInstance';
 
 async function fetchTalkOptions(query) {
   const res = await axiosInstance.get('/talks', {
-    params: query ? { q: query } : undefined
+    params: query ? { q: query } : undefined,
   });
   return res.data.data.map((t) => normalizeOption({ id: t.id, label: t.title }));
 }

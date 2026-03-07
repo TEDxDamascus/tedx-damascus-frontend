@@ -1,7 +1,7 @@
 export const localeInputTypes = {
   textField: 'textField',
   textFieldMultiple: 'textFieldMultiple',
-  editor: 'editor'
+  editor: 'editor',
 };
 
 export const SUPPORTED_LOCALES = ['en', 'ar'];
@@ -20,7 +20,7 @@ export function ensureLocaleValue(value) {
   if (value && typeof value === 'object' && 'ar' in value && 'en' in value) {
     return {
       ar: String(value.ar ?? ''),
-      en: String(value.en ?? '')
+      en: String(value.en ?? ''),
     };
   }
   if (typeof value === 'string') {

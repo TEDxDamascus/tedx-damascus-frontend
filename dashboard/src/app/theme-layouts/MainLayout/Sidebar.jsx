@@ -10,16 +10,9 @@ import {
   Box,
   Typography,
   Divider,
-  IconButton
+  IconButton,
 } from '@mui/material';
-import {
-  Dashboard,
-  People,
-  Event,
-  Settings,
-  ChevronLeft,
-  Menu
-} from '@mui/icons-material';
+import { Dashboard, People, Event, Settings, ChevronLeft, Menu } from '@mui/icons-material';
 
 const drawerWidth = 260;
 
@@ -27,7 +20,7 @@ const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Speakers', icon: <People />, path: '/speakers' },
   { text: 'Events', icon: <Event />, path: '/events' },
-  { text: 'Settings', icon: <Settings />, path: '/settings' }
+  { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
 
 function Sidebar() {
@@ -51,8 +44,8 @@ function Sidebar() {
           transition: 'width 0.3s',
           overflowX: 'hidden',
           backgroundColor: '#1a1a1a',
-          color: 'white'
-        }
+          color: 'white',
+        },
       }}
     >
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -81,12 +74,12 @@ function Sidebar() {
                 '&.Mui-selected': {
                   backgroundColor: '#EB0028',
                   '&:hover': {
-                    backgroundColor: '#C00020'
-                  }
+                    backgroundColor: '#C00020',
+                  },
                 },
                 '&:hover': {
-                  backgroundColor: 'rgba(235, 0, 40, 0.1)'
-                }
+                  backgroundColor: 'rgba(235, 0, 40, 0.1)',
+                },
               }}
             >
               <ListItemIcon
@@ -94,7 +87,7 @@ function Sidebar() {
                   minWidth: 0,
                   mr: open ? 3 : 'auto',
                   justifyContent: 'center',
-                  color: 'white'
+                  color: 'white',
                 }}
               >
                 {item.icon}

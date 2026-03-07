@@ -48,7 +48,7 @@ export const tokenService = {
       email: payload.email,
       role: payload.role,
       permissions: payload.permissions ?? [],
-      is_active: true
+      is_active: true,
     };
-  }
+  },
 };

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { ButtonGroup, Button } from '@mui/material';
-import { selectLocale, setLocale } from '../store/localeSlice';
+import { selectLocale, setLocale } from '../../store/localeSlice';
 
 export default function LocaleSwitcher() {
   const dispatch = useDispatch();
