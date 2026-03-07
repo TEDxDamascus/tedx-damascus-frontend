@@ -11,14 +11,6 @@ import { CustomAutocomplete, normalizeOption } from '../../../../shared-componen
 import { ImagePickerField } from '../../../../shared-components/image-picker';
 import axiosInstance from '@/app/services/axiosInstance';
 
-/**
- * Fetch talk options from the backend.
- * Query param `q` is optional — omitting it returns all available talks
- * so the dropdown is populated on the first keystroke.
- *
- * Expected response shape:
- * { success: true, data: [{ id, title, ... }] }
- */
 async function fetchTalkOptions(query) {
   const res = await axiosInstance.get('/talks', {
     params: query ? { q: query } : undefined

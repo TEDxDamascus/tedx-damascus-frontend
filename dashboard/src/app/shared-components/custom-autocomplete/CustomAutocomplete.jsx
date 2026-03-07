@@ -67,7 +67,6 @@ function CustomAutocomplete({
   const isEqual = customIsOptionEqualToValue ?? isOptionEqualToValue;
   const hasError = !!externalError || !!scopeError;
 
-  // Ensure selected value(s) appear in options (e.g. when loading from form reset)
   const valueArr = multiple && Array.isArray(value) ? value : value ? [value] : [];
   const valueIds = new Set(valueArr.map((v) => v?.id ?? v?.value).filter(Boolean));
   const optionsWithValue = [

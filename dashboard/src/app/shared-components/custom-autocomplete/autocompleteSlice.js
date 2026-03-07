@@ -70,7 +70,6 @@ export const fetchOptionsThunk = createAsyncThunk(
   }
 );
 
-/** Debounced version – use this from component. Wait 300ms after last input. */
 export function createDebouncedFetch(dispatch) {
   return debounce(({ scope, query, fetchOptionsFn }) => {
     if (!query?.trim()) {
