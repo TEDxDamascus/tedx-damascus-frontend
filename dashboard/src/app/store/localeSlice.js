@@ -7,7 +7,7 @@ const getStoredLocale = () => {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored === 'ar' || stored === 'en') return stored;
   } catch (_) {}
-  return 'ar';
+  return 'en';
 };
 
 const initialState = {
