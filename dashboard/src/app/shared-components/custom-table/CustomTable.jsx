@@ -187,6 +187,8 @@ export default function CustomTable({
   const { params, setPage, setPageSize, setSearch, setSort } = useTableState(tableId);
   const { page, pageSize, sortBy, sortDir } = params;
 
+  const safeData = Array.isArray(data) ? data : [];
+
   const [selectedIds, setSelectedIds] = useState([]);
   const [localSearch, setLocalSearch] = useState(params.search);
   const debounceRef = useRef(null);
@@ -207,7 +209,7 @@ export default function CustomTable({
     }
   };
 
-  const allIds = data.map(getRowId);
+  const allIds = safeData.map(getRowId);
   const allSelected = allIds.length > 0 && allIds.every((id) => selectedIds.includes(id));
 
   const toggleAll = () => {
@@ -262,7 +264,7 @@ export default function CustomTable({
                 </th>
               ))}
               {hasActions && (
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                   Actions
                 </th>
               )}
@@ -277,10 +279,10 @@ export default function CustomTable({
                 hasActions={hasActions}
                 hasBulk={hasBulk}
               />
-            ) : data.length === 0 ? (
+            ) : safeData.length === 0 ? (
               <EmptyState message={emptyMessage} />
             ) : (
-              data.map((row) => {
+              safeData.map((row) => {
                 const rowId = getRowId(row);
                 const isSelected = selectedIds.includes(rowId);
                 const actions = rowActions?.(row) ?? [];
@@ -313,7 +315,7 @@ export default function CustomTable({
                     ))}
                     {hasActions && (
                       <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-start gap-1">
                           {actions.map((action, i) => (
                             <button
                               key={i}

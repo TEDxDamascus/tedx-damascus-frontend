@@ -33,7 +33,7 @@ function SpeakersList() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6 pt-8">
       <SpeakersListHeader />
 
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
