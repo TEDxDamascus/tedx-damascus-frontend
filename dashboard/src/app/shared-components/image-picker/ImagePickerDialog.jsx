@@ -7,9 +7,7 @@ import {
   Button,
   Tabs,
   Tab,
-  Box,
   Grid,
-  Typography,
   Skeleton,
   Pagination,
   IconButton,
@@ -32,96 +30,46 @@ function ImageCard({ item, currentUrl, onSelect, onDelete }) {
   const isActive = currentUrl === item.url;
 
   return (
-    <Box
+    <div
       onClick={() => onSelect(item.url)}
-      sx={{
-        position: 'relative',
-        cursor: 'pointer',
-        border: isActive ? '2px solid #EB0028' : '2px solid transparent',
-        borderRadius: 1,
-        overflow: 'hidden',
-        aspectRatio: '1',
-        bgcolor: '#f5f5f5',
-        '&:hover': { borderColor: '#EB0028' },
-        '&:hover .delete-btn': { opacity: 1 },
-      }}
+      className={[
+        'group relative cursor-pointer overflow-hidden rounded',
+        'aspect-square bg-gray-100',
+        isActive ? 'ring-2 ring-tedx-red' : 'ring-2 ring-transparent hover:ring-tedx-red',
+      ].join(' ')}
     >
       <img
         src={item.url}
         alt={item.basename}
         loading="lazy"
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        className="h-full w-full object-cover"
       />
 
-      <IconButton
-        className="delete-btn"
-        size="small"
+      {/* Delete button */}
+      <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           onDelete(item);
         }}
-        sx={{
-          position: 'absolute',
-          top: 4,
-          left: 4,
-          bgcolor: 'rgba(0,0,0,0.55)',
-          opacity: 0,
-          transition: 'opacity .15s',
-          width: 26,
-          height: 26,
-          '&:hover': { bgcolor: 'rgba(220,38,38,0.9)' },
-        }}
+        className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded bg-black/55 opacity-0 transition-opacity hover:bg-red-600 group-hover:opacity-100"
       >
-        <DeleteOutline sx={{ color: 'white', fontSize: 15 }} />
-      </IconButton>
+        <DeleteOutline style={{ fontSize: 14, color: 'white' }} />
+      </button>
 
+      {/* Selected check */}
       {isActive && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 4,
-            right: 4,
-            bgcolor: '#EB0028',
-            borderRadius: '50%',
-            width: 22,
-            height: 22,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Check sx={{ color: 'white', fontSize: 14 }} />
-        </Box>
+        <div className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-tedx-red">
+          <Check style={{ fontSize: 13, color: 'white' }} />
+        </div>
       )}
 
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          bgcolor: 'rgba(0,0,0,0.55)',
-          px: 1,
-          py: 0.5,
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'white',
-            display: 'block',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {item.basename}
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.65)' }}>
-          {formatBytes(item.size)}
-        </Typography>
-      </Box>
-    </Box>
+      {/* Name overlay */}
+      <div className="absolute bottom-0 left-0 right-0 bg-black/55 px-2 py-1">
+        <p className="truncate text-xs text-white">{item.basename}</p>
+        <p className="text-xs text-white/65">{formatBytes(item.size)}</p>
+      </div>
+    </div>
   );
 }
 
@@ -146,7 +94,7 @@ function LibraryTab({ currentUrl, onSelect }) {
       <Grid container spacing={1.5}>
         {Array.from({ length: 8 }).map((_, i) => (
           <Grid item xs={6} sm={4} md={3} key={i}>
-            <Skeleton variant="rectangular" sx={{ aspectRatio: '1', borderRadius: 1 }} />
+            <Skeleton variant="rectangular" className="aspect-square rounded" />
           </Grid>
         ))}
       </Grid>
@@ -154,16 +102,12 @@ function LibraryTab({ currentUrl, onSelect }) {
   }
 
   if (!items.length) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 8 }}>
-        <Typography color="text.secondary">No images uploaded yet.</Typography>
-      </Box>
-    );
+    return <div className="py-16 text-center text-sm text-gray-400">No images uploaded yet.</div>;
   }
 
   return (
     <>
-      <Box sx={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity .2s' }}>
+      <div className={isFetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
         <Grid container spacing={1.5}>
           {items.map((item) => (
             <Grid item xs={6} sm={4} md={3} key={item.id}>
@@ -178,16 +122,18 @@ function LibraryTab({ currentUrl, onSelect }) {
         </Grid>
 
         {totalPages > 1 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          <div className="mt-4 flex justify-center">
             <Pagination
               count={totalPages}
               page={page}
               onChange={(_, val) => setPage(val)}
-              sx={{ '& .Mui-selected': { bgcolor: '#EB0028 !important', color: 'white' } }}
+              sx={{
+                '& .Mui-selected': { bgcolor: 'var(--color-primary) !important', color: 'white' },
+              }}
             />
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       <ConfirmModal
         open={!!confirmItem}
@@ -216,49 +162,27 @@ function UploadTab({ onFileSelect, preview }) {
   };
 
   return (
-    <Box>
-      <Box
-        onClick={() => fileInputRef.current?.click()}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        sx={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '2px dashed #ddd',
-          borderRadius: 2,
-          p: preview ? 2 : 6,
-          cursor: 'pointer',
-          '&:hover': { borderColor: '#EB0028', bgcolor: '#fff8f8' },
-        }}
-      >
-        <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleChange} />
-        {preview ? (
-          <img
-            src={preview}
-            alt="preview"
-            style={{
-              width: '100%',
-              maxHeight: 280,
-              objectFit: 'contain',
-              borderRadius: 8,
-            }}
-          />
-        ) : (
-          <>
-            <CloudUpload sx={{ fontSize: 52, color: '#ccc', mb: 1.5 }} />
-            <Typography variant="body1" fontWeight={500} color="text.secondary">
-              Click or drag an image here
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-              PNG, JPG, WEBP — up to 10 MB
-            </Typography>
-          </>
-        )}
-      </Box>
-    </Box>
+    <div
+      onClick={() => fileInputRef.current?.click()}
+      onDrop={handleDrop}
+      onDragOver={(e) => e.preventDefault()}
+      className="flex min-h-[280px] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-tedx-red hover:bg-red-50"
+    >
+      <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleChange} />
+      {preview ? (
+        <img
+          src={preview}
+          alt="preview"
+          className="max-h-[260px] w-full rounded-lg object-contain"
+        />
+      ) : (
+        <>
+          <CloudUpload className="mb-3 text-gray-300" style={{ fontSize: 52 }} />
+          <p className="text-sm font-medium text-gray-500">Click or drag an image here</p>
+          <p className="mt-1 text-xs text-gray-400">PNG, JPG, WEBP — up to 10 MB</p>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -281,13 +205,11 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
     setPendingPreview(URL.createObjectURL(file));
   };
 
-  // Library: clicking an image immediately inserts the URL and closes
   const handleLibrarySelect = (url) => {
     onSelect(url);
     onClose();
   };
 
-  // Upload: triggered by footer button
   const handleUpload = async () => {
     if (!pendingFile) return;
     const formData = new FormData();
@@ -301,52 +223,39 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle
-        sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}
-      >
-        Media Library
+      <DialogTitle className="flex items-center justify-between pb-2">
+        <span className="text-lg font-semibold text-tedx-dark">Media Library</span>
         <IconButton onClick={onClose} size="small">
           <Close fontSize="small" />
         </IconButton>
       </DialogTitle>
 
-      <Box sx={{ px: 3, borderBottom: 1, borderColor: 'divider' }}>
+      <div className="border-b border-gray-200 px-6">
         <Tabs
           value={tab}
           onChange={(_, v) => setTab(v)}
           sx={{
-            '& .MuiTab-root.Mui-selected': { color: '#EB0028' },
-            '& .MuiTabs-indicator': { bgcolor: '#EB0028' },
+            '& .MuiTab-root.Mui-selected': { color: 'var(--color-primary)' },
+            '& .MuiTabs-indicator': { bgcolor: 'var(--color-primary)' },
           }}
         >
           <Tab label="Library" />
           <Tab label="Upload New" />
         </Tabs>
-      </Box>
+      </div>
 
-      <DialogContent sx={{ minHeight: 360 }}>
+      <DialogContent className="min-h-[360px]">
         {tab === 0 && <LibraryTab currentUrl={currentUrl} onSelect={handleLibrarySelect} />}
         {tab === 1 && <UploadTab onFileSelect={handleFileSelect} preview={pendingPreview} />}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider', gap: 1 }}>
+      <DialogActions className="gap-2 border-t border-gray-200 px-6 py-3">
         {tab === 1 && pendingFile && (
-          <Box sx={{ flex: 1, overflow: 'hidden' }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{
-                display: 'block',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {pendingFile.name} — {formatBytes(pendingFile.size)}
-            </Typography>
-          </Box>
+          <p className="mr-auto truncate text-xs text-gray-400">
+            {pendingFile.name} — {formatBytes(pendingFile.size)}
+          </p>
         )}
-        <Button onClick={onClose} sx={{ flexShrink: 0 }}>
+        <Button onClick={onClose} className="flex-shrink-0">
           Cancel
         </Button>
         {tab === 1 && (
@@ -355,7 +264,11 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
             onClick={handleUpload}
             disabled={!pendingFile || isUploading}
             startIcon={isUploading ? <CircularProgress size={14} color="inherit" /> : null}
-            sx={{ bgcolor: '#EB0028', '&:hover': { bgcolor: '#c8001f' }, flexShrink: 0 }}
+            className="flex-shrink-0"
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+            }}
           >
             {isUploading ? 'Uploading…' : 'Upload Image'}
           </Button>

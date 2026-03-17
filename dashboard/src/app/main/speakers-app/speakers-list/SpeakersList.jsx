@@ -10,7 +10,7 @@ function SpeakersList() {
   const { data, isLoading } = useGetSpeakersQuery(params);
 
   return (
-    <div className="p-6">
+    <div className="p-6 pt-8">
       <SpeakersListHeader />
       <SpeakersListTable
         data={data?.data?.items ?? data?.data ?? []}

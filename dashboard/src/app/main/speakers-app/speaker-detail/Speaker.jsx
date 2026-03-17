@@ -3,23 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Tabs, Tab, Box, Paper, CircularProgress } from '@mui/material';
+import { Tabs, Tab, Box, Paper, CircularProgress, Button } from '@mui/material';
+import { Save } from '@mui/icons-material';
+import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useSnackbar } from 'notistack';
 import {
   useGetSpeakerQuery,
   useCreateSpeakerMutation,
   useUpdateSpeakerMutation,
 } from '../SpeakersApi';
-import SpeakerHeader from './SpeakerHeader';
 import BasicInfoTab from './tabs/BasicInfoTab';
 import SocialLinksTab from './tabs/SocialLinksTab';
 import SpeakerModel from './models/SpeakerModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 
-const localeObjectSchema = z.object({
-  ar: z.string(),
-  en: z.string(),
-});
+const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
 const speakerSchema = z.object({
   name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
@@ -46,15 +44,12 @@ function Speaker() {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [currentTab, setCurrentTab] = useState(0);
-
   const isNew = speakerId === 'add';
 
-  const { data: speaker, isLoading } = useGetSpeakerQuery(speakerId, {
-    skip: isNew,
-  });
-
+  const { data: speaker, isLoading } = useGetSpeakerQuery(speakerId, { skip: isNew });
   const [createSpeaker, { isLoading: isCreating }] = useCreateSpeakerMutation();
   const [updateSpeaker, { isLoading: isUpdating }] = useUpdateSpeakerMutation();
+  const isSaving = isCreating || isUpdating;
 
   const {
     control,
@@ -88,62 +83,75 @@ function Speaker() {
       }
       navigate('/speakers');
     } catch {
-      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} speaker`, {
-        variant: 'error',
-      });
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} speaker`, { variant: 'error' });
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <CircularProgress sx={{ color: '#EB0028' }} />
+        <CircularProgress className="text-tedx-red" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <SpeakerHeader
-        onSave={handleSubmit(onSubmit)}
-        isNew={isNew}
-        isSaving={isCreating || isUpdating}
+    <div className="p-6 pt-8">
+      <Breadcrumb
+        items={[
+          { label: 'Speakers', href: '/speakers' },
+          { label: isNew ? 'Add New Speaker' : 'Edit Speaker' },
+        ]}
       />
 
-      <Box sx={{ p: 3 }}>
-        <Paper
-          elevation={0}
+      {/* Title + actions — no background */}
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-tedx-dark">
+          {isNew ? 'Add New Speaker' : 'Edit Speaker'}
+        </h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/speakers')}
+            className="border-gray-300 text-gray-500"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSaving}
+            className="bg-tedx-red hover:bg-tedx-red-dark"
+          >
+            {isSaving ? 'Saving...' : 'Save Speaker'}
+          </Button>
+        </div>
+      </div>
+
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
+      >
+        <Tabs
+          value={currentTab}
+          onChange={(_, v) => setCurrentTab(v)}
           sx={{
-            border: '1px solid #e0e0e0',
-            borderRadius: 2,
-            overflow: 'hidden',
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 3,
+            '& .MuiTab-root.Mui-selected': { color: 'var(--color-primary)' },
+            '& .MuiTabs-indicator': { backgroundColor: 'var(--color-primary)' },
           }}
         >
-          <Tabs
-            value={currentTab}
-            onChange={(e, newValue) => setCurrentTab(newValue)}
-            sx={{
-              borderBottom: 1,
-              borderColor: 'divider',
-              px: 3,
-              '& .MuiTab-root.Mui-selected': {
-                color: '#EB0028',
-              },
-              '& .MuiTabs-indicator': {
-                backgroundColor: '#EB0028',
-              },
-            }}
-          >
-            <Tab label="Basic Information" />
-            <Tab label="Social Links" />
-          </Tabs>
-
-          <Box>
-            {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
-            {currentTab === 1 && <SocialLinksTab control={control} errors={errors} />}
-          </Box>
-        </Paper>
-      </Box>
+          <Tab label="Basic Information" />
+          <Tab label="Social Links" />
+        </Tabs>
+        <Box>
+          {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
+          {currentTab === 1 && <SocialLinksTab control={control} errors={errors} />}
+        </Box>
+      </Paper>
     </div>
   );
 }

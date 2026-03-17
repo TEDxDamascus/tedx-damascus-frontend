@@ -13,6 +13,7 @@ import AuthLayout from './theme-layouts/AuthLayout/AuthLayout';
 import SignInConfig from './main/sign-in/SignInConfig';
 import DashboardAppConfig from './main/dashboard/DashboardAppConfig';
 import SpeakersAppConfig from './main/speakers-app/SpeakersAppConfig';
+import FormsAppConfig from './main/forms-app/FormsAppConfig';
 import NotFoundPage from './main/not-found/NotFoundPage';
 
 function App() {
@@ -56,6 +57,13 @@ function App() {
                       ))}
                       {SpeakersAppConfig.routes.map((route, index) => (
                         <Route key={`speaker-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {FormsAppConfig.routes.map((route, index) => (
+                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
                           {route.children?.map((child, childIndex) => (
                             <Route key={childIndex} path={child.path} element={child.element} />
                           ))}

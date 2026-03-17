@@ -7,34 +7,53 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-import { DeleteOutline } from '@mui/icons-material';
+import { DeleteOutline, CheckCircleOutline } from '@mui/icons-material';
+
+const VARIANTS = {
+  danger: {
+    label: 'Delete',
+    loadingLabel: 'Deleting…',
+    icon: <DeleteOutline />,
+    className: 'bg-red-500 hover:bg-red-600',
+  },
+  warning: {
+    label: 'Confirm',
+    loadingLabel: 'Processing…',
+    icon: <CheckCircleOutline />,
+    className: 'bg-amber-500 hover:bg-amber-600 text-white',
+  },
+};
 
 export default function ConfirmModal({
   open,
   onClose,
   onConfirm,
   loading = false,
-  title = 'Delete Item',
-  description = 'Are you sure you want to delete this item?',
+  title = 'Confirm',
+  description = 'Are you sure?',
+  confirmLabel,
+  variant = 'danger',
 }) {
+  const v = VARIANTS[variant] ?? VARIANTS.danger;
+
   return (
     <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="xs" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+      <DialogActions className="px-6 pb-4 gap-2">
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
         <Button
           variant="contained"
-          color="error"
           onClick={onConfirm}
           disabled={loading}
-          startIcon={loading ? <CircularProgress size={14} color="inherit" /> : <DeleteOutline />}
+          startIcon={loading ? <CircularProgress size={14} color="inherit" /> : v.icon}
+          className={v.className}
         >
-          {loading ? 'Deleting…' : 'Delete'}
+          {loading ? v.loadingLabel : (confirmLabel ?? v.label)}
         </Button>
       </DialogActions>
     </Dialog>

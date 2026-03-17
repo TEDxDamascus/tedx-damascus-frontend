@@ -12,13 +12,22 @@ import {
   Divider,
   IconButton,
 } from '@mui/material';
-import { Dashboard, People, Event, Settings, ChevronLeft, Menu } from '@mui/icons-material';
+import {
+  Dashboard,
+  People,
+  Event,
+  Settings,
+  ChevronLeft,
+  Menu,
+  Assignment,
+} from '@mui/icons-material';
 
 const drawerWidth = 260;
 
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Speakers', icon: <People />, path: '/speakers' },
+  { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
