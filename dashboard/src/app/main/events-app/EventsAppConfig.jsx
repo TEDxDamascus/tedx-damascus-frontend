@@ -5,7 +5,7 @@ const EventsList = lazy(() => import('./events-list/EventsList'));
 const EventsAppConfig = {
   routes: [
     {
-      path: 'events',
+      path: '/events',
       children: [
         {
           path: '',

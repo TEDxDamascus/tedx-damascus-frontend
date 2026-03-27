@@ -6,7 +6,7 @@ const eventsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (builder) => ({
     getEvents: builder.query({
       query: ({ page = 1, pageSize = 10, search, sortBy, sortDir } = {}) => ({
-        url: '/events', 
+        url: '/events',
         method: 'GET',
         params: {
           page,

@@ -115,7 +115,11 @@ export default function FormBuilder() {
               sx={
                 isPublished
                   ? { backgroundColor: '#374151', '&:hover': { backgroundColor: '#1f2937' } }
-                  : { backgroundColor: '#d97706', '&:hover': { backgroundColor: '#b45309' }, color: '#fff' }
+                  : {
+                      backgroundColor: '#d97706',
+                      '&:hover': { backgroundColor: '#b45309' },
+                      color: '#fff',
+                    }
               }
             >
               {isPublished ? 'Unpublish' : 'Publish'}

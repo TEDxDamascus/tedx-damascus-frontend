@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Box } from '@mui/material';
-import { useGetEventsQuery } from './EventsApi'; 
 import { useTableState } from '../../../shared-components/custom-table';
 import EventsListHeader from './EventsListHeader';
 import EventsListTable from './EventsListTable';
 import FilterIcon from '@/app/shared-components/filter-icon/FilterIcon';
+import { useGetEventsQuery } from '@/app/main/events-app/EventsApi.js';
 
 const TABLE_ID = 'events';
 
@@ -18,9 +18,7 @@ function EventsList() {
     setFilteredData(eventsArray);
   }, [data]);
 
-  const filterConfig = useMemo(() => [
-    { key: 'title', label: 'Event Title', type: 'text' }
-  ], []);
+  const filterConfig = useMemo(() => [{ key: 'title', label: 'Event Title', type: 'text' }], []);
 
   return (
     <div className="p-6 pt-8">

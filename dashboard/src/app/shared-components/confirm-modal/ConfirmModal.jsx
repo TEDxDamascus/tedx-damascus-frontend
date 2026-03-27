@@ -42,7 +42,7 @@ export default function ConfirmModal({
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>
       </DialogContent>
-      <DialogActions className="px-6 pb-4 gap-2">
+      <DialogActions className="gap-2 px-6 pb-4">
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
