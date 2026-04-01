@@ -1,0 +1,152 @@
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Tabs, Tab, Box, Paper, CircularProgress, Button } from '@mui/material';
+import { Save } from '@mui/icons-material';
+import Breadcrumb from '../../../shared-components/breadcrumb';
+import { useSnackbar } from 'notistack';
+import {
+  useGetEventQuery,
+  useCreateEventMutation,
+  useUpdateEventMutation,
+} from '../EventsApi';
+import BasicInfoTab from './tabs/BasicInfoTab';
+import SocialLinksTab from './tabs/SocialLinksTab'; 
+import EventModel from './models/events-model';
+import { ensureLocaleValue } from '../../../shared-components/locale-input';
+
+const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
+
+const eventSchema = z.object({
+  title: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Title is required'),
+  date: z.string().min(1, 'Date is required'),
+  description: localeObjectSchema.optional(),
+  location: localeObjectSchema.optional(),
+  venue: z.string().optional(),
+  time: z.string().optional(),
+  image: z.string().optional(),
+  ticketsLink: z.string().url('Invalid URL').optional().or(z.literal('')),
+  speakers: z.array(z.any()).optional(),
+  status: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
+function Event() {
+  const { eventId } = useParams();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+  const [currentTab, setCurrentTab] = useState(0);
+  const isNew = eventId === 'add';
+
+  const { data: event, isLoading } = useGetEventQuery(eventId, { skip: isNew });
+  const [createEvent, { isLoading: isCreating }] = useCreateEventMutation();
+  const [updateEvent, { isLoading: isUpdating }] = useUpdateEventMutation();
+  const isSaving = isCreating || isUpdating;
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(eventSchema),
+    defaultValues: EventModel(),
+  });
+
+  useEffect(() => {
+    if (event && !isNew) {
+      reset({
+        ...event,
+        title: ensureLocaleValue(event.title),
+        description: ensureLocaleValue(event.description),
+        location: ensureLocaleValue(event.location),
+      });
+    }
+  }, [event, isNew, reset]);
+
+  const onSubmit = async (data) => {
+    try {
+      if (isNew) {
+        await createEvent(data).unwrap();
+        enqueueSnackbar('Event created successfully', { variant: 'success' });
+      } else {
+        await updateEvent({ id: eventId, data }).unwrap();
+        enqueueSnackbar('Event updated successfully', { variant: 'success' });
+      }
+      navigate('/events');
+    } catch {
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} event`, { variant: 'error' });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <CircularProgress className="text-tedx-red" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 pt-8">
+      <Breadcrumb
+        items={[
+          { label: 'Events', href: '/events' },
+          { label: isNew ? 'Add New Event' : 'Edit Event' },
+        ]}
+      />
+
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-tedx-dark">
+          {isNew ? 'Add New Event' : 'Edit Event'}
+        </h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/events')}
+            className="border-gray-300 text-gray-500"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSaving}
+            className="bg-tedx-red hover:bg-tedx-red-dark"
+          >
+            {isSaving ? 'Saving...' : 'Save Event'}
+          </Button>
+        </div>
+      </div>
+
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
+      >
+        <Tabs
+          value={currentTab}
+          onChange={(_, v) => setCurrentTab(v)}
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 3,
+            '& .MuiTab-root.Mui-selected': { color: 'var(--color-primary)' },
+            '& .MuiTabs-indicator': { backgroundColor: 'var(--color-primary)' },
+          }}
+        >
+          <Tab label="Basic Information" />
+          <Tab label="Links & Media" />
+        </Tabs>
+        <Box>
+          {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
+          {currentTab === 1 && <SocialLinksTab control={control} errors={errors} />}
+        </Box>
+      </Paper>
+    </div>
+  );
+}
+
+export default Event;
