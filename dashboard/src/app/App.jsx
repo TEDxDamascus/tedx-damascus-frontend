@@ -15,6 +15,7 @@ import DashboardAppConfig from './main/dashboard/DashboardAppConfig';
 import SpeakersAppConfig from './main/speakers-app/SpeakersAppConfig';
 import FormsAppConfig from './main/forms-app/FormsAppConfig';
 import NotFoundPage from './main/not-found/NotFoundPage';
+import UsersAppConfig from './main/users-app/UsersAppConfig';
 
 function App() {
   return (
@@ -63,6 +64,12 @@ function App() {
                         </Route>
                       ))}
                       {FormsAppConfig.routes.map((route, index) => (
+                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))} {UsersAppConfig.routes.map((route, index) => (
                         <Route key={`forms-${index}`} path={route.path} element={route.element}>
                           {route.children?.map((child, childIndex) => (
                             <Route key={childIndex} path={child.path} element={child.element} />

@@ -16,6 +16,13 @@ const navigationConfig = [
     url: '/speakers',
   },
   {
+    id: 'users',
+    title: 'Users',
+    type: 'item',
+    icon: People,
+    url: '/users',
+  },
+  {
     id: 'events',
     title: 'Events',
     type: 'item',
