@@ -22,7 +22,14 @@ function SortIcon({ column, sortBy, sortDir }) {
   );
 }
 
-function TableToolbar({ localSearch, onSearchChange, selectedIds, onBulkDelete, bulkDeleteLabel }) {
+function TableToolbar({
+  localSearch,
+  onSearchChange,
+  selectedIds,
+  onBulkDelete,
+  bulkDeleteLabel,
+  bulkActions,
+}) {
   return (
     <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
       <div className="relative max-w-xs flex-1">
@@ -39,14 +46,29 @@ function TableToolbar({ localSearch, onSearchChange, selectedIds, onBulkDelete, 
         />
       </div>
 
-      {selectedIds.length > 0 && onBulkDelete && (
-        <button
-          onClick={() => onBulkDelete(selectedIds)}
-          className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100"
-        >
-          <DeleteOutline style={{ fontSize: 16 }} />
-          {bulkDeleteLabel ?? `Delete (${selectedIds.length})`}
-        </button>
+      {selectedIds.length > 0 && (
+        <>
+          {bulkActions?.map((action, i) => (
+            <button
+              key={i}
+              onClick={action.onClick}
+              disabled={action.disabled}
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {action.icon}
+              {action.label}
+            </button>
+          ))}
+          {onBulkDelete && (
+            <button
+              onClick={() => onBulkDelete(selectedIds)}
+              className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100"
+            >
+              <DeleteOutline style={{ fontSize: 16 }} />
+              {bulkDeleteLabel ?? `Delete (${selectedIds.length})`}
+            </button>
+          )}
+        </>
       )}
     </div>
   );
@@ -183,13 +205,20 @@ export default function CustomTable({
   getRowId = (row) => row.id,
   emptyMessage = 'No results found.',
   bulkDeleteLabel,
+  bulkActions,
+  selectedIds: externalSelectedIds,
+  onSelectChange: externalOnSelectChange,
 }) {
   const { params, setPage, setPageSize, setSearch, setSort } = useTableState(tableId);
   const { page, pageSize, sortBy, sortDir } = params;
 
   const safeData = Array.isArray(data) ? data : [];
 
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [internalSelectedIds, setInternalSelectedIds] = useState([]);
+  const selectedIds = externalSelectedIds ?? internalSelectedIds;
+  const setSelectedIds = externalOnSelectChange
+    ? (ids) => externalOnSelectChange(ids)
+    : setInternalSelectedIds;
   const [localSearch, setLocalSearch] = useState(params.search);
   const debounceRef = useRef(null);
 
@@ -231,6 +260,7 @@ export default function CustomTable({
         selectedIds={selectedIds}
         onBulkDelete={onBulkDelete}
         bulkDeleteLabel={bulkDeleteLabel}
+        bulkActions={bulkActions}
       />
 
       <div className="overflow-x-auto">
@@ -310,7 +340,12 @@ export default function CustomTable({
                         key={col.id}
                         className={`px-4 py-3 text-sm text-gray-700 ${col.cellClassName ?? ''}`}
                       >
-                        {col.renderCell ? col.renderCell(row[col.id], row) : (row[col.id] ?? '—')}
+                        {col.renderCell
+                          ? col.renderCell(row[col.id], row, {
+                              selectedIds,
+                              onSelectChange: setSelectedIds,
+                            })
+                          : (row[col.id] ?? '—')}
                       </td>
                     ))}
                     {hasActions && (
@@ -320,7 +355,7 @@ export default function CustomTable({
                             <button
                               key={i}
                               onClick={action.onClick}
-                              title={action.label}
+                              title={action.title || action.label}
                               disabled={action.disabled}
                               className={[
                                 'rounded-lg p-1.5 transition-colors',

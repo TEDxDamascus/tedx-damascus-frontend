@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { useTableState } from '../../../shared-components/custom-table';
 import EventsListHeader from './EventsListHeader';
 import EventsListTable from './EventsListTable';
@@ -16,8 +15,6 @@ function EventsList() {
     const eventsArray = data?.data?.items ?? data?.data ?? [];
     setFilteredData(eventsArray);
   }, [data]);
-
-  const filterConfig = useMemo(() => [{ key: 'title', label: 'Event Title', type: 'text' }], []);
 
   return (
     <div className="p-6 pt-8">

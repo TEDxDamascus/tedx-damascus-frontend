@@ -3,8 +3,15 @@ import SpeakersAppConfig from '../main/speakers-app/SpeakersAppConfig';
 import DashboardAppConfig from '../main/dashboard/DashboardAppConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import EventsAppConfig from '../main/events-app/EventsAppConfig';
+import UsersAppConfig from '../main/users-app/UsersAppConfig';
 
-const routeConfigs = [SignInConfig, DashboardAppConfig, SpeakersAppConfig, EventsAppConfig];
+const routeConfigs = [
+  SignInConfig,
+  DashboardAppConfig,
+  SpeakersAppConfig,
+  EventsAppConfig,
+  UsersAppConfig,
+];
 
 const routes = [
   ...routeConfigs.flatMap((config) => config.routes),

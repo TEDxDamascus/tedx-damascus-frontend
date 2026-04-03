@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Box } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { useGetSpeakersQuery } from '../SpeakersApi';
 import { useTableState } from '../../../shared-components/custom-table';
 import SpeakersListHeader from './SpeakersListHeader';
@@ -17,19 +16,6 @@ function SpeakersList() {
     const speakersArray = data?.data?.items ?? data?.data ?? [];
     setFilteredData(speakersArray);
   }, [data]);
-
-  const filterConfig = useMemo(
-    () => [
-      { key: 'name', label: 'Name', type: 'text' },
-      {
-        key: 'createdAt',
-        label: 'Year',
-        type: 'date',
-        options: ['2023', '2024', '2025', '2026'],
-      },
-    ],
-    [],
-  );
 
   return (
     <div className="p-6 pt-8">
