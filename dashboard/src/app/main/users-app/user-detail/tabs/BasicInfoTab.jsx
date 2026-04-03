@@ -2,7 +2,7 @@ import { Controller } from 'react-hook-form';
 import { TextField, FormControl, InputLabel, Select, MenuItem, Grid, Box } from '@mui/material';
 
 const ROLES = [
-    { value: 'SuperAdmin', label: 'Super Admin' },
+  { value: 'SuperAdmin', label: 'Super Admin' },
   { value: 'admin', label: 'Admin' },
   { value: 'user', label: 'User' },
 ];

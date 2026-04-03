@@ -22,7 +22,14 @@ function SortIcon({ column, sortBy, sortDir }) {
   );
 }
 
-function TableToolbar({ localSearch, onSearchChange, selectedIds, onBulkDelete, bulkDeleteLabel, bulkActions }) {
+function TableToolbar({
+  localSearch,
+  onSearchChange,
+  selectedIds,
+  onBulkDelete,
+  bulkDeleteLabel,
+  bulkActions,
+}) {
   return (
     <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
       <div className="relative max-w-xs flex-1">
@@ -209,7 +216,9 @@ export default function CustomTable({
 
   const [internalSelectedIds, setInternalSelectedIds] = useState([]);
   const selectedIds = externalSelectedIds ?? internalSelectedIds;
-  const setSelectedIds = externalOnSelectChange ? (ids) => externalOnSelectChange(ids) : setInternalSelectedIds;
+  const setSelectedIds = externalOnSelectChange
+    ? (ids) => externalOnSelectChange(ids)
+    : setInternalSelectedIds;
   const [localSearch, setLocalSearch] = useState(params.search);
   const debounceRef = useRef(null);
 
@@ -331,7 +340,12 @@ export default function CustomTable({
                         key={col.id}
                         className={`px-4 py-3 text-sm text-gray-700 ${col.cellClassName ?? ''}`}
                       >
-                        {col.renderCell ? col.renderCell(row[col.id], row, { selectedIds, onSelectChange: setSelectedIds }) : (row[col.id] ?? '—')}
+                        {col.renderCell
+                          ? col.renderCell(row[col.id], row, {
+                              selectedIds,
+                              onSelectChange: setSelectedIds,
+                            })
+                          : (row[col.id] ?? '—')}
                       </td>
                     ))}
                     {hasActions && (

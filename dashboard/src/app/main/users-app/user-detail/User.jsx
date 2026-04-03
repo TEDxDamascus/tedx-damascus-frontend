@@ -7,13 +7,7 @@ import { Tabs, Tab, Box, Paper, CircularProgress, Button, Alert } from '@mui/mat
 import { Save } from '@mui/icons-material';
 import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useSnackbar } from 'notistack';
-import { useSelector } from 'react-redux';
-import { selectUser } from '../../../auth/store/userSlice';
-import {
-  useGetUserQuery,
-  useCreateUserMutation,
-  useUpdateUserMutation,
-} from '../UsersApi';
+import { useGetUserQuery, useCreateUserMutation, useUpdateUserMutation } from '../UsersApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
 import UserModel from './models/UserModel';
 
@@ -28,7 +22,6 @@ function User() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const currentUser = useSelector(selectUser);
   const [currentTab, setCurrentTab] = useState(0);
   const isNew = userId === 'add';
 
@@ -80,10 +73,7 @@ function User() {
   return (
     <div className="p-6 pt-8">
       <Breadcrumb
-        items={[
-          { label: 'Users', path: '/users' },
-          { label: isNew ? 'Add User' : 'Edit User' },
-        ]}
+        items={[{ label: 'Users', path: '/users' }, { label: isNew ? 'Add User' : 'Edit User' }]}
       />
 
       <div className="mb-6">
@@ -113,7 +103,16 @@ function User() {
             <BasicInfoTab control={control} errors={errors} isDisabled={isUserDisabled} />
           </Box>
 
-          <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Box
+            sx={{
+              p: 3,
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 2,
+            }}
+          >
             <Button onClick={() => navigate('/users')}>Cancel</Button>
             <Button
               type="submit"

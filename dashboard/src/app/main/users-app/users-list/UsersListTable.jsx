@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { Edit, Visibility, Block, CheckCircle, DeleteOutline } from '@mui/icons-material';
-import { Tooltip, Checkbox } from '@mui/material';
+import { Edit, Visibility, Block, CheckCircle } from '@mui/icons-material';
+import { Checkbox } from '@mui/material';
 import { useUpdateUserMutation, useBulkUpdateUsersMutation } from '../UsersApi';
 import { selectUser } from '../../../auth/store/userSlice';
 import CustomTable from '../../../shared-components/custom-table';
@@ -40,7 +40,14 @@ const COLUMNS = [
   },
 ];
 
-function UsersListTable({ data, totalCount, isLoading, selectedIds, onSelectChange, onBulkAction }) {
+function UsersListTable({
+  data,
+  totalCount,
+  isLoading,
+  selectedIds,
+  onSelectChange,
+  onBulkAction,
+}) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const currentUser = useSelector(selectUser);
@@ -57,7 +64,9 @@ function UsersListTable({ data, totalCount, isLoading, selectedIds, onSelectChan
     try {
       const newStatus = user.status === 'active' ? 'disabled' : 'active';
       await updateUser({ id: user.id, data: { status: newStatus } }).unwrap();
-      enqueueSnackbar(`User ${newStatus === 'active' ? 'enabled' : 'disabled'} successfully`, { variant: 'success' });
+      enqueueSnackbar(`User ${newStatus === 'active' ? 'enabled' : 'disabled'} successfully`, {
+        variant: 'success',
+      });
     } catch {
       enqueueSnackbar('Failed to update user status', { variant: 'error' });
     }
@@ -108,7 +117,12 @@ function UsersListTable({ data, totalCount, isLoading, selectedIds, onSelectChan
 
     if (row.id !== currentUser?.id) {
       actions.push({
-        icon: row.status === 'active' ? <Block style={{ fontSize: 18 }} /> : <CheckCircle style={{ fontSize: 18 }} />,
+        icon:
+          row.status === 'active' ? (
+            <Block style={{ fontSize: 18 }} />
+          ) : (
+            <CheckCircle style={{ fontSize: 18 }} />
+          ),
         label: row.status === 'active' ? 'Disable' : 'Enable',
         onClick: () => {
           if (row.status === 'active') {
@@ -130,18 +144,21 @@ function UsersListTable({ data, totalCount, isLoading, selectedIds, onSelectChan
     return actions;
   };
 
-  const bulkActions = selectedIds.length > 0 ? [
-    {
-      label: 'Enable Selected',
-      onClick: handleBulkEnable,
-      disabled: isBulkUpdating,
-    },
-    {
-      label: 'Disable Selected',
-      onClick: handleBulkDisable,
-      disabled: isBulkUpdating,
-    },
-  ] : [];
+  const bulkActions =
+    selectedIds.length > 0
+      ? [
+          {
+            label: 'Enable Selected',
+            onClick: handleBulkEnable,
+            disabled: isBulkUpdating,
+          },
+          {
+            label: 'Disable Selected',
+            onClick: handleBulkDisable,
+            disabled: isBulkUpdating,
+          },
+        ]
+      : [];
 
   return (
     <>

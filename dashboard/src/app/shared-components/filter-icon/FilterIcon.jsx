@@ -1,19 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  IconButton,
-  Menu,
-  MenuItem,
-  TextField,
-  InputAdornment,
-  Box,
-} from "@mui/material";
-import TuneIcon from "@mui/icons-material/Tune";
-import CloseIcon from "@mui/icons-material/Close";
+import React, { useState, useEffect, useRef } from 'react';
+import { IconButton, Menu, MenuItem, TextField, InputAdornment, Box } from '@mui/material';
+import TuneIcon from '@mui/icons-material/Tune';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function FilterIcon({ items, filters, onFiltered }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeFilter, setActiveFilter] = useState(null);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [inputVisible, setInputVisible] = useState(false);
   const lastSentDataRef = useRef(null);
 
@@ -27,43 +20,34 @@ export default function FilterIcon({ items, filters, onFiltered }) {
 
   const handleSelectFilter = (filter) => {
     setActiveFilter(filter);
-    setValue("");
+    setValue('');
     setInputVisible(true);
     handleCloseMenu();
   };
 
   useEffect(() => {
-  
     const currentItems = Array.isArray(items) ? items : [];
     let result = currentItems;
 
     if (activeFilter && value) {
-      if (value === 'all') {
-        result = currentItems;
-      } else {
-        result = currentItems.filter((item) => {
-          const itemValue = item[activeFilter.key];
+      result = currentItems.filter((item) => {
+        const itemValue = item[activeFilter.key];
 
-          if (activeFilter.type === "text") {
-            return String(itemValue || "")
-              .toLowerCase()
-              .includes(value.toLowerCase());
-          }
+        if (activeFilter.type === 'text') {
+          return String(itemValue || '')
+            .toLowerCase()
+            .includes(value.toLowerCase());
+        }
 
-          if (activeFilter.type === "date") {
-            if (!itemValue) return false;
-        
-            const itemYear = new Date(itemValue).getFullYear().toString();
-            return itemYear === value;
-          }
+        if (activeFilter.type === 'date') {
+          if (!itemValue) return false;
 
-          if (activeFilter.type === "select") {
-            return itemValue === value;
-          }
+          const itemYear = new Date(itemValue).getFullYear().toString();
+          return itemYear === value;
+        }
 
-          return true;
-        });
-      }
+        return true;
+      });
     }
 
     const resultString = JSON.stringify(result);
@@ -74,11 +58,8 @@ export default function FilterIcon({ items, filters, onFiltered }) {
   }, [value, activeFilter, items, onFiltered]);
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <IconButton 
-        onClick={handleFilterButtonClick}
-        color={inputVisible ? "primary" : "default"} 
-      >
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <IconButton onClick={handleFilterButtonClick} color={inputVisible ? 'primary' : 'default'}>
         <TuneIcon fontSize="medium" />
       </IconButton>
 
@@ -92,7 +73,7 @@ export default function FilterIcon({ items, filters, onFiltered }) {
 
       {inputVisible && activeFilter && (
         <TextField
-          select={activeFilter.type === "date" || activeFilter.type === "select"}
+          select={activeFilter.type === 'date'}
           label={activeFilter.label}
           variant="outlined"
           value={value}
@@ -101,10 +82,10 @@ export default function FilterIcon({ items, filters, onFiltered }) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton 
-                  size="small" 
+                <IconButton
+                  size="small"
                   onClick={() => {
-                    setValue("");
+                    setValue('');
                     setInputVisible(false); // إغلاق الحقل عند المسح
                     setActiveFilter(null);
                   }}
@@ -114,23 +95,16 @@ export default function FilterIcon({ items, filters, onFiltered }) {
               </InputAdornment>
             ),
           }}
-          sx={{ 
+          sx={{
             minWidth: 200,
-          
-            '& .MuiOutlinedInput-root': { borderRadius: '8px' } 
+
+            '& .MuiOutlinedInput-root': { borderRadius: '8px' },
           }}
         >
-          {activeFilter.type === "date" && activeFilter.options
+          {activeFilter.type === 'date' && activeFilter.options
             ? activeFilter.options.map((opt) => (
                 <MenuItem key={opt} value={opt}>
                   {opt}
-                </MenuItem>
-              ))
-            : null}
-          {activeFilter.type === "select" && activeFilter.options
-            ? activeFilter.options.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
                 </MenuItem>
               ))
             : null}
