@@ -35,6 +35,9 @@ dashboard/build
 # =========================
 # Environment files
 # =========================
+.env
+website/.env
+dashboard/.env
 website/.env*.local
 dashboard/.env*.local
 .env.local

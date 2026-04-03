@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   Menu,
   Assignment,
+  Article,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -29,6 +30,7 @@ const menuItems = [
   { text: 'Speakers', icon: <People />, path: '/speakers' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
+  { text: 'Blog', icon: <Article />, path: '/blogs' },
   { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
 

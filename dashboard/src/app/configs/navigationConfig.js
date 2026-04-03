@@ -1,4 +1,4 @@
-import { Dashboard, People, Event, Settings } from '@mui/icons-material';
+import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
 
 const navigationConfig = [
   {
@@ -21,6 +21,13 @@ const navigationConfig = [
     type: 'item',
     icon: Event,
     url: '/events',
+  },
+  {
+    id: 'blog',
+    title: 'Blog',
+    type: 'item',
+    icon: Article,
+    url: '/blogs',
   },
   {
     id: 'settings',
