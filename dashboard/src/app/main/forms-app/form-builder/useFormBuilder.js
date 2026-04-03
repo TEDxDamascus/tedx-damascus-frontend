@@ -18,6 +18,10 @@ const DEFAULT_SETTINGS = {
   name: { en: '', ar: '' },
   description: { en: '', ar: '' },
   targetRole: 'Speaker',
+  starts_at: '',
+  ends_at: '',
+  expires_at: '',
+  max_submissions: '',
 };
 
 export function useFormBuilder(formId) {
@@ -40,6 +44,10 @@ export function useFormBuilder(formId) {
         name: form.name ?? { en: '', ar: '' },
         description: form.description ?? { en: '', ar: '' },
         targetRole: form.targetRole ?? 'Speaker',
+        starts_at: form.starts_at ? form.starts_at.slice(0, 16) : '',
+        ends_at: form.ends_at ? form.ends_at.slice(0, 16) : '',
+        expires_at: form.expires_at ? form.expires_at.slice(0, 16) : '',
+        max_submissions: form.max_submissions ?? '',
       });
       didReset.current = true;
     }

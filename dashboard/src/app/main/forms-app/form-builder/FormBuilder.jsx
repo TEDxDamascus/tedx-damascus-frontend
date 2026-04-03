@@ -148,7 +148,7 @@ export default function FormBuilder() {
         </Tabs>
 
         <div className="p-6">
-          {tab === 0 && <FormSettings control={settingsForm.control} />}
+          {tab === 0 && <FormSettings control={settingsForm.control} shareableUrl={form?.shareable_url} />}
           {tab === 1 && !isNew && (
             <QuestionList
               questions={questions}

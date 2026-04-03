@@ -9,7 +9,7 @@ import {
   ExpandLess,
 } from '@mui/icons-material';
 import { CircularProgress, Switch } from '@mui/material';
-import { getTypeLabel, hasOptions } from './questionUtils';
+import { getTypeLabel, hasOptions, isSection } from './questionUtils';
 import ConfirmModal from '../../../shared-components/confirm-modal';
 
 // ─── Locale field (plain text) ───────────────────────────────────────────────
@@ -46,6 +46,10 @@ function LocaleField({ label, value = { en: '', ar: '' }, onChange, multiline = 
   );
 }
 
+// ─── Shared input style ───────────────────────────────────────────────────────
+const inputCls =
+  'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red';
+
 // ─── Config fields per type ───────────────────────────────────────────────────
 function ConfigFields({ type, config = {}, onChange }) {
   const update = (key, val) => onChange({ ...config, [key]: val });
@@ -60,7 +64,7 @@ function ConfigFields({ type, config = {}, onChange }) {
           value={config.maxLength ?? ''}
           onChange={(e) => update('maxLength', e.target.value ? Number(e.target.value) : undefined)}
           placeholder="No limit"
-          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red"
+          className={inputCls}
         />
       </div>
     );
@@ -79,7 +83,7 @@ function ConfigFields({ type, config = {}, onChange }) {
               update('maxLength', e.target.value ? Number(e.target.value) : undefined)
             }
             placeholder="No limit"
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red"
+            className={inputCls}
           />
         </div>
         <div>
@@ -91,25 +95,122 @@ function ConfigFields({ type, config = {}, onChange }) {
             value={config.rows ?? ''}
             onChange={(e) => update('rows', e.target.value ? Number(e.target.value) : undefined)}
             placeholder="Default (3)"
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red"
+            className={inputCls}
           />
         </div>
       </div>
     );
   }
 
+  if (type === 'number') {
+    return (
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min</label>
+          <input
+            type="number"
+            value={config.min ?? ''}
+            onChange={(e) => update('min', e.target.value !== '' ? Number(e.target.value) : '')}
+            placeholder="No limit"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max</label>
+          <input
+            type="number"
+            value={config.max ?? ''}
+            onChange={(e) => update('max', e.target.value !== '' ? Number(e.target.value) : '')}
+            placeholder="No limit"
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Step</label>
+          <input
+            type="number"
+            min={0.01}
+            value={config.step ?? ''}
+            onChange={(e) => update('step', e.target.value !== '' ? Number(e.target.value) : '')}
+            placeholder="1"
+            className={inputCls}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'phone') {
+    return (
+      <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
+        <Switch
+          size="small"
+          checked={!!config.country_code_required}
+          onChange={(e) => update('country_code_required', e.target.checked)}
+          sx={{
+            '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: 'var(--color-primary)',
+            },
+          }}
+        />
+        <span className="text-sm text-gray-600">Require country code</span>
+      </div>
+    );
+  }
+
   if (type === 'rating') {
     return (
-      <div>
-        <label className="mb-1 block text-xs font-medium text-gray-500">Max Rating</label>
-        <select
-          value={config.maxRating ?? 5}
-          onChange={(e) => update('maxRating', Number(e.target.value))}
-          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red"
-        >
-          <option value={5}>5 stars</option>
-          <option value={10}>10 stars</option>
-        </select>
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">Min</label>
+            <input
+              type="number"
+              min={0}
+              value={config.min ?? 1}
+              onChange={(e) => update('min', Number(e.target.value))}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">Max</label>
+            <input
+              type="number"
+              min={2}
+              max={10}
+              value={config.max ?? 5}
+              onChange={(e) => update('max', Number(e.target.value))}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">Step</label>
+            <input
+              type="number"
+              min={1}
+              value={config.step ?? 1}
+              onChange={(e) => update('step', Number(e.target.value))}
+              className={inputCls}
+            />
+          </div>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Label</label>
+          <LocaleField
+            label="Min label"
+            value={config.min_label ?? { en: '', ar: '' }}
+            onChange={(v) => update('min_label', v)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Label</label>
+          <LocaleField
+            label="Max label"
+            value={config.max_label ?? { en: '', ar: '' }}
+            onChange={(v) => update('max_label', v)}
+          />
+        </div>
       </div>
     );
   }
@@ -133,10 +234,139 @@ function ConfigFields({ type, config = {}, onChange }) {
     );
   }
 
+  if (type === 'date_range') {
+    return (
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Date</label>
+          <input
+            type="date"
+            value={config.min_date ?? ''}
+            onChange={(e) => update('min_date', e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Date</label>
+          <input
+            type="date"
+            value={config.max_date ?? ''}
+            onChange={(e) => update('max_date', e.target.value)}
+            className={inputCls}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'file_upload') {
+    const allowedTypes = config.allowed_types ?? [];
+    const toggleType = (t) => {
+      const next = allowedTypes.includes(t)
+        ? allowedTypes.filter((x) => x !== t)
+        : [...allowedTypes, t];
+      update('allowed_types', next);
+    };
+    return (
+      <div className="space-y-4">
+        <div>
+          <label className="mb-2 block text-xs font-medium text-gray-500">Allowed File Types</label>
+          <div className="flex flex-wrap gap-2">
+            {['pdf', 'jpg', 'png', 'docx', 'mp4', 'xlsx'].map((t) => (
+              <label
+                key={t}
+                className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm transition-colors hover:border-tedx-red"
+              >
+                <input
+                  type="checkbox"
+                  checked={allowedTypes.includes(t)}
+                  onChange={() => toggleType(t)}
+                  className="accent-tedx-red"
+                />
+                <span className="font-medium uppercase text-gray-600">{t}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">Max Size (MB)</label>
+            <input
+              type="number"
+              min={1}
+              value={config.max_size_mb ?? ''}
+              onChange={(e) =>
+                update('max_size_mb', e.target.value ? Number(e.target.value) : undefined)
+              }
+              placeholder="10"
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">Max Files</label>
+            <input
+              type="number"
+              min={1}
+              value={config.max_files ?? ''}
+              onChange={(e) =>
+                update('max_files', e.target.value ? Number(e.target.value) : undefined)
+              }
+              placeholder="1"
+              className={inputCls}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'yes_no') {
+    return (
+      <div>
+        <label className="mb-1 block text-xs font-medium text-gray-500">Default Value</label>
+        <select
+          value={config.default_value === null || config.default_value === undefined ? '' : String(config.default_value)}
+          onChange={(e) =>
+            update('default_value', e.target.value === '' ? null : e.target.value === 'true')
+          }
+          className={inputCls}
+        >
+          <option value="">No default</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+    );
+  }
+
+  if (type === 'section') {
+    return (
+      <div className="rounded-lg border border-dashed border-gray-300 p-4">
+        <div className="border-t-2 border-gray-300" />
+        <p className="mt-2 text-xs text-gray-400">
+          This element acts as a visual section break. Use the title and description fields above to
+          set its heading and subtitle.
+        </p>
+      </div>
+    );
+  }
+
   return null;
 }
 
-const hasConfig = (type) => ['short_text', 'long_text', 'rating', 'date'].includes(type);
+const hasConfig = (type) =>
+  [
+    'short_text',
+    'long_text',
+    'number',
+    'phone',
+    'rating',
+    'date',
+    'date_range',
+    'file_upload',
+    'yes_no',
+    'section',
+  ].includes(type);
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function QuestionCard({
@@ -188,6 +418,7 @@ export default function QuestionCard({
   };
 
   const titlePreview = local.title?.en || local.title?.ar || '';
+  const sectionType = isSection(local.type);
 
   return (
     <>
@@ -197,12 +428,20 @@ export default function QuestionCard({
           className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50"
           onClick={() => setExpanded((v) => !v)}
         >
-          {/* Type badge — amber/draft style */}
-          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+          {/* Type badge */}
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              sectionType
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'bg-amber-100 text-amber-700'
+            }`}
+          >
             {getTypeLabel(local.type)}
           </span>
 
-          <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>
+          {!sectionType && (
+            <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>
+          )}
 
           {titlePreview ? (
             <span className="flex-1 truncate text-sm text-gray-800">{titlePreview}</span>
@@ -210,7 +449,7 @@ export default function QuestionCard({
             <span className="flex-1" />
           )}
 
-          {local.isRequired && (
+          {local.isRequired && !sectionType && (
             <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-tedx-red ring-1 ring-red-200">
               Required
             </span>
@@ -257,25 +496,26 @@ export default function QuestionCard({
         {/* ── Expanded content ── */}
         {expanded && (
           <div className="space-y-5 border-t border-gray-100 px-4 pb-5 pt-4">
-            {/* Question label */}
+            {/* Question label / Section title */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
-                Question Label
+                {sectionType ? 'Section Title' : 'Question Label'}
               </label>
               <LocaleField
-                label="Question"
+                label={sectionType ? 'Section title' : 'Question'}
                 value={local.title}
                 onChange={(val) => save({ ...local, title: val })}
               />
             </div>
 
-            {/* Help text */}
+            {/* Help text / Section description */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
-                Help Text <span className="font-normal normal-case text-gray-300">(optional)</span>
+                {sectionType ? 'Section Description' : 'Help Text'}{' '}
+                <span className="font-normal normal-case text-gray-300">(optional)</span>
               </label>
               <LocaleField
-                label="Help text"
+                label={sectionType ? 'Description' : 'Help text'}
                 value={local.helpText}
                 onChange={(val) => save({ ...local, helpText: val })}
               />
@@ -354,25 +594,27 @@ export default function QuestionCard({
               </div>
             )}
 
-            {/* Required — prominent bottom toggle */}
-            <div className="mt-2 flex items-center justify-between rounded-lg border border-dashed border-tedx-red bg-red-50 px-4 py-3">
-              <div>
-                <p className="text-sm font-semibold text-tedx-red">Required field</p>
-                <p className="text-xs text-red-400">
-                  Users must answer this question before submitting.
-                </p>
+            {/* Required toggle — hidden for section */}
+            {!sectionType && (
+              <div className="mt-2 flex items-center justify-between rounded-lg border border-dashed border-tedx-red bg-red-50 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold text-tedx-red">Required field</p>
+                  <p className="text-xs text-red-400">
+                    Users must answer this question before submitting.
+                  </p>
+                </div>
+                <Switch
+                  checked={local.isRequired}
+                  onChange={(e) => save({ ...local, isRequired: e.target.checked })}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: 'var(--color-primary)',
+                    },
+                  }}
+                />
               </div>
-              <Switch
-                checked={local.isRequired}
-                onChange={(e) => save({ ...local, isRequired: e.target.checked })}
-                sx={{
-                  '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                    backgroundColor: 'var(--color-primary)',
-                  },
-                }}
-              />
-            </div>
+            )}
           </div>
         )}
       </div>
@@ -386,8 +628,8 @@ export default function QuestionCard({
           onRemove(question.id);
         }}
         loading={isRemoving}
-        title="Delete Question"
-        description={`Are you sure you want to delete Q${index + 1}${titlePreview ? ` "${titlePreview}"` : ''}? This cannot be undone.`}
+        title={sectionType ? 'Delete Section' : 'Delete Question'}
+        description={`Are you sure you want to delete ${sectionType ? 'this section' : `Q${index + 1}`}${titlePreview ? ` "${titlePreview}"` : ''}? This cannot be undone.`}
       />
     </>
   );
