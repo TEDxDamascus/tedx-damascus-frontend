@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { LocaleInput, localeInputTypes } from '../../../shared-components/locale-input';
+import { ContentCopy, Check, LinkOutlined } from '@mui/icons-material';
+import { LocaleInput } from '../../../shared-components/locale-input';
 import RichTextEditor from '../../../shared-components/rich-text-editor';
 import { TARGET_ROLES } from './questionUtils';
 
-// Two rich text editors side by side (EN left, AR right) — same pattern as LocaleField
+// Two rich text editors side by side (EN left, AR right)
 function LocaleRichTextEditor({ value = { en: '', ar: '' }, onChange }) {
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -32,83 +34,217 @@ function LocaleRichTextEditor({ value = { en: '', ar: '' }, onChange }) {
   );
 }
 
-export default function FormSettings({ control }) {
+// Shared input style
+const inputCls =
+  'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red';
+
+// Section heading helper
+function SectionHeading({ children }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">Form Name</label>
-        <Controller
-          name="name"
-          control={control}
-          rules={{ validate: (v) => !!(v?.en?.trim() || v?.ar?.trim()) || 'Name is required' }}
-          render={({ field, fieldState }) => (
-            <LocaleInput
-              {...field}
-              label="Name"
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-              required
-            />
-          )}
-        />
-      </div>
+    <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+      <h3 className="text-sm font-semibold text-gray-600">{children}</h3>
+    </div>
+  );
+}
 
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <LocaleRichTextEditor value={field.value} onChange={field.onChange} />
-          )}
-        />
-      </div>
+// Shareable URL panel
+function ShareableUrlPanel({ url }) {
+  const [copied, setCopied] = useState(false);
 
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">Target Role</label>
-        <Controller
-          name="targetRole"
-          control={control}
-          render={({ field }) => (
-            <FormControl size="small" fullWidth>
-              <InputLabel sx={{ '&.Mui-focused': { color: 'var(--color-primary)' } }}>
-                Role
-              </InputLabel>
-              <Select
+  const handleCopy = () => {
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+      <div className="mb-2 flex items-center gap-2">
+        <LinkOutlined style={{ fontSize: 16 }} className="text-gray-400" />
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+          Shareable Link
+        </span>
+      </div>
+      {url ? (
+        <div className="flex items-center gap-2">
+          <span className="flex-1 truncate rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
+            {url}
+          </span>
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-tedx-red hover:text-tedx-red"
+          >
+            {copied ? (
+              <>
+                <Check style={{ fontSize: 16 }} className="text-green-500" />
+                <span className="text-green-600">Copied!</span>
+              </>
+            ) : (
+              <>
+                <ContentCopy style={{ fontSize: 16 }} />
+                Copy
+              </>
+            )}
+          </button>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-400">Available after the form is published.</p>
+      )}
+    </div>
+  );
+}
+
+export default function FormSettings({ control, shareableUrl }) {
+  const selectSx = {
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+  };
+  const menuSx = {
+    PaperProps: {
+      sx: {
+        '& .MuiMenuItem-root.Mui-selected': {
+          backgroundColor: 'rgba(235, 0, 40, 0.08)',
+          color: 'var(--color-primary)',
+          fontWeight: 600,
+        },
+        '& .MuiMenuItem-root:hover': { backgroundColor: 'rgba(235, 0, 40, 0.05)' },
+      },
+    },
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* ── Basic Info ── */}
+      <div className="space-y-6">
+        <SectionHeading>Basic Information</SectionHeading>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Form Name</label>
+          <Controller
+            name="name"
+            control={control}
+            rules={{ validate: (v) => !!(v?.en?.trim() || v?.ar?.trim()) || 'Name is required' }}
+            render={({ field, fieldState }) => (
+              <LocaleInput
                 {...field}
-                label="Role"
-                sx={{
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--color-primary)',
-                  },
-                  '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--color-primary)',
-                  },
-                }}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      '& .MuiMenuItem-root.Mui-selected': {
-                        backgroundColor: 'rgba(235, 0, 40, 0.08)',
-                        color: 'var(--color-primary)',
-                        fontWeight: 600,
-                      },
-                      '& .MuiMenuItem-root:hover': {
-                        backgroundColor: 'rgba(235, 0, 40, 0.05)',
-                      },
-                    },
-                  },
-                }}
-              >
-                {TARGET_ROLES.map((role) => (
-                  <MenuItem key={role} value={role}>
-                    {role}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        />
+                label="Name"
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                required
+              />
+            )}
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <LocaleRichTextEditor value={field.value} onChange={field.onChange} />
+            )}
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Target Role</label>
+          <Controller
+            name="targetRole"
+            control={control}
+            render={({ field }) => (
+              <FormControl size="small" fullWidth>
+                <InputLabel sx={{ '&.Mui-focused': { color: 'var(--color-primary)' } }}>
+                  Role
+                </InputLabel>
+                <Select {...field} label="Role" sx={selectSx} MenuProps={menuSx}>
+                  {TARGET_ROLES.map((role) => (
+                    <MenuItem key={role} value={role}>
+                      {role}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </div>
+      </div>
+
+      {/* ── Scheduling ── */}
+      <div className="space-y-4">
+        <SectionHeading>Scheduling</SectionHeading>
+        <p className="text-xs text-gray-400">Leave empty to keep the form open indefinitely.</p>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">Opens At</label>
+            <Controller
+              name="starts_at"
+              control={control}
+              render={({ field }) => (
+                <input {...field} type="datetime-local" className={inputCls} />
+              )}
+            />
+            <p className="mt-1 text-xs text-gray-400">Form not accessible before this date.</p>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">Closes At</label>
+            <Controller
+              name="ends_at"
+              control={control}
+              render={({ field }) => (
+                <input {...field} type="datetime-local" className={inputCls} />
+              )}
+            />
+            <p className="mt-1 text-xs text-gray-400">Form stops accepting responses.</p>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">Expires At</label>
+            <Controller
+              name="expires_at"
+              control={control}
+              render={({ field }) => (
+                <input {...field} type="datetime-local" className={inputCls} />
+              )}
+            />
+            <p className="mt-1 text-xs text-gray-400">Hard expiry — returns 410 after this.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Limits ── */}
+      <div className="space-y-4">
+        <SectionHeading>Submission Limits</SectionHeading>
+
+        <div className="max-w-xs">
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Max Submissions</label>
+          <Controller
+            name="max_submissions"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="number"
+                min={1}
+                placeholder="Unlimited"
+                className={inputCls}
+              />
+            )}
+          />
+          <p className="mt-1 text-xs text-gray-400">
+            Form closes automatically when this limit is reached.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Share ── */}
+      <div className="space-y-4">
+        <SectionHeading>Share</SectionHeading>
+        <ShareableUrlPanel url={shareableUrl} />
       </div>
     </div>
   );

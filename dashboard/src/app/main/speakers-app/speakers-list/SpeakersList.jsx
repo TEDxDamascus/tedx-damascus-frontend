@@ -4,7 +4,6 @@ import { useGetSpeakersQuery } from '../SpeakersApi';
 import { useTableState } from '../../../shared-components/custom-table';
 import SpeakersListHeader from './SpeakersListHeader';
 import SpeakersListTable from './SpeakersListTable';
-import FilterIcon from '@/app/shared-components/filter-icon/FilterIcon';
 
 const TABLE_ID = 'speakers';
 
@@ -35,14 +34,6 @@ function SpeakersList() {
   return (
     <div className="p-6 pt-8">
       <SpeakersListHeader />
-
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-        <FilterIcon
-          items={data?.data?.items ?? data?.data ?? []}
-          filters={filterConfig}
-          onFiltered={setFilteredData}
-        />
-      </Box>
 
       <SpeakersListTable
         data={filteredData}

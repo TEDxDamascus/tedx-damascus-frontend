@@ -115,7 +115,11 @@ export default function FormBuilder() {
               sx={
                 isPublished
                   ? { backgroundColor: '#374151', '&:hover': { backgroundColor: '#1f2937' } }
-                  : { backgroundColor: '#d97706', '&:hover': { backgroundColor: '#b45309' }, color: '#fff' }
+                  : {
+                      backgroundColor: '#d97706',
+                      '&:hover': { backgroundColor: '#b45309' },
+                      color: '#fff',
+                    }
               }
             >
               {isPublished ? 'Unpublish' : 'Publish'}
@@ -144,7 +148,9 @@ export default function FormBuilder() {
         </Tabs>
 
         <div className="p-6">
-          {tab === 0 && <FormSettings control={settingsForm.control} />}
+          {tab === 0 && (
+            <FormSettings control={settingsForm.control} shareableUrl={form?.shareable_url} />
+          )}
           {tab === 1 && !isNew && (
             <QuestionList
               questions={questions}
