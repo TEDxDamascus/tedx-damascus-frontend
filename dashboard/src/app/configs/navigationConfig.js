@@ -1,4 +1,5 @@
 import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
+import { RecordVoiceOver } from '@mui/icons-material';
 
 const navigationConfig = [
   {
@@ -12,8 +13,15 @@ const navigationConfig = [
     id: 'speakers',
     title: 'Speakers',
     type: 'item',
-    icon: People,
+    icon: Dashboard,
     url: '/speakers',
+  },
+  {
+    id: 'users',
+    title: 'Users',
+    type: 'item',
+    icon: People,
+    url: '/users',
   },
   {
     id: 'events',

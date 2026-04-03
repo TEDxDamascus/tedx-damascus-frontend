@@ -18,6 +18,7 @@ import {
   Event,
   Settings,
   ChevronLeft,
+  RecordVoiceOver,
   Menu,
   Assignment,
   Article,
@@ -27,7 +28,8 @@ const drawerWidth = 260;
 
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Speakers', icon: <People />, path: '/speakers' },
+  { text: 'Speakers', icon: <RecordVoiceOver />, path: '/speakers' },
+  { text: 'Users', icon: <People />, path: '/users' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Blog', icon: <Article />, path: '/blogs' },

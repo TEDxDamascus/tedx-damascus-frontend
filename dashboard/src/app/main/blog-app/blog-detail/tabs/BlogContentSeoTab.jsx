@@ -49,7 +49,10 @@ function BlogContentSeoTab({
   const titleLength = getPreferredLocaleText(titleValue).length;
   const descriptionLength = getPreferredLocaleText(metaDescriptionValue).length;
   const keywordsLength = getPreferredLocaleText(metaKeywordsValue).length;
-  const socialPreviewTitle = getPreferredLocaleText(ogTitleValue) || getPreferredLocaleText(titleValue) || 'Article title preview';
+  const socialPreviewTitle =
+    getPreferredLocaleText(ogTitleValue) ||
+    getPreferredLocaleText(titleValue) ||
+    'Article title preview';
   const socialPreviewDescription =
     getPreferredLocaleText(ogDescriptionValue) ||
     getPreferredLocaleText(metaDescriptionValue) ||
@@ -76,17 +79,26 @@ function BlogContentSeoTab({
     scoreMap[keywordsStatus];
   const seoScorePercent = Math.round((seoScoreRaw / 8) * 100);
 
-  const scoreColor = seoScorePercent >= 75 ? 'success' : seoScorePercent >= 40 ? 'warning' : 'error';
+  const scoreColor =
+    seoScorePercent >= 75 ? 'success' : seoScorePercent >= 40 ? 'warning' : 'error';
   const statusColor = (status) =>
     status === 'green' ? 'success' : status === 'yellow' ? 'warning' : 'error';
-  const statusLabel = (status) => (status === 'green' ? 'Good' : status === 'yellow' ? 'Needs tweak' : 'Missing');
+  const statusLabel = (status) =>
+    status === 'green' ? 'Good' : status === 'yellow' ? 'Needs tweak' : 'Missing';
 
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5, p: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 1.25,
+              }}
+            >
               <Typography sx={{ fontWeight: 600 }}>SEO Checklist</Typography>
               <Chip label={`${seoScorePercent}%`} color={scoreColor} size="small" />
             </Box>
@@ -99,7 +111,11 @@ function BlogContentSeoTab({
             <Stack spacing={1}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="body2">Title length (50-60 chars): {titleLength}</Typography>
-                <Chip label={statusLabel(titleStatus)} color={statusColor(titleStatus)} size="small" />
+                <Chip
+                  label={statusLabel(titleStatus)}
+                  color={statusColor(titleStatus)}
+                  size="small"
+                />
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="body2">
@@ -113,11 +129,19 @@ function BlogContentSeoTab({
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="body2">OG image available</Typography>
-                <Chip label={statusLabel(ogImageStatus)} color={statusColor(ogImageStatus)} size="small" />
+                <Chip
+                  label={statusLabel(ogImageStatus)}
+                  color={statusColor(ogImageStatus)}
+                  size="small"
+                />
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="body2">Meta keywords provided</Typography>
-                <Chip label={statusLabel(keywordsStatus)} color={statusColor(keywordsStatus)} size="small" />
+                <Chip
+                  label={statusLabel(keywordsStatus)}
+                  color={statusColor(keywordsStatus)}
+                  size="small"
+                />
               </Box>
             </Stack>
           </Box>
@@ -264,14 +288,20 @@ function BlogContentSeoTab({
                 onChange={field.onChange}
                 label="Cover Image"
                 error={!!errors.blog_image}
-                helperText={errors.blog_image?.message || 'Used as article cover and OG fallback image.'}
+                helperText={
+                  errors.blog_image?.message || 'Used as article cover and OG fallback image.'
+                }
               />
             )}
           />
         </Grid>
 
         <Grid item xs={12}>
-          <Accordion defaultExpanded={false} disableGutters sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
+          <Accordion
+            defaultExpanded={false}
+            disableGutters
+            sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}
+          >
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Box>
                 <Typography sx={{ fontWeight: 600 }}>SEO Settings</Typography>
@@ -379,9 +409,18 @@ function BlogContentSeoTab({
                       bgcolor: 'background.default',
                     }}
                   >
-                    <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ mb: 1 }}
+                    >
                       Social image preview source:{' '}
-                      {ogImage ? 'OG image (custom)' : coverImage ? 'Cover image fallback' : 'No image selected'}
+                      {ogImage
+                        ? 'OG image (custom)'
+                        : coverImage
+                          ? 'Cover image fallback'
+                          : 'No image selected'}
                     </Typography>
                     {previewImage ? (
                       <img

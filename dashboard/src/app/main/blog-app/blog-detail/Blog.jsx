@@ -149,7 +149,9 @@ function Blog() {
       status: data.status || 'draft',
       category: data.category || undefined,
       read_time: Number(data.read_time) || undefined,
-      related_blogs: (data.related_blogs || []).map((item) => item?.id ?? item?.value).filter(Boolean),
+      related_blogs: (data.related_blogs || [])
+        .map((item) => item?.id ?? item?.value)
+        .filter(Boolean),
       meta_title: sanitizeLocaleObject(data.meta_title),
       meta_description: sanitizeLocaleObject(data.meta_description),
       meta_keywords: sanitizeLocaleObject(data.meta_keywords),
@@ -197,7 +199,9 @@ function Blog() {
 
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-tedx-dark">{isNew ? 'Add New Article' : 'Edit Article'}</h1>
+          <h1 className="text-3xl font-bold text-tedx-dark">
+            {isNew ? 'Add New Article' : 'Edit Article'}
+          </h1>
           {formatReadTime(currentReadTime) && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {formatReadTime(currentReadTime)}
@@ -224,7 +228,10 @@ function Blog() {
         </div>
       </div>
 
-      <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}>
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
+      >
         <Box>
           <BlogContentSeoTab
             control={control}
