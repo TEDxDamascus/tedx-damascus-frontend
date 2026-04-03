@@ -7,13 +7,9 @@ import { Tabs, Tab, Box, Paper, CircularProgress, Button } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useSnackbar } from 'notistack';
-import {
-  useGetEventQuery,
-  useCreateEventMutation,
-  useUpdateEventMutation,
-} from '../EventsApi';
+import { useGetEventQuery, useCreateEventMutation, useUpdateEventMutation } from '../EventsApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
-import SocialLinksTab from './tabs/SocialLinksTab'; 
+import SocialLinksTab from './tabs/SocialLinksTab';
 import EventModel from './models/events-model';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 

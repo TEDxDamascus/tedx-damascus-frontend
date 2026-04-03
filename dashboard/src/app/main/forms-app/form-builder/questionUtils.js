@@ -33,7 +33,13 @@ export function getTypeLabel(type) {
 
 function getDefaultConfig(type) {
   if (type === 'rating') {
-    return { min: 1, max: 5, step: 1, min_label: { en: '', ar: '' }, max_label: { en: '', ar: '' } };
+    return {
+      min: 1,
+      max: 5,
+      step: 1,
+      min_label: { en: '', ar: '' },
+      max_label: { en: '', ar: '' },
+    };
   }
   if (type === 'number') return { min: '', max: '', step: '' };
   if (type === 'file_upload') {

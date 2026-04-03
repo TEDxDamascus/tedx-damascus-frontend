@@ -90,9 +90,7 @@ function ShareableUrlPanel({ url }) {
           </button>
         </div>
       ) : (
-        <p className="text-sm text-gray-400">
-          Available after the form is published.
-        </p>
+        <p className="text-sm text-gray-400">Available after the form is published.</p>
       )}
     </div>
   );
@@ -177,9 +175,7 @@ export default function FormSettings({ control, shareableUrl }) {
       {/* ── Scheduling ── */}
       <div className="space-y-4">
         <SectionHeading>Scheduling</SectionHeading>
-        <p className="text-xs text-gray-400">
-          Leave empty to keep the form open indefinitely.
-        </p>
+        <p className="text-xs text-gray-400">Leave empty to keep the form open indefinitely.</p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
@@ -188,11 +184,7 @@ export default function FormSettings({ control, shareableUrl }) {
               name="starts_at"
               control={control}
               render={({ field }) => (
-                <input
-                  {...field}
-                  type="datetime-local"
-                  className={inputCls}
-                />
+                <input {...field} type="datetime-local" className={inputCls} />
               )}
             />
             <p className="mt-1 text-xs text-gray-400">Form not accessible before this date.</p>
@@ -204,11 +196,7 @@ export default function FormSettings({ control, shareableUrl }) {
               name="ends_at"
               control={control}
               render={({ field }) => (
-                <input
-                  {...field}
-                  type="datetime-local"
-                  className={inputCls}
-                />
+                <input {...field} type="datetime-local" className={inputCls} />
               )}
             />
             <p className="mt-1 text-xs text-gray-400">Form stops accepting responses.</p>
@@ -220,11 +208,7 @@ export default function FormSettings({ control, shareableUrl }) {
               name="expires_at"
               control={control}
               render={({ field }) => (
-                <input
-                  {...field}
-                  type="datetime-local"
-                  className={inputCls}
-                />
+                <input {...field} type="datetime-local" className={inputCls} />
               )}
             />
             <p className="mt-1 text-xs text-gray-400">Hard expiry — returns 410 after this.</p>
@@ -237,9 +221,7 @@ export default function FormSettings({ control, shareableUrl }) {
         <SectionHeading>Submission Limits</SectionHeading>
 
         <div className="max-w-xs">
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            Max Submissions
-          </label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">Max Submissions</label>
           <Controller
             name="max_submissions"
             control={control}

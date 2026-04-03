@@ -325,7 +325,11 @@ function ConfigFields({ type, config = {}, onChange }) {
       <div>
         <label className="mb-1 block text-xs font-medium text-gray-500">Default Value</label>
         <select
-          value={config.default_value === null || config.default_value === undefined ? '' : String(config.default_value)}
+          value={
+            config.default_value === null || config.default_value === undefined
+              ? ''
+              : String(config.default_value)
+          }
           onChange={(e) =>
             update('default_value', e.target.value === '' ? null : e.target.value === 'true')
           }
@@ -431,17 +435,13 @@ export default function QuestionCard({
           {/* Type badge */}
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              sectionType
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'bg-amber-100 text-amber-700'
+              sectionType ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
             }`}
           >
             {getTypeLabel(local.type)}
           </span>
 
-          {!sectionType && (
-            <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>
-          )}
+          {!sectionType && <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>}
 
           {titlePreview ? (
             <span className="flex-1 truncate text-sm text-gray-800">{titlePreview}</span>
