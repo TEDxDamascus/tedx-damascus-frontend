@@ -8,7 +8,7 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@mui/icons-material';
-import { CircularProgress, Switch } from '@mui/material';
+import { CircularProgress, Switch, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { getTypeLabel, hasOptions, isSection } from './questionUtils';
 import ConfirmModal from '../../../shared-components/confirm-modal';
 
@@ -321,24 +321,41 @@ function ConfigFields({ type, config = {}, onChange }) {
   }
 
   if (type === 'yes_no') {
+    const current =
+      config.default_value === null || config.default_value === undefined
+        ? ''
+        : String(config.default_value);
     return (
       <div>
         <label className="mb-1 block text-xs font-medium text-gray-500">Default Value</label>
-        <select
-          value={
-            config.default_value === null || config.default_value === undefined
-              ? ''
-              : String(config.default_value)
-          }
-          onChange={(e) =>
-            update('default_value', e.target.value === '' ? null : e.target.value === 'true')
-          }
-          className={inputCls}
+        <ToggleButtonGroup
+          exclusive
+          value={current}
+          onChange={(_, val) => {
+            if (val === null) return;
+            update('default_value', val === '' ? null : val === 'true');
+          }}
+          size="small"
+          sx={{
+            '& .MuiToggleButton-root': {
+              textTransform: 'none',
+              fontSize: 13,
+              px: 2,
+              borderColor: '#e0e0e0',
+              color: '#555',
+            },
+            '& .MuiToggleButton-root.Mui-selected': {
+              backgroundColor: 'var(--color-primary)',
+              color: '#fff',
+              borderColor: 'var(--color-primary)',
+              '&:hover': { backgroundColor: 'var(--color-primary-dark)' },
+            },
+          }}
         >
-          <option value="">No default</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
+          <ToggleButton value="">No default</ToggleButton>
+          <ToggleButton value="true">Yes</ToggleButton>
+          <ToggleButton value="false">No</ToggleButton>
+        </ToggleButtonGroup>
       </div>
     );
   }

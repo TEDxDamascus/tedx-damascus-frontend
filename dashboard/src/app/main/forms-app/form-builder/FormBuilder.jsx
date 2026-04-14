@@ -149,7 +149,14 @@ export default function FormBuilder() {
 
         <div className="p-6">
           {tab === 0 && (
-            <FormSettings control={settingsForm.control} shareableUrl={form?.shareable_url} />
+            <FormSettings
+              control={settingsForm.control}
+              shareableUrl={
+                typeof form?.shareable_url === 'string'
+                  ? form.shareable_url
+                  : form?.shareable_url?.en || form?.shareable_url?.ar || ''
+              }
+            />
           )}
           {tab === 1 && !isNew && (
             <QuestionList

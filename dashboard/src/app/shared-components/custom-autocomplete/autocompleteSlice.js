@@ -72,11 +72,7 @@ export const fetchOptionsThunk = createAsyncThunk(
 
 export function createDebouncedFetch(dispatch) {
   return debounce(({ scope, query, fetchOptionsFn }) => {
-    if (!query?.trim()) {
-      dispatch(setOptions({ scope, options: [] }));
-      return;
-    }
-    dispatch(fetchOptionsThunk({ scope, query: query.trim(), fetchOptionsFn }));
+    dispatch(fetchOptionsThunk({ scope, query: query?.trim() ?? '', fetchOptionsFn }));
   }, 300);
 }
 

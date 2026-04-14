@@ -3,33 +3,66 @@ import { apiService } from 'app/store/apiService';
 export const addTagTypes = ['Blogs', 'Blog'];
 
 const now = () => new Date().toISOString();
+const wait = (ms = 120) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// ── Mock database (aligned with Blog backend entity) ──────────────────────────
 let mockBlogs = [
   {
     id: 'blog-1',
     title: { en: 'TEDx Damascus Launch', ar: 'إطلاق TEDx Damascus' },
-    slug: 'tedx-damascus-launch',
+    slug: { en: 'tedx-damascus-launch', ar: 'اطلاق-تيدكس-دمشق' },
     description: { en: 'Launch recap and highlights.', ar: 'ملخص الإطلاق وأهم اللحظات.' },
     content: {
-      en: 'This is a mock article to keep development moving before backend integration.',
-      ar: 'هذا مقال تجريبي لمتابعة التطوير قبل ربط الباك إند.',
+      en: 'TEDx Damascus held its first event, bringing together visionaries from across Syria and the region.',
+      ar: 'أقامت TEDx Damascus أول فعالياتها، جامعةً رواد الفكر من أنحاء سوريا والمنطقة.',
     },
     status: 'published',
+    publishedAt: '2025-03-01T10:00:00Z',
     category: 'news',
+    views_count: 142,
     read_time: 4,
+    blog_image: '',
+    og_image: '',
+    gallery: [],
     meta_title: { en: 'TEDx Damascus Launch', ar: 'إطلاق TEDx Damascus' },
     meta_description: { en: 'Launch recap', ar: 'ملخص الإطلاق' },
     meta_keywords: { en: 'tedx,damascus,launch', ar: 'تيدكس,دمشق,إطلاق' },
     og_title: { en: 'TEDx Damascus', ar: 'TEDx Damascus' },
     og_description: { en: 'Official launch post', ar: 'منشور الإطلاق الرسمي' },
+    canonical_url: '',
+    createdAt: '2025-03-01T10:00:00Z',
+    updatedAt: '2025-03-01T10:00:00Z',
+  },
+  {
+    id: 'blog-2',
+    title: { en: 'Ideas Worth Spreading in Damascus', ar: 'أفكار تستحق الانتشار في دمشق' },
+    slug: { en: 'ideas-worth-spreading', ar: 'افكار-تستحق-الانتشار' },
+    description: {
+      en: 'How TEDx is changing the conversation in Syria.',
+      ar: 'كيف تغيّر TEDx مسار الحوار في سوريا.',
+    },
+    content: {
+      en: 'Since its founding, TEDx Damascus has become a platform for bold ideas and inspiring stories.',
+      ar: 'منذ تأسيسها، أصبحت TEDx Damascus منصةً للأفكار الجريئة والقصص الملهمة.',
+    },
+    status: 'draft',
+    publishedAt: null,
+    category: 'community',
+    views_count: 0,
+    read_time: 5,
     blog_image: '',
+    og_image: '',
     gallery: [],
-    createdAt: now(),
-    updatedAt: now(),
+    meta_title: { en: 'Ideas Worth Spreading', ar: 'أفكار تستحق الانتشار' },
+    meta_description: { en: '', ar: '' },
+    meta_keywords: { en: '', ar: '' },
+    og_title: { en: '', ar: '' },
+    og_description: { en: '', ar: '' },
+    canonical_url: '',
+    createdAt: '2025-04-01T09:00:00Z',
+    updatedAt: '2025-04-01T09:00:00Z',
   },
 ];
-
-const wait = (ms = 120) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function matchBlogId(blog, id) {
   return String(blog.id) === String(id) || String(blog._id) === String(id);
@@ -45,9 +78,7 @@ function getBlogTitle(blog) {
 
 export async function searchBlogOptions(query, { excludeId } = {}) {
   await wait(80);
-  const term = String(query || '')
-    .trim()
-    .toLowerCase();
+  const term = String(query || '').trim().toLowerCase();
   return mockBlogs
     .filter((blog) => !excludeId || !matchBlogId(blog, excludeId))
     .filter((blog) => {
@@ -71,7 +102,7 @@ const blogsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
     getBlogs: builder.query({
       async queryFn({ page = 1, limit = 10, status, category } = {}) {
         await wait();
-        const filtered = mockBlogs.filter((blog) => {
+        let filtered = mockBlogs.filter((blog) => {
           if (status && blog.status !== status) return false;
           if (category && blog.category !== category) return false;
           return true;
@@ -82,110 +113,67 @@ const blogsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
           data: {
             success: true,
             statusCode: 200,
-            message: 'Mock blogs list',
-            data: {
-              items,
-              total: filtered.length,
-              page,
-              limit,
-            },
+            message: 'Blogs list',
+            data: { items, total: filtered.length, page, limit },
           },
         };
       },
       providesTags: ['Blogs'],
     }),
+
     getBlog: builder.query({
       async queryFn(blogId) {
         await wait();
         const blog = mockBlogs.find((item) => matchBlogId(item, blogId));
-        if (!blog) {
-          return {
-            error: {
-              status: 404,
-              data: 'Blog not found',
-            },
-          };
-        }
-        return {
-          data: {
-            success: true,
-            statusCode: 200,
-            data: blog,
-          },
-        };
+        if (!blog) return { error: { status: 404, data: 'Blog not found' } };
+        return { data: { success: true, statusCode: 200, data: blog } };
       },
       providesTags: ['Blog'],
     }),
+
     createBlog: builder.mutation({
       async queryFn(data) {
         await wait();
         const newBlog = {
           ...data,
           id: `blog-${Date.now()}`,
+          views_count: 0,
+          publishedAt: data.status === 'published' ? now() : null,
           createdAt: now(),
           updatedAt: now(),
         };
         mockBlogs = [newBlog, ...mockBlogs];
-        return {
-          data: {
-            success: true,
-            statusCode: 201,
-            message: 'Mock blog created',
-            data: newBlog,
-          },
-        };
+        return { data: { success: true, statusCode: 201, message: 'Blog created', data: newBlog } };
       },
       invalidatesTags: ['Blogs'],
     }),
+
     updateBlog: builder.mutation({
       async queryFn({ id, data }) {
         await wait();
         const index = mockBlogs.findIndex((item) => matchBlogId(item, id));
-        if (index < 0) {
-          return {
-            error: {
-              status: 404,
-              data: 'Blog not found',
-            },
-          };
-        }
+        if (index < 0) return { error: { status: 404, data: 'Blog not found' } };
+        const prev = mockBlogs[index];
         const updated = {
-          ...mockBlogs[index],
+          ...prev,
           ...data,
+          publishedAt:
+            data.status === 'published' && !prev.publishedAt ? now() : prev.publishedAt,
           updatedAt: now(),
         };
         mockBlogs[index] = updated;
-        return {
-          data: {
-            success: true,
-            statusCode: 200,
-            message: 'Mock blog updated',
-            data: updated,
-          },
-        };
+        return { data: { success: true, statusCode: 200, message: 'Blog updated', data: updated } };
       },
       invalidatesTags: ['Blogs', 'Blog'],
     }),
+
     deleteBlog: builder.mutation({
       async queryFn(id) {
         await wait();
         const before = mockBlogs.length;
         mockBlogs = mockBlogs.filter((item) => !matchBlogId(item, id));
-        if (before === mockBlogs.length) {
-          return {
-            error: {
-              status: 404,
-              data: 'Blog not found',
-            },
-          };
-        }
-        return {
-          data: {
-            success: true,
-            statusCode: 200,
-            message: 'Mock blog deleted',
-          },
-        };
+        if (before === mockBlogs.length) return { error: { status: 404, data: 'Blog not found' } };
+        return { data: { success: true, statusCode: 200, message: 'Blog deleted' } };
       },
       invalidatesTags: ['Blogs'],
     }),

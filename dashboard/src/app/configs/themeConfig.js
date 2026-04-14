@@ -63,6 +63,60 @@ const themeConfig = createTheme({
         },
       },
     },
+    // Date/Time picker popups use the primary colour (red) for selected dates,
+    // today indicator, clock hands, etc.
+    MuiPickersDay: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            backgroundColor: '#EB0028',
+            '&:hover': { backgroundColor: '#C00020' },
+            '&:focus': { backgroundColor: '#EB0028' },
+          },
+          '&.MuiPickersDay-today:not(.Mui-selected)': {
+            borderColor: '#EB0028',
+            color: '#EB0028',
+          },
+        },
+      },
+    },
+    MuiClock: {
+      styleOverrides: {
+        pin: { backgroundColor: '#EB0028' },
+      },
+    },
+    MuiClockPointer: {
+      styleOverrides: {
+        root: { backgroundColor: '#EB0028' },
+        thumb: {
+          backgroundColor: '#EB0028',
+          borderColor: '#EB0028',
+        },
+      },
+    },
+    MuiClockNumber: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            backgroundColor: '#EB0028',
+          },
+        },
+      },
+    },
+    MuiDateCalendar: {
+      styleOverrides: {
+        root: {
+          '& .MuiPickersYear-yearButton.Mui-selected': {
+            backgroundColor: '#EB0028',
+            '&:hover': { backgroundColor: '#C00020' },
+          },
+          '& .MuiPickersMonth-monthButton.Mui-selected': {
+            backgroundColor: '#EB0028',
+            '&:hover': { backgroundColor: '#C00020' },
+          },
+        },
+      },
+    },
   },
 });
 

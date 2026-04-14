@@ -13,27 +13,40 @@ const COLUMNS = [
   {
     id: 'image',
     header: '',
-    renderCell: (value, row) => (
-      <div className="flex items-center">
-        {value ? (
-          <img src={value} alt={row.title} className="h-10 w-10 rounded-full object-cover" />
-        ) : (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
-            {row.title?.charAt(0) ?? '?'}
-          </div>
-        )}
-      </div>
-    ),
+    renderCell: (value, row) => {
+      const titleText = row.title?.en || row.title?.ar || '';
+      return (
+        <div className="flex items-center">
+          {value ? (
+            <img src={value} alt={titleText} className="h-10 w-10 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
+              {titleText.charAt(0) || '?'}
+            </div>
+          )}
+        </div>
+      );
+    },
     headerClassName: 'w-16',
   },
   {
     id: 'title',
     header: 'Event Title',
     sortable: true,
-    renderCell: (value) => <span className="font-medium text-tedx-dark">{value}</span>,
+    renderCell: (value) => (
+      <span className="font-medium text-tedx-dark">
+        {typeof value === 'string' ? value : value?.en || value?.ar || '—'}
+      </span>
+    ),
   },
   { id: 'date', header: 'Date', sortable: true },
-  { id: 'location', header: 'Location', sortable: true },
+  {
+    id: 'location',
+    header: 'Location',
+    sortable: true,
+    renderCell: (value) =>
+      typeof value === 'string' ? value : value?.en || value?.ar || '—',
+  },
   {
     id: 'active',
     header: 'Status',
@@ -94,7 +107,7 @@ function EventsListTable({ data, totalCount, isLoading }) {
         onConfirm={handleDeleteConfirm}
         loading={isDeleting}
         title="Delete Event"
-        description={`Are you sure you want to delete "${confirmItem?.title}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${confirmItem?.title?.en || confirmItem?.title?.ar || confirmItem?.title || 'this event'}"? This action cannot be undone.`}
       />
     </>
   );

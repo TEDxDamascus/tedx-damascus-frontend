@@ -2,9 +2,21 @@ import { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { ContentCopy, Check, LinkOutlined } from '@mui/icons-material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { parseISO, formatISO, isValid } from 'date-fns';
 import { LocaleInput } from '../../../shared-components/locale-input';
 import RichTextEditor from '../../../shared-components/rich-text-editor';
 import { TARGET_ROLES } from './questionUtils';
+
+const pickerSx = {
+  width: '100%',
+  '& .MuiOutlinedInput-root': {
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+  },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-primary)' },
+  '& .MuiIconButton-root': { color: 'var(--color-primary)' },
+};
 
 // Two rich text editors side by side (EN left, AR right)
 function LocaleRichTextEditor({ value = { en: '', ar: '' }, onChange }) {
@@ -178,41 +190,35 @@ export default function FormSettings({ control, shareableUrl }) {
         <p className="text-xs text-gray-400">Leave empty to keep the form open indefinitely.</p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Opens At</label>
-            <Controller
-              name="starts_at"
-              control={control}
-              render={({ field }) => (
-                <input {...field} type="datetime-local" className={inputCls} />
-              )}
-            />
-            <p className="mt-1 text-xs text-gray-400">Form not accessible before this date.</p>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Closes At</label>
-            <Controller
-              name="ends_at"
-              control={control}
-              render={({ field }) => (
-                <input {...field} type="datetime-local" className={inputCls} />
-              )}
-            />
-            <p className="mt-1 text-xs text-gray-400">Form stops accepting responses.</p>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">Expires At</label>
-            <Controller
-              name="expires_at"
-              control={control}
-              render={({ field }) => (
-                <input {...field} type="datetime-local" className={inputCls} />
-              )}
-            />
-            <p className="mt-1 text-xs text-gray-400">Hard expiry — returns 410 after this.</p>
-          </div>
+          {[
+            { name: 'starts_at', label: 'Opens At', hint: 'Form not accessible before this date.' },
+            { name: 'ends_at', label: 'Closes At', hint: 'Form stops accepting responses.' },
+            { name: 'expires_at', label: 'Expires At', hint: 'Hard expiry — returns 410 after this.' },
+          ].map(({ name, label, hint }) => (
+            <div key={name}>
+              <Controller
+                name={name}
+                control={control}
+                render={({ field }) => {
+                  const dtValue = field.value
+                    ? (() => { const d = parseISO(field.value); return isValid(d) ? d : null; })()
+                    : null;
+                  return (
+                    <DateTimePicker
+                      label={label}
+                      value={dtValue}
+                      onChange={(newDt) =>
+                        field.onChange(newDt && isValid(newDt) ? formatISO(newDt) : '')
+                      }
+                      slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                      sx={pickerSx}
+                    />
+                  );
+                }}
+              />
+              <p className="mt-1 text-xs text-gray-400">{hint}</p>
+            </div>
+          ))}
         </div>
       </div>
 

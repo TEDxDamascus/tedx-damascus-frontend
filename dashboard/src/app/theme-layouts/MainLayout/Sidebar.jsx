@@ -33,7 +33,7 @@ const menuItems = [
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Blog', icon: <Article />, path: '/blogs' },
-  { text: 'Settings', icon: <Settings />, path: '/settings' },
+  // { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
 
 function Sidebar() {

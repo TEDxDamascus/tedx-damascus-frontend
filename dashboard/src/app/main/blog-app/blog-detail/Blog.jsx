@@ -237,7 +237,7 @@ function Blog() {
             control={control}
             errors={errors}
             onGenerateSlug={handleGenerateSlug}
-            slugPreviewBase="/blog"
+            slugPreviewBase="/blogs"
             fetchRelatedBlogsOptions={fetchRelatedBlogsOptions}
           />
         </Box>
