@@ -10,7 +10,8 @@ const BlogModel = (data) =>
     content: defaultLocaleValue(),
     status: 'draft',
     publishedAt: null,
-    category: '',
+    blog_category: null,
+    tags: [],
     views_count: 0,
     read_time: 0,
     blog_image: '',
@@ -22,12 +23,9 @@ const BlogModel = (data) =>
     canonical_url: '',
     og_title: defaultLocaleValue(),
     og_description: defaultLocaleValue(),
+    author_user: null,
     // Frontend-only fields (ask backend to add):
     related_blogs: [],
-    twitter_title: defaultLocaleValue(),
-    twitter_description: defaultLocaleValue(),
-    twitter_image: '',
-    twitter_card: 'summary_large_image',
   });
 
 export default BlogModel;
