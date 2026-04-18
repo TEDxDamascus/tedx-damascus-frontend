@@ -1,19 +1,22 @@
 import { Controller } from 'react-hook-form';
-import { TextField, FormControlLabel, Switch, Grid, Box } from '@mui/material';
+import { FormControlLabel, Switch, Grid, Box } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { parse, format, isValid } from 'date-fns';
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
-import {
-  CustomAutocomplete,
-  normalizeOption,
-} from '../../../../shared-components/custom-autocomplete';
+import { CustomAutocomplete } from '../../../../shared-components/custom-autocomplete';
 import { ImagePickerField } from '../../../../shared-components/image-picker';
-import axiosInstance from '@/app/services/axiosInstance';
+import { searchSpeakerOptions } from '../../../speakers-app/SpeakersApi';
 
-async function fetchSpeakerOptions(query) {
-  const res = await axiosInstance.get('/speakers', {
-    params: query ? { q: query } : undefined,
-  });
-  return res.data.data.map((s) => normalizeOption({ id: s.id, label: s.name.en || s.name.ar }));
-}
+const pickerSx = {
+  width: '100%',
+  '& .MuiOutlinedInput-root': {
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+  },
+  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-primary)' },
+  '& .MuiIconButton-root': { color: 'var(--color-primary)' },
+};
 
 function BasicInfoTab({ control, errors }) {
   return (
@@ -40,18 +43,28 @@ function BasicInfoTab({ control, errors }) {
           <Controller
             name="date"
             control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Event Date"
-                type="date"
-                fullWidth
-                required
-                InputLabelProps={{ shrink: true }}
-                error={!!errors.date}
-                helperText={errors.date?.message}
-              />
-            )}
+            render={({ field }) => {
+              const dateValue = field.value
+                ? (() => { const d = parse(field.value, 'yyyy-MM-dd', new Date()); return isValid(d) ? d : null; })()
+                : null;
+              return (
+                <DatePicker
+                  label="Event Date *"
+                  value={dateValue}
+                  onChange={(newDate) =>
+                    field.onChange(newDate && isValid(newDate) ? format(newDate, 'yyyy-MM-dd') : '')
+                  }
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.date,
+                      helperText: errors.date?.message,
+                    },
+                  }}
+                  sx={pickerSx}
+                />
+              );
+            }}
           />
         </Grid>
 
@@ -59,17 +72,28 @@ function BasicInfoTab({ control, errors }) {
           <Controller
             name="time"
             control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Event Time"
-                type="time"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                error={!!errors.time}
-                helperText={errors.time?.message}
-              />
-            )}
+            render={({ field }) => {
+              const timeValue = field.value
+                ? (() => { const d = parse(field.value, 'HH:mm', new Date()); return isValid(d) ? d : null; })()
+                : null;
+              return (
+                <TimePicker
+                  label="Event Time"
+                  value={timeValue}
+                  onChange={(newTime) =>
+                    field.onChange(newTime && isValid(newTime) ? format(newTime, 'HH:mm') : '')
+                  }
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.time,
+                      helperText: errors.time?.message,
+                    },
+                  }}
+                  sx={pickerSx}
+                />
+              );
+            }}
           />
         </Grid>
 
@@ -84,38 +108,6 @@ function BasicInfoTab({ control, errors }) {
                 label="Location / City"
                 error={!!errors.location}
                 helperText={errors.location?.message}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="venue"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Venue (Hall/Building)"
-                fullWidth
-                error={!!errors.venue}
-                helperText={errors.venue?.message}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="ticketsLink"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Tickets Link (URL)"
-                fullWidth
-                error={!!errors.ticketsLink}
-                helperText={errors.ticketsLink?.message}
               />
             )}
           />
@@ -145,12 +137,29 @@ function BasicInfoTab({ control, errors }) {
               <CustomAutocomplete
                 {...field}
                 scope="event-speakers"
-                fetchOptions={fetchSpeakerOptions}
+                fetchOptions={searchSpeakerOptions}
                 multiple
                 label="Event Speakers"
                 placeholder="Search speakers..."
                 error={errors.speakers}
                 helperText={errors.speakers?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            name="brief"
+            control={control}
+            render={({ field }) => (
+              <LocaleInput
+                {...field}
+                type={localeInputTypes.textFieldMultiple}
+                label="Brief (optional)"
+                minRows={2}
+                error={!!errors.brief}
+                helperText={errors.brief?.message}
               />
             )}
           />

@@ -6,21 +6,18 @@ const SpeakerModel = (data) =>
     id: _.uniqueId('speaker-'),
     name: defaultLocaleValue(),
     bio: defaultLocaleValue(),
-    title: defaultLocaleValue(),
+    description: defaultLocaleValue(),
+    speaker_image: '',
+    social_links: [],
+    gallery: [],
+    video_link: '',
     company: '',
     email: '',
     phone: '',
-    image: '',
-    socialLinks: {
-      linkedin: '',
-      twitter: '',
-      facebook: '',
-      website: '',
-    },
-    talks: [],
     featured: false,
     active: true,
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 
 export default SpeakerModel;

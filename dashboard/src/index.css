@@ -35,6 +35,71 @@ code {
   min-height: 100vh;
 }
 
+/* Native date/time inputs — use the TEDx red theme colour */
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'],
+input[type='month'],
+input[type='week'] {
+  accent-color: var(--color-primary);
+}
+
+/* ── MUI X Date/Time Pickers — TEDx red theme ──────────────────────────────
+   The picker popover renders in a portal so component-level sx doesn't reach
+   it. Global CSS with high specificity is the reliable fix.              */
+
+/* Calendar: selected day circle */
+.MuiPickersDay-root.Mui-selected,
+.MuiPickersDay-root.Mui-selected:hover,
+.MuiPickersDay-root.Mui-selected:focus {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+/* Calendar: today outline (when not selected) */
+.MuiPickersDay-today:not(.Mui-selected) {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Calendar: year & month view selected buttons */
+.MuiPickersYear-yearButton.Mui-selected,
+.MuiPickersYear-yearButton.Mui-selected:hover,
+.MuiPickersMonth-monthButton.Mui-selected,
+.MuiPickersMonth-monthButton.Mui-selected:hover {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+/* Digital time picker: selected hour / minute / AM-PM column item */
+.MuiMultiSectionDigitalClockSection-item.Mui-selected,
+.MuiMultiSectionDigitalClockSection-item.Mui-selected:hover,
+.MuiDigitalClock-item.Mui-selected,
+.MuiDigitalClock-item.Mui-selected:hover {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+/* "Today" / "Clear" / "OK" action buttons in picker footer */
+.MuiPickersLayout-actionBar .MuiButton-root,
+.MuiDialogActions-root .MuiButton-root {
+  color: var(--color-primary) !important;
+}
+
+/* Analog clock pin & pointer (used when ampm clock is shown) */
+.MuiClock-pin,
+.MuiClockPointer-root {
+  background-color: var(--color-primary) !important;
+}
+.MuiClockPointer-thumb {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+.MuiClockNumber-root.Mui-selected {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

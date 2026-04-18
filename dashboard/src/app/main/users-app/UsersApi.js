@@ -1,52 +1,150 @@
 import { apiService } from 'app/store/apiService';
+import { buildDefaultPermissions } from './user-detail/models/UserModel';
 
 export const addTagTypes = ['Users', 'User'];
+
+const wait = (ms = 150) => new Promise((r) => setTimeout(r, ms));
+const now = () => new Date().toISOString();
+
+// ── Mock database ─────────────────────────────────────────────────────────────
+let usersDB = [
+  {
+    id: 'user-1',
+    name: 'Super Admin',
+    email: 'superadmin@tedxdamascus.com',
+    role: 'superadmin',
+    permissions: buildDefaultPermissions(true),
+    status: 'active',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
+  },
+  {
+    id: 'user-2',
+    name: 'Ahmad Admin',
+    email: 'ahmad@tedxdamascus.com',
+    role: 'admin',
+    permissions: {
+      blogs: { view: true, create: true, edit: true, delete: false },
+      users: { view: true, create: true, edit: true, delete: false },
+      speakers: { view: true, create: true, edit: true, delete: false },
+      forms: { view: true, create: true, edit: true, delete: false },
+      events: { view: true, create: true, edit: true, delete: false },
+      files: { view: true, create: true, edit: false, delete: false },
+      images: { view: true, create: true, edit: false, delete: false },
+    },
+    status: 'active',
+    createdAt: '2025-02-10T08:00:00Z',
+    updatedAt: '2025-02-10T08:00:00Z',
+  },
+  {
+    id: 'user-3',
+    name: 'Layla Coordinator',
+    email: 'layla@tedxdamascus.com',
+    role: 'user',
+    permissions: {
+      blogs: { view: true, create: false, edit: false, delete: false },
+      users: { view: true, create: false, edit: false, delete: false },
+      speakers: { view: true, create: false, edit: false, delete: false },
+      forms: { view: true, create: false, edit: false, delete: false },
+      events: { view: true, create: false, edit: false, delete: false },
+      files: { view: true, create: false, edit: false, delete: false },
+      images: { view: true, create: false, edit: false, delete: false },
+    },
+    status: 'active',
+    createdAt: '2025-03-15T12:00:00Z',
+    updatedAt: '2025-03-15T12:00:00Z',
+  },
+  {
+    id: 'user-4',
+    name: 'Omar Volunteer',
+    email: 'omar@tedxdamascus.com',
+    role: 'user',
+    permissions: buildDefaultPermissions(false),
+    status: 'disabled',
+    createdAt: '2025-03-20T09:00:00Z',
+    updatedAt: '2025-04-01T11:00:00Z',
+  },
+];
 
 const usersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: ({ page = 1, pageSize = 10, search, sortBy, sortDir, status } = {}) => ({
-        url: '/users',
-        method: 'GET',
-        params: {
-          page,
-          pageSize,
-          ...(search ? { search } : {}),
-          ...(sortBy ? { sortBy, sortDir } : {}),
-          ...(status ? { status } : {}),
-        },
-      }),
+      async queryFn({ page = 1, pageSize = 10, search, sortBy, sortDir, status } = {}) {
+        await wait();
+        let items = [...usersDB];
+
+        if (search) {
+          const q = search.toLowerCase();
+          items = items.filter(
+            (u) =>
+              u.name?.toLowerCase().includes(q) ||
+              u.email?.toLowerCase().includes(q),
+          );
+        }
+        if (status) {
+          items = items.filter((u) => u.status === status);
+        }
+        if (sortBy && items[0]?.[sortBy] !== undefined) {
+          items.sort((a, b) => {
+            const av = String(a[sortBy] ?? '');
+            const bv = String(b[sortBy] ?? '');
+            return sortDir === 'desc' ? bv.localeCompare(av) : av.localeCompare(bv);
+          });
+        }
+
+        const start = (page - 1) * pageSize;
+        const paged = items.slice(start, start + pageSize);
+        return { data: { data: paged, total: items.length } };
+      },
       providesTags: ['Users'],
     }),
+
     getUser: builder.query({
-      query: (userId) => ({
-        url: `/users/${userId}`,
-        method: 'GET',
-      }),
+      async queryFn(userId) {
+        await wait();
+        const user = usersDB.find((u) => u.id === userId);
+        if (!user) return { error: { status: 404, data: 'User not found' } };
+        return { data: user };
+      },
       providesTags: ['User'],
     }),
+
     createUser: builder.mutation({
-      query: (newUser) => ({
-        url: `/users`,
-        method: 'POST',
-        data: newUser,
-      }),
+      async queryFn(data) {
+        await wait();
+        const newUser = {
+          ...data,
+          id: `user-${Date.now()}`,
+          permissions: data.permissions ?? [],
+          createdAt: now(),
+          updatedAt: now(),
+        };
+        usersDB.push(newUser);
+        return { data: newUser };
+      },
       invalidatesTags: ['Users'],
     }),
+
     updateUser: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/users/${id}`,
-        method: 'PATCH',
-        data,
-      }),
+      async queryFn({ id, data }) {
+        await wait();
+        const i = usersDB.findIndex((u) => u.id === id);
+        if (i < 0) return { error: { status: 404, data: 'User not found' } };
+        usersDB[i] = { ...usersDB[i], ...data, updatedAt: now() };
+        return { data: usersDB[i] };
+      },
       invalidatesTags: ['Users', 'User'],
     }),
+
     bulkUpdateUsers: builder.mutation({
-      query: ({ ids, data }) => ({
-        url: `/users/bulk-update`,
-        method: 'PATCH',
-        data: { ids, ...data },
-      }),
+      async queryFn({ ids, data }) {
+        await wait();
+        ids.forEach((id) => {
+          const i = usersDB.findIndex((u) => u.id === id);
+          if (i >= 0) usersDB[i] = { ...usersDB[i], ...data, updatedAt: now() };
+        });
+        return { data: { updated: ids.length } };
+      },
       invalidatesTags: ['Users'],
     }),
   }),
@@ -59,3 +157,5 @@ export const {
   useUpdateUserMutation,
   useBulkUpdateUsersMutation,
 } = usersApi;
+
+export default usersApi;

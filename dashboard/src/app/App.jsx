@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { SnackbarProvider } from 'notistack';
 import store from './store/store';
 import themeConfig from './configs/themeConfig';
@@ -25,6 +27,7 @@ function App() {
     <Provider store={store}>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={themeConfig}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
           <CssBaseline />
           <IntlProviderWrapper>
             <SnackbarProvider
@@ -104,6 +107,7 @@ function App() {
               </BrowserRouter>
             </SnackbarProvider>
           </IntlProviderWrapper>
+          </LocalizationProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </Provider>

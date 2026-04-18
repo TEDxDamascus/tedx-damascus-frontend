@@ -19,11 +19,11 @@ const eventSchema = z.object({
   title: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Title is required'),
   date: z.string().min(1, 'Date is required'),
   description: localeObjectSchema.optional(),
+  brief: localeObjectSchema.optional(),
   location: localeObjectSchema.optional(),
-  venue: z.string().optional(),
   time: z.string().optional(),
   image: z.string().optional(),
-  ticketsLink: z.string().url('Invalid URL').optional().or(z.literal('')),
+  gallery: z.array(z.string()).optional(),
   speakers: z.array(z.any()).optional(),
   status: z.string().optional(),
   active: z.boolean().optional(),
@@ -57,7 +57,9 @@ function Event() {
         ...event,
         title: ensureLocaleValue(event.title),
         description: ensureLocaleValue(event.description),
+        brief: ensureLocaleValue(event.brief),
         location: ensureLocaleValue(event.location),
+        gallery: Array.isArray(event.gallery) ? event.gallery : [],
       });
     }
   }, [event, isNew, reset]);

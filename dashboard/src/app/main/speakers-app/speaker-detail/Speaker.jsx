@@ -13,7 +13,7 @@ import {
   useUpdateSpeakerMutation,
 } from '../SpeakersApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
-import SocialLinksTab from './tabs/SocialLinksTab';
+import MediaLinksTab from './tabs/MediaLinksTab';
 import SpeakerModel from './models/SpeakerModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 
@@ -21,20 +21,15 @@ const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
 const speakerSchema = z.object({
   name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
   bio: localeObjectSchema.optional(),
-  title: localeObjectSchema.optional(),
+  description: localeObjectSchema.optional(),
+  speaker_image: z.string().optional(),
+  social_links: z.array(z.string()).optional(),
+  gallery: z.array(z.string()).optional(),
+  video_link: z.string().optional(),
   company: z.string().optional(),
   phone: z.string().optional(),
-  image: z.string().optional(),
-  socialLinks: z
-    .object({
-      linkedin: z.string().optional(),
-      twitter: z.string().optional(),
-      facebook: z.string().optional(),
-      website: z.string().optional(),
-    })
-    .optional(),
   featured: z.boolean().optional(),
   active: z.boolean().optional(),
 });
@@ -66,8 +61,12 @@ function Speaker() {
       reset({
         ...speaker,
         name: ensureLocaleValue(speaker.name),
-        title: ensureLocaleValue(speaker.title),
         bio: ensureLocaleValue(speaker.bio),
+        description: ensureLocaleValue(speaker.description),
+        speaker_image: speaker.speaker_image || '',
+        social_links: Array.isArray(speaker.social_links) ? speaker.social_links : [],
+        gallery: Array.isArray(speaker.gallery) ? speaker.gallery : [],
+        video_link: speaker.video_link || '',
       });
     }
   }, [speaker, isNew, reset]);
@@ -104,7 +103,6 @@ function Speaker() {
         ]}
       />
 
-      {/* Title + actions — no background */}
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-tedx-dark">
           {isNew ? 'Add New Speaker' : 'Edit Speaker'}
@@ -122,17 +120,14 @@ function Speaker() {
             startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
             onClick={handleSubmit(onSubmit)}
             disabled={isSaving}
-            className="bg-tedx-red hover:bg-tedx-red-dark"
+            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
           >
             {isSaving ? 'Saving...' : 'Save Speaker'}
           </Button>
         </div>
       </div>
 
-      <Paper
-        elevation={0}
-        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
-      >
+      <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}>
         <Tabs
           value={currentTab}
           onChange={(_, v) => setCurrentTab(v)}
@@ -145,11 +140,11 @@ function Speaker() {
           }}
         >
           <Tab label="Basic Information" />
-          <Tab label="Social Links" />
+          <Tab label="Media & Links" />
         </Tabs>
         <Box>
           {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
-          {currentTab === 1 && <SocialLinksTab control={control} errors={errors} />}
+          {currentTab === 1 && <MediaLinksTab control={control} errors={errors} />}
         </Box>
       </Paper>
     </div>

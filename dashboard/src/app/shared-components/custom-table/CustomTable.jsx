@@ -29,6 +29,7 @@ function TableToolbar({
   onBulkDelete,
   bulkDeleteLabel,
   bulkActions,
+  rightAction,
 }) {
   return (
     <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
@@ -70,6 +71,8 @@ function TableToolbar({
           )}
         </>
       )}
+
+      {rightAction && <div className="ml-auto">{rightAction}</div>}
     </div>
   );
 }
@@ -208,6 +211,7 @@ export default function CustomTable({
   bulkActions,
   selectedIds: externalSelectedIds,
   onSelectChange: externalOnSelectChange,
+  rightAction,
 }) {
   const { params, setPage, setPageSize, setSearch, setSort } = useTableState(tableId);
   const { page, pageSize, sortBy, sortDir } = params;
@@ -261,6 +265,7 @@ export default function CustomTable({
         onBulkDelete={onBulkDelete}
         bulkDeleteLabel={bulkDeleteLabel}
         bulkActions={bulkActions}
+        rightAction={rightAction}
       />
 
       <div className="overflow-x-auto">
