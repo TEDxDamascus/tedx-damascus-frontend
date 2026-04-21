@@ -22,6 +22,7 @@ import {
   Menu,
   Assignment,
   Article,
+  Handshake,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -29,6 +30,7 @@ const drawerWidth = 260;
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Speakers', icon: <RecordVoiceOver />, path: '/speakers' },
+  { text: 'Partners', icon: <Handshake />, path: '/partners' },
   { text: 'Users', icon: <People />, path: '/users' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
