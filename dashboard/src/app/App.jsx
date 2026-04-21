@@ -17,6 +17,7 @@ import DashboardAppConfig from './main/dashboard/DashboardAppConfig';
 import SpeakersAppConfig from './main/speakers-app/SpeakersAppConfig';
 import FormsAppConfig from './main/forms-app/FormsAppConfig';
 import BlogsAppConfig from './main/blog-app/BlogsAppConfig';
+import WallAppConfig from './main/wall-app/WallAppConfig';
 import EventsAppConfig from './main/events-app/EventsAppConfig.jsx';
 
 import NotFoundPage from './main/not-found/NotFoundPage';
@@ -92,6 +93,13 @@ function App() {
                       ))}
                       {BlogsAppConfig.routes.map((route, index) => (
                         <Route key={`blogs-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {WallAppConfig.routes.map((route, index) => (
+                        <Route key={`wall-${index}`} path={route.path} element={route.element}>
                           {route.children?.map((child, childIndex) => (
                             <Route key={childIndex} path={child.path} element={child.element} />
                           ))}

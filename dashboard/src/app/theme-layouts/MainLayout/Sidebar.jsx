@@ -22,6 +22,7 @@ import {
   Assignment,
   Article,
   LabelOutlined,
+  Forum,
 } from '@mui/icons-material';
 
 const drawerWidth = 260;
@@ -32,6 +33,7 @@ const menuItems = [
   { text: 'Users', icon: <People />, path: '/users' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
+  { text: 'Wall', icon: <Forum />, path: '/wall' },
   { text: 'Blog', icon: <Article />, path: '/blogs' },
   { text: 'Blog categories', icon: <LabelOutlined />, path: '/blogs/categories' },
   // { text: 'Settings', icon: <Settings />, path: '/settings' },

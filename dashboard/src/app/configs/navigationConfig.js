@@ -2,6 +2,7 @@ import {
   Article,
   Dashboard,
   Event,
+  Forum,
   LabelOutlined,
   People,
   RecordVoiceOver,
@@ -36,6 +37,13 @@ const navigationConfig = [
     type: 'item',
     icon: Event,
     url: '/events',
+  },
+  {
+    id: 'wall',
+    title: 'Wall',
+    type: 'item',
+    icon: Forum,
+    url: '/wall',
   },
   {
     id: 'blog',
