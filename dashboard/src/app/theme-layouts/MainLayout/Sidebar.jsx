@@ -23,13 +23,14 @@ import {
   Assignment,
   Article,
 } from '@mui/icons-material';
-
+import GroupsIcon from '@mui/icons-material/Groups';
 const drawerWidth = 260;
 
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Speakers', icon: <RecordVoiceOver />, path: '/speakers' },
   { text: 'Users', icon: <People />, path: '/users' },
+  { text: 'team', icon: <GroupsIcon />, path: '/team' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Blog', icon: <Article />, path: '/blogs' },

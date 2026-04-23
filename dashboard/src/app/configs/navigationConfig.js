@@ -1,6 +1,6 @@
 import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
 import { RecordVoiceOver } from '@mui/icons-material';
-
+import GroupsIcon from '@mui/icons-material/Groups';
 const navigationConfig = [
   {
     id: 'dashboard',
@@ -22,6 +22,13 @@ const navigationConfig = [
     type: 'item',
     icon: People,
     url: '/users',
+  },
+  {
+    id: 'team',
+    title: 'team',
+    type: 'item',
+    icon: GroupsIcon ,
+    url: '/team',
   },
   {
     id: 'events',

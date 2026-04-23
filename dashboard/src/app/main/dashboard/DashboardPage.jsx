@@ -10,7 +10,7 @@ import {
   PublishedWithChanges,
   EventNote,
 } from '@mui/icons-material';
-import { useGetAnalyticsQuery } from '../analytics-app/AnalyticsApi';
+// import { useGetAnalyticsQuery } from '../analytics-app/AnalyticsApi';
 
 const ACTIVITY_ICONS = {
   blog_published: <Article sx={{ fontSize: 18 }} />,
@@ -69,9 +69,14 @@ function StatCard({ title, value, icon, color, loading }) {
 }
 
 function DashboardPage() {
-  const { data, isLoading } = useGetAnalyticsQuery();
-  const summary = data?.data?.summary ?? {};
-  const recentActivity = data?.data?.recentActivity ?? [];
+  // const { data, isLoading } = useGetAnalyticsQuery();
+  // const summary = data?.data?.summary ?? {};
+  // const recentActivity = data?.data?.recentActivity ?? [];
+  
+  const data = null;
+  const isLoading = false;
+  const summary = {};
+  const recentActivity = [];
 
   const statsCards = [
     {
@@ -139,7 +144,7 @@ function DashboardPage() {
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        {/* Recent Activity */}
+      
         <Grid item xs={12} md={8}>
           <Paper
             elevation={0}
@@ -208,7 +213,7 @@ function DashboardPage() {
           </Paper>
         </Grid>
 
-        {/* Submissions by Form */}
+      
         <Grid item xs={12} md={4}>
           <Paper
             elevation={0}
@@ -224,7 +229,8 @@ function DashboardPage() {
               </Box>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {(data?.data?.submissionsByForm ?? []).map((item, i) => (
+                {/* {(data?.data?.submissionsByForm ?? []).map((item, i) => ( */}
+                {[].map((item, i) => (
                   <Box
                     key={i}
                     sx={{
