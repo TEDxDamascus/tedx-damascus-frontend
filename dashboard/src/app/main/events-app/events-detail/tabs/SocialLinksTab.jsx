@@ -38,7 +38,11 @@ function GalleryPicker({ control, name }) {
               border: '1px solid #e0e0e0',
             }}
           >
-            <img src={url} alt={`gallery-${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img
+              src={url}
+              alt={`gallery-${i}`}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
             <IconButton
               size="small"
               onClick={() => handleRemove(url)}

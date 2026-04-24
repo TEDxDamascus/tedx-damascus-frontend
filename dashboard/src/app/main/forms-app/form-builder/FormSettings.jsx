@@ -193,7 +193,11 @@ export default function FormSettings({ control, shareableUrl }) {
           {[
             { name: 'starts_at', label: 'Opens At', hint: 'Form not accessible before this date.' },
             { name: 'ends_at', label: 'Closes At', hint: 'Form stops accepting responses.' },
-            { name: 'expires_at', label: 'Expires At', hint: 'Hard expiry — returns 410 after this.' },
+            {
+              name: 'expires_at',
+              label: 'Expires At',
+              hint: 'Hard expiry — returns 410 after this.',
+            },
           ].map(({ name, label, hint }) => (
             <div key={name}>
               <Controller
@@ -201,7 +205,10 @@ export default function FormSettings({ control, shareableUrl }) {
                 control={control}
                 render={({ field }) => {
                   const dtValue = field.value
-                    ? (() => { const d = parseISO(field.value); return isValid(d) ? d : null; })()
+                    ? (() => {
+                        const d = parseISO(field.value);
+                        return isValid(d) ? d : null;
+                      })()
                     : null;
                   return (
                     <DateTimePicker

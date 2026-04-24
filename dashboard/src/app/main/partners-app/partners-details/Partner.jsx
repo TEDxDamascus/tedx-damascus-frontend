@@ -113,14 +113,20 @@ function Partner() {
             startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
             onClick={handleSubmit(onSubmit)}
             disabled={isSaving}
-            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+            }}
           >
             {isSaving ? 'Saving...' : 'Save Partner'}
           </Button>
         </div>
       </div>
 
-      <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}>
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
+      >
         <Tabs
           value={currentTab}
           onChange={(_, v) => setCurrentTab(v)}
@@ -134,9 +140,7 @@ function Partner() {
         >
           <Tab label="Partner Information" />
         </Tabs>
-        <Box>
-          {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
-        </Box>
+        <Box>{currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}</Box>
       </Paper>
     </div>
   );

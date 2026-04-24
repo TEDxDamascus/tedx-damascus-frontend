@@ -40,21 +40,29 @@ const COLUMNS = [
     ),
   },
   { id: 'department', header: 'Department', sortable: true },
-  { 
-    id: 'role', 
+  {
+    id: 'role',
     header: 'Role',
     renderCell: (value) => (
       <span>{typeof value === 'string' ? value : value?.en || value?.ar || '—'}</span>
-    )
+    ),
   },
   {
     id: 'linkedin',
     header: 'Social',
-    renderCell: (value) => value ? (
-      <a href={value} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm font-medium">
-        LinkedIn
-      </a>
-    ) : <span className="text-gray-400">—</span>,
+    renderCell: (value) =>
+      value ? (
+        <a
+          href={value}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm font-medium text-blue-600 hover:underline"
+        >
+          LinkedIn
+        </a>
+      ) : (
+        <span className="text-gray-400">—</span>
+      ),
   },
   {
     id: 'active',

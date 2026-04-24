@@ -69,18 +69,6 @@ function StatCard({ title, value, icon, color, loading }) {
 }
 
 function DashboardPage() {
-  // const { data, isLoading } = useGetAnalyticsQuery();
-  // const summary = data?.data?.summary ?? {};
-  // const recentActivity = data?.data?.recentActivity ?? [];
-
-  const data = null;
-  const isLoading = false;
-  const summary = {};
-  const recentActivity = [];
-  // const { data, isLoading } = useGetAnalyticsQuery();
-  // const summary = data?.data?.summary ?? {};
-  // const recentActivity = data?.data?.recentActivity ?? [];
-
   const summary = {};
   const recentActivity = [];
   const isLoading = false;
@@ -151,7 +139,6 @@ function DashboardPage() {
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
-
         <Grid item xs={12} md={8}>
           <Paper
             elevation={0}
@@ -219,7 +206,6 @@ function DashboardPage() {
             )}
           </Paper>
         </Grid>
-
 
         <Grid item xs={12} md={4}>
           <Paper

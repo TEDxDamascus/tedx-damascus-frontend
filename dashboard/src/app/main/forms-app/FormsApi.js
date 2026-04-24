@@ -45,7 +45,10 @@ let formsDB = [
         orderIndex: 1,
         type: 'short_text',
         title: { en: 'Talk Title', ar: 'عنوان المحادثة' },
-        helpText: { en: 'A short, compelling title for your talk', ar: 'عنوان قصير وجذاب لمحادثتك' },
+        helpText: {
+          en: 'A short, compelling title for your talk',
+          ar: 'عنوان قصير وجذاب لمحادثتك',
+        },
         isRequired: true,
         config: {},
         options: [],
@@ -55,7 +58,10 @@ let formsDB = [
         orderIndex: 2,
         type: 'long_text',
         title: { en: 'Talk Summary', ar: 'ملخص المحادثة' },
-        helpText: { en: 'Describe your talk idea in 200–400 words', ar: 'صف فكرة محادثتك في 200–400 كلمة' },
+        helpText: {
+          en: 'Describe your talk idea in 200–400 words',
+          ar: 'صف فكرة محادثتك في 200–400 كلمة',
+        },
         isRequired: true,
         config: { maxLength: 2000 },
         options: [],
@@ -64,7 +70,10 @@ let formsDB = [
         id: 'q-4',
         orderIndex: 3,
         type: 'radio',
-        title: { en: 'Have you spoken at a TEDx event before?', ar: 'هل تحدثت في فعالية TEDx من قبل؟' },
+        title: {
+          en: 'Have you spoken at a TEDx event before?',
+          ar: 'هل تحدثت في فعالية TEDx من قبل؟',
+        },
         helpText: { en: '', ar: '' },
         isRequired: true,
         config: {},
@@ -153,7 +162,10 @@ let formsDB = [
         orderIndex: 1,
         type: 'short_text',
         title: { en: 'Full Name', ar: 'الاسم الكامل' },
-        helpText: { en: 'Your official full name as on your ID', ar: 'اسمك الرسمي الكامل كما في هويتك' },
+        helpText: {
+          en: 'Your official full name as on your ID',
+          ar: 'اسمك الرسمي الكامل كما في هويتك',
+        },
         isRequired: true,
         config: { maxLength: 120 },
         options: [],
@@ -163,7 +175,10 @@ let formsDB = [
         orderIndex: 2,
         type: 'long_text',
         title: { en: 'Tell us about yourself', ar: 'أخبرنا عن نفسك' },
-        helpText: { en: 'Write a short bio (200–400 words)', ar: 'اكتب سيرة ذاتية قصيرة (200–400 كلمة)' },
+        helpText: {
+          en: 'Write a short bio (200–400 words)',
+          ar: 'اكتب سيرة ذاتية قصيرة (200–400 كلمة)',
+        },
         isRequired: true,
         config: { maxLength: 2000, rows: 5 },
         options: [],
@@ -173,7 +188,10 @@ let formsDB = [
         orderIndex: 3,
         type: 'number',
         title: { en: 'Years of Experience', ar: 'سنوات الخبرة' },
-        helpText: { en: 'How many years of professional experience do you have?', ar: 'كم سنة خبرة مهنية لديك؟' },
+        helpText: {
+          en: 'How many years of professional experience do you have?',
+          ar: 'كم سنة خبرة مهنية لديك؟',
+        },
         isRequired: false,
         config: { min: 0, max: 50, step: 1 },
         options: [],
@@ -203,7 +221,10 @@ let formsDB = [
         orderIndex: 6,
         type: 'url',
         title: { en: 'Personal Website or Portfolio', ar: 'الموقع الشخصي أو المحفظة' },
-        helpText: { en: 'Link to your work (LinkedIn, GitHub, etc.)', ar: 'رابط لأعمالك (LinkedIn، GitHub، إلخ)' },
+        helpText: {
+          en: 'Link to your work (LinkedIn, GitHub, etc.)',
+          ar: 'رابط لأعمالك (LinkedIn، GitHub، إلخ)',
+        },
         isRequired: false,
         config: {},
         options: [],
@@ -214,7 +235,10 @@ let formsDB = [
         orderIndex: 7,
         type: 'section',
         title: { en: 'Choice Questions', ar: 'أسئلة الاختيار' },
-        helpText: { en: 'Single and multiple selection types', ar: 'أنواع الاختيار الفردي والمتعدد' },
+        helpText: {
+          en: 'Single and multiple selection types',
+          ar: 'أنواع الاختيار الفردي والمتعدد',
+        },
         isRequired: false,
         config: {},
         options: [],
@@ -224,7 +248,10 @@ let formsDB = [
         orderIndex: 8,
         type: 'radio',
         title: { en: 'Have you volunteered before?', ar: 'هل تطوعت من قبل؟' },
-        helpText: { en: 'Pick the option that best describes you', ar: 'اختر الخيار الذي يصفك بشكل أفضل' },
+        helpText: {
+          en: 'Pick the option that best describes you',
+          ar: 'اختر الخيار الذي يصفك بشكل أفضل',
+        },
         isRequired: true,
         config: {},
         options: [
@@ -258,7 +285,11 @@ let formsDB = [
         options: [
           { id: 'opt-s1', orderIndex: 0, label: { en: 'Registration Desk', ar: 'طاولة التسجيل' } },
           { id: 'opt-s2', orderIndex: 1, label: { en: 'Stage Management', ar: 'إدارة المسرح' } },
-          { id: 'opt-s3', orderIndex: 2, label: { en: 'Social Media', ar: 'وسائل التواصل الاجتماعي' } },
+          {
+            id: 'opt-s3',
+            orderIndex: 2,
+            label: { en: 'Social Media', ar: 'وسائل التواصل الاجتماعي' },
+          },
           { id: 'opt-s4', orderIndex: 3, label: { en: 'Photography', ar: 'التصوير' } },
         ],
       },
@@ -267,7 +298,10 @@ let formsDB = [
         orderIndex: 11,
         type: 'multi_select',
         title: { en: 'Languages you speak', ar: 'اللغات التي تتحدثها' },
-        helpText: { en: 'Select all languages you are comfortable using', ar: 'اختر جميع اللغات التي تجيدها' },
+        helpText: {
+          en: 'Select all languages you are comfortable using',
+          ar: 'اختر جميع اللغات التي تجيدها',
+        },
         isRequired: false,
         config: {},
         options: [
@@ -281,8 +315,14 @@ let formsDB = [
         id: 'sq-13',
         orderIndex: 12,
         type: 'yes_no',
-        title: { en: 'Are you available the full event day?', ar: 'هل أنت متاح طوال يوم الفعالية؟' },
-        helpText: { en: 'The event runs from 9 AM to 8 PM', ar: 'تمتد الفعالية من 9 صباحاً حتى 8 مساءً' },
+        title: {
+          en: 'Are you available the full event day?',
+          ar: 'هل أنت متاح طوال يوم الفعالية؟',
+        },
+        helpText: {
+          en: 'The event runs from 9 AM to 8 PM',
+          ar: 'تمتد الفعالية من 9 صباحاً حتى 8 مساءً',
+        },
         isRequired: true,
         config: { default_value: null },
         options: [],
@@ -303,7 +343,10 @@ let formsDB = [
         orderIndex: 14,
         type: 'date',
         title: { en: 'Date of Birth', ar: 'تاريخ الميلاد' },
-        helpText: { en: 'Must be 18 or older to volunteer', ar: 'يجب أن يكون عمرك 18 عاماً أو أكثر للتطوع' },
+        helpText: {
+          en: 'Must be 18 or older to volunteer',
+          ar: 'يجب أن يكون عمرك 18 عاماً أو أكثر للتطوع',
+        },
         isRequired: true,
         config: { includeTime: false },
         options: [],
@@ -323,7 +366,10 @@ let formsDB = [
         orderIndex: 16,
         type: 'file_upload',
         title: { en: 'Upload your CV', ar: 'ارفع سيرتك الذاتية' },
-        helpText: { en: 'PDF or Word document, max 5 MB', ar: 'ملف PDF أو Word، بحد أقصى 5 ميغابايت' },
+        helpText: {
+          en: 'PDF or Word document, max 5 MB',
+          ar: 'ملف PDF أو Word، بحد أقصى 5 ميغابايت',
+        },
         isRequired: false,
         config: { allowed_types: ['pdf', 'docx'], max_size_mb: 5, max_files: 1 },
         options: [],
@@ -344,7 +390,10 @@ let formsDB = [
         orderIndex: 18,
         type: 'rating',
         title: { en: 'How did you hear about TEDx Damascus?', ar: 'كيف سمعت عن TEDx Damascus؟' },
-        helpText: { en: 'Rate your familiarity from 1 (just heard) to 5 (long-time follower)', ar: 'قيّم معرفتك من 1 (سمعت للتو) إلى 5 (متابع منذ فترة طويلة)' },
+        helpText: {
+          en: 'Rate your familiarity from 1 (just heard) to 5 (long-time follower)',
+          ar: 'قيّم معرفتك من 1 (سمعت للتو) إلى 5 (متابع منذ فترة طويلة)',
+        },
         isRequired: false,
         config: {
           min: 1,
@@ -525,7 +574,12 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         let updated;
         formsDB = formsDB.map((f) => {
           if (f.id !== formId) return f;
-          updated = { ...f, status: 'Published', publishedAt: f.publishedAt ?? now(), updatedAt: now() };
+          updated = {
+            ...f,
+            status: 'Published',
+            publishedAt: f.publishedAt ?? now(),
+            updatedAt: now(),
+          };
           return updated;
         });
         if (!updated) return { error: { status: 404, data: 'Form not found' } };

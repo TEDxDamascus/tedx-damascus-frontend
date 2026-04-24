@@ -69,9 +69,7 @@ function mapBlogFromApi(raw) {
     slug: ensureLocaleValue(source.slug),
     blog_image: source.blog_image || '',
     tags: Array.isArray(source.tags)
-      ? source.tags
-          .map((tag) => String(tag || '').trim())
-          .filter(Boolean)
+      ? source.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
       : [],
     author_user: source.author_user_id
       ? {
@@ -87,8 +85,7 @@ function mapBlogFromApi(raw) {
       ? {
           id: String(source.category_id),
           label:
-            (source.category_name || source.category || '').trim() ||
-            String(source.category_id),
+            (source.category_name || source.category || '').trim() || String(source.category_id),
         }
       : typeof source.category === 'string' && source.category.trim()
         ? { id: source.category, label: source.category.trim() }
@@ -168,9 +165,7 @@ function Blog() {
       category_name: data.blog_category?.label ?? null,
       read_time: Number(data.read_time) || undefined,
       tags: Array.isArray(data.tags)
-        ? data.tags
-            .map((tag) => String(tag || '').trim())
-            .filter(Boolean)
+        ? data.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
         : undefined,
       author_user_id: data.author_user?.id || undefined,
       author_user_name: data.author_user?.label || undefined,

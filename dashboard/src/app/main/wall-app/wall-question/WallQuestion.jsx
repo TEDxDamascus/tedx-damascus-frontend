@@ -184,7 +184,11 @@ function WallQuestion() {
         {isNew ? 'New wall question' : 'Edit wall question'}
       </Typography>
 
-      <Paper className="mb-6 p-4" elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+      <Paper
+        className="mb-6 p-4"
+        elevation={0}
+        sx={{ border: '1px solid', borderColor: 'divider' }}
+      >
         <Box component="form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Controller
             name="title"
@@ -220,7 +224,12 @@ function WallQuestion() {
               {saving ? 'Saving…' : 'Save'}
             </Button>
             {!isNew && (
-              <Button color="error" variant="outlined" disabled={isDeleting} onClick={handleDeleteQuestion}>
+              <Button
+                color="error"
+                variant="outlined"
+                disabled={isDeleting}
+                onClick={handleDeleteQuestion}
+              >
                 Delete question
               </Button>
             )}
@@ -236,7 +245,11 @@ function WallQuestion() {
           <Typography variant="h6" className="mb-3">
             Answers (moderation)
           </Typography>
-          <Paper className="mb-4 p-4" elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <Paper
+            className="mb-4 p-4"
+            elevation={0}
+            sx={{ border: '1px solid', borderColor: 'divider' }}
+          >
             <Typography variant="body2" className="mb-2 text-gray-600">
               Simulate a visitor submission (mock — goes to <strong>pending</strong>).
             </Typography>
@@ -251,7 +264,11 @@ function WallQuestion() {
                 multiline
                 minRows={2}
               />
-              <Button variant="outlined" onClick={handleAddTestAnswer} disabled={isAddingAnswer || !testAnswerBody.trim()}>
+              <Button
+                variant="outlined"
+                onClick={handleAddTestAnswer}
+                disabled={isAddingAnswer || !testAnswerBody.trim()}
+              >
                 Add test answer
               </Button>
             </div>
@@ -292,10 +309,20 @@ function WallQuestion() {
                   <div className="flex flex-wrap gap-2">
                     {a.status === 'pending' && (
                       <>
-                        <Button size="small" variant="contained" color="success" onClick={() => handleApprove(a.id)}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="success"
+                          onClick={() => handleApprove(a.id)}
+                        >
                           Approve
                         </Button>
-                        <Button size="small" variant="outlined" color="warning" onClick={() => handleReject(a.id)}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          color="warning"
+                          onClick={() => handleReject(a.id)}
+                        >
                           Reject
                         </Button>
                       </>
@@ -305,7 +332,12 @@ function WallQuestion() {
                         Set as featured
                       </Button>
                     )}
-                    <Button size="small" color="error" variant="text" onClick={() => handleDeleteAnswer(a.id)}>
+                    <Button
+                      size="small"
+                      color="error"
+                      variant="text"
+                      onClick={() => handleDeleteAnswer(a.id)}
+                    >
                       Delete
                     </Button>
                   </div>

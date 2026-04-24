@@ -238,9 +238,7 @@ function BlogContentSeoTab({
                 value={Array.isArray(field.value) ? field.value : []}
                 onChange={(_, newValue) => {
                   field.onChange(
-                    (newValue || [])
-                      .map((tag) => String(tag || '').trim())
-                      .filter(Boolean),
+                    (newValue || []).map((tag) => String(tag || '').trim()).filter(Boolean),
                   );
                 }}
                 renderInput={(params) => (
@@ -636,7 +634,6 @@ function BlogContentSeoTab({
                     )}
                   />
                 </Grid>
-
               </Grid>
             </AccordionDetails>
           </Accordion>

@@ -19,10 +19,7 @@ let speakersDB = [
       ar: 'يقود د. أحمد مختبر أبحاث الذكاء الاصطناعي في مركز دمشق للابتكار التقني.',
     },
     speaker_image: 'https://picsum.photos/seed/speaker-portrait/800/1000',
-    social_links: [
-      'https://linkedin.com/in/ahmadhassan',
-      'https://twitter.com/ahmadhassan',
-    ],
+    social_links: ['https://linkedin.com/in/ahmadhassan', 'https://twitter.com/ahmadhassan'],
     gallery: [
       'https://picsum.photos/seed/tedx-main/1200/800',
       'https://picsum.photos/seed/stage-lights/1200/800',
@@ -48,13 +45,8 @@ let speakersDB = [
       ar: 'أسست ليلى EdTech Syria عام 2018 ووصلت منذ ذلك الحين إلى أكثر من 50,000 طالب.',
     },
     speaker_image: 'https://picsum.photos/seed/woman-speaker/800/1000',
-    social_links: [
-      'https://linkedin.com/in/laylam',
-      'https://facebook.com/laylam',
-    ],
-    gallery: [
-      'https://picsum.photos/seed/conference-room/1200/800',
-    ],
+    social_links: ['https://linkedin.com/in/laylam', 'https://facebook.com/laylam'],
+    gallery: ['https://picsum.photos/seed/conference-room/1200/800'],
     video_link: '',
     company: 'EdTech Syria',
     email: 'layla.mansour@example.com',
@@ -72,14 +64,11 @@ let speakersDB = [
       ar: 'مهندس معماري حائز على جوائز يعيد تصور المساحات الحضرية بتصاميم مستدامة.',
     },
     description: {
-      en: 'Omar\'s studio has completed over 30 projects across Syria and Lebanon, blending heritage aesthetics with modern engineering.',
+      en: "Omar's studio has completed over 30 projects across Syria and Lebanon, blending heritage aesthetics with modern engineering.",
       ar: 'أنجز مكتب عمر أكثر من 30 مشروعاً في سوريا ولبنان.',
     },
     speaker_image: '',
-    social_links: [
-      'https://linkedin.com/in/omarkhalil',
-      'https://heritagearchitecture.com',
-    ],
+    social_links: ['https://linkedin.com/in/omarkhalil', 'https://heritagearchitecture.com'],
     gallery: [],
     video_link: '',
     company: 'Heritage Architecture Studio',
@@ -98,13 +87,11 @@ let speakersDB = [
       ar: 'عالمة أعصاب تستكشف تقاطع علم الدماغ والصحة النفسية والرفاهية الثقافية.',
     },
     description: {
-      en: 'Dr. Sarah\'s research at Damascus University focuses on trauma recovery in conflict-affected populations.',
+      en: "Dr. Sarah's research at Damascus University focuses on trauma recovery in conflict-affected populations.",
       ar: 'تركز أبحاث د. سارة في جامعة دمشق على التعافي من الصدمات في المجتمعات المتأثرة بالنزاعات.',
     },
     speaker_image: '',
-    social_links: [
-      'https://linkedin.com/in/sarahjaber',
-    ],
+    social_links: ['https://linkedin.com/in/sarahjaber'],
     gallery: [],
     video_link: '',
     company: 'Damascus University',
@@ -127,10 +114,7 @@ let speakersDB = [
       ar: 'فاز فيلم كريم الوثائقي "شظايا دمشق" بجائزة السينما العربية 2023.',
     },
     speaker_image: '',
-    social_links: [
-      'https://twitter.com/karimothman',
-      'https://syrianstories.com',
-    ],
+    social_links: ['https://twitter.com/karimothman', 'https://syrianstories.com'],
     gallery: [],
     video_link: '',
     company: 'Syrian Stories Productions',
@@ -145,7 +129,9 @@ let speakersDB = [
 
 export async function searchSpeakerOptions(query) {
   await wait(80);
-  const term = String(query || '').trim().toLowerCase();
+  const term = String(query || '')
+    .trim()
+    .toLowerCase();
   return speakersDB
     .filter((s) => {
       if (!term) return true;
@@ -205,7 +191,12 @@ const speakersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints
     createSpeaker: builder.mutation({
       async queryFn(data) {
         await wait();
-        const newSpeaker = { ...data, id: `speaker-${Date.now()}`, createdAt: now(), updatedAt: now() };
+        const newSpeaker = {
+          ...data,
+          id: `speaker-${Date.now()}`,
+          createdAt: now(),
+          updatedAt: now(),
+        };
         speakersDB = [newSpeaker, ...speakersDB];
         return { data: newSpeaker };
       },

@@ -86,7 +86,7 @@ export default function FilterIcon({ items, filters, onFiltered }) {
                   size="small"
                   onClick={() => {
                     setValue('');
-                    setInputVisible(false); 
+                    setInputVisible(false);
                     setActiveFilter(null);
                   }}
                 >

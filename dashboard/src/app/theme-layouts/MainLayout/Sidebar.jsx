@@ -16,7 +16,6 @@ import {
   Dashboard,
   People,
   Event,
-  Settings,
   ChevronLeft,
   RecordVoiceOver,
   Menu,

@@ -49,18 +49,17 @@ function BannedWordsPage() {
 
   return (
     <div className="p-6 pt-8">
-      <Breadcrumb
-        items={[
-          { label: 'Wall', href: '/wall' },
-          { label: 'Banned words' },
-        ]}
-      />
+      <Breadcrumb items={[{ label: 'Wall', href: '/wall' }, { label: 'Banned words' }]} />
 
       <Typography variant="h4" className="mb-6 font-bold text-tedx-dark">
         Banned words
       </Typography>
 
-      <Paper className="mb-6 p-4" elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+      <Paper
+        className="mb-6 p-4"
+        elevation={0}
+        sx={{ border: '1px solid', borderColor: 'divider' }}
+      >
         <Typography variant="subtitle2" className="mb-3 text-gray-600">
           Add a word to filter (Arabic / English / both). Backend will enforce rules later.
         </Typography>

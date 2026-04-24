@@ -14,9 +14,9 @@ let partnersDB = [
     image: 'https://picsum.photos/seed/telecom/400/400',
     description: {
       en: 'The leading telecommunications provider in Syria.',
-      ar: 'المزود الرائد لخدمات الاتصالات في سوريا.'
+      ar: 'المزود الرائد لخدمات الاتصالات في سوريا.',
     },
-    type: 'Diamond Sponsor', 
+    type: 'Diamond Sponsor',
     createdAt: '2025-01-15T10:00:00Z',
     updatedAt: '2025-01-15T10:00:00Z',
   },
@@ -28,9 +28,9 @@ let partnersDB = [
     image: 'https://picsum.photos/seed/bank/400/400',
     description: {
       en: 'First Islamic bank in Syria providing modern financial solutions.',
-      ar: 'أول مصرف إسلامي في سوريا يقدم حلولاً مالية حديثة.'
+      ar: 'أول مصرف إسلامي في سوريا يقدم حلولاً مالية حديثة.',
     },
-    type: 'Gold Sponsor', 
+    type: 'Gold Sponsor',
     createdAt: '2025-01-16T11:30:00Z',
     updatedAt: '2025-01-16T11:30:00Z',
   },
@@ -42,9 +42,9 @@ let partnersDB = [
     image: 'https://picsum.photos/seed/university/400/400',
     description: {
       en: 'The oldest and largest university in Syria, our academic partner.',
-      ar: 'أقدم وأكبر جامعة في سوريا، شريكنا الأكاديمي.'
+      ar: 'أقدم وأكبر جامعة في سوريا، شريكنا الأكاديمي.',
     },
-    type: 'Academic Partner', 
+    type: 'Academic Partner',
     createdAt: '2025-01-17T09:15:00Z',
     updatedAt: '2025-01-17T09:15:00Z',
   },
@@ -64,10 +64,10 @@ const partnersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints
               p.title?.en?.toLowerCase().includes(q) ||
               p.title?.ar?.toLowerCase().includes(q) ||
               p.email?.toLowerCase().includes(q) ||
-              p.type?.toLowerCase().includes(q)
+              p.type?.toLowerCase().includes(q),
           );
         }
-        
+
         if (sortBy) {
           items.sort((a, b) => {
             const av = String(a[sortBy] ?? '');
@@ -96,7 +96,12 @@ const partnersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints
     createPartner: builder.mutation({
       async queryFn(data) {
         await wait();
-        const newPartner = { ...data, id: `partner-${Date.now()}`, createdAt: now(), updatedAt: now() };
+        const newPartner = {
+          ...data,
+          id: `partner-${Date.now()}`,
+          createdAt: now(),
+          updatedAt: now(),
+        };
         partnersDB = [newPartner, ...partnersDB];
         return { data: newPartner };
       },

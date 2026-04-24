@@ -1,4 +1,4 @@
-import { Controller, useWatch } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import {
   TextField,
   FormControl,
@@ -11,10 +11,7 @@ import {
   Checkbox,
   Paper,
 } from '@mui/material';
-import {
-  PERMISSION_RESOURCES,
-  PERMISSION_ACTIONS,
-} from '../models/UserModel';
+import { PERMISSION_RESOURCES, PERMISSION_ACTIONS } from '../models/UserModel';
 
 const ROLES = [
   { value: 'admin', label: 'Admin' },
@@ -75,10 +72,7 @@ function PermissionsTable({ control, isDisabled }) {
             </thead>
             <tbody>
               {PERMISSION_RESOURCES.map((resource, ri) => (
-                <tr
-                  key={resource}
-                  style={{ backgroundColor: ri % 2 === 0 ? '#fff' : '#fafafa' }}
-                >
+                <tr key={resource} style={{ backgroundColor: ri % 2 === 0 ? '#fff' : '#fafafa' }}>
                   <td
                     style={{
                       padding: '8px 16px',
@@ -197,12 +191,7 @@ function BasicInfoTab({ control, errors, isDisabled, isOwnSuperadmin, isNew }) {
             name="status"
             control={control}
             render={({ field }) => (
-              <FormControl
-                fullWidth
-                required
-                error={!!errors.status}
-                disabled={isOwnSuperadmin}
-              >
+              <FormControl fullWidth required error={!!errors.status} disabled={isOwnSuperadmin}>
                 <InputLabel>Status</InputLabel>
                 <Select {...field} label="Status">
                   <MenuItem value="active">Active</MenuItem>

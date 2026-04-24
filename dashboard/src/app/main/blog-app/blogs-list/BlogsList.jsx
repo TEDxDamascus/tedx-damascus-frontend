@@ -79,7 +79,10 @@ function BlogsList() {
           </ToggleButtonGroup>
           <Button
             variant="contained"
-            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+            }}
             onClick={() => navigate('/blogs/add')}
           >
             Add New Article
@@ -121,7 +124,10 @@ function BlogsList() {
 
                   {/* Text content */}
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+                    <div
+                      className="font-medium text-gray-900"
+                      dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                    >
                       {getLocalizedText(blog.title, locale)}
                     </div>
                     {!!getLocalizedText(blog.description, locale) && (

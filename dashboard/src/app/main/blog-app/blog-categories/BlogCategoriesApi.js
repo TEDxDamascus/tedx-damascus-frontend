@@ -24,7 +24,9 @@ let mockCategories = [
 
 export async function searchBlogCategoryOptions(query) {
   await wait(80);
-  const term = String(query || '').trim().toLowerCase();
+  const term = String(query || '')
+    .trim()
+    .toLowerCase();
   return mockCategories
     .filter((c) => {
       if (!term) return true;

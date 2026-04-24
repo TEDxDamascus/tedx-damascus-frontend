@@ -69,13 +69,13 @@ let usersDB = [
 /** Options for blog author autocomplete (search by name or email). */
 export async function searchUserOptions(query) {
   await wait(80);
-  const term = String(query || '').trim().toLowerCase();
+  const term = String(query || '')
+    .trim()
+    .toLowerCase();
   return usersDB
     .filter((u) => {
       if (!term) return true;
-      return (
-        u.name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term)
-      );
+      return u.name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term);
     })
     .slice(0, 20)
     .map((u) => ({
@@ -94,9 +94,7 @@ const usersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         if (search) {
           const q = search.toLowerCase();
           items = items.filter(
-            (u) =>
-              u.name?.toLowerCase().includes(q) ||
-              u.email?.toLowerCase().includes(q),
+            (u) => u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q),
           );
         }
         if (status) {

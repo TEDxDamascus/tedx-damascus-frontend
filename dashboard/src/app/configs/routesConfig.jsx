@@ -11,7 +11,7 @@ const routeConfigs = [
   SignInConfig,
   DashboardAppConfig,
   SpeakersAppConfig,
-  teamAppConfig ,
+  teamAppConfig,
   EventsAppConfig,
   UsersAppConfig,
 

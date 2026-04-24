@@ -45,7 +45,10 @@ function BasicInfoTab({ control, errors }) {
             control={control}
             render={({ field }) => {
               const dateValue = field.value
-                ? (() => { const d = parse(field.value, 'yyyy-MM-dd', new Date()); return isValid(d) ? d : null; })()
+                ? (() => {
+                    const d = parse(field.value, 'yyyy-MM-dd', new Date());
+                    return isValid(d) ? d : null;
+                  })()
                 : null;
               return (
                 <DatePicker
@@ -74,7 +77,10 @@ function BasicInfoTab({ control, errors }) {
             control={control}
             render={({ field }) => {
               const timeValue = field.value
-                ? (() => { const d = parse(field.value, 'HH:mm', new Date()); return isValid(d) ? d : null; })()
+                ? (() => {
+                    const d = parse(field.value, 'HH:mm', new Date());
+                    return isValid(d) ? d : null;
+                  })()
                 : null;
               return (
                 <TimePicker

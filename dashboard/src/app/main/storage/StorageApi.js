@@ -216,8 +216,7 @@ const storageApi = apiService.enhanceEndpoints({ addTagTypes: ['StorageMedia'] }
         await wait();
         const before = mediaDB.length;
         mediaDB = mediaDB.filter((m) => m.id !== id);
-        if (before === mediaDB.length)
-          return { error: { status: 404, data: 'Media not found' } };
+        if (before === mediaDB.length) return { error: { status: 404, data: 'Media not found' } };
         return { data: { message: 'Media deleted' } };
       },
       invalidatesTags: ['StorageMedia'],

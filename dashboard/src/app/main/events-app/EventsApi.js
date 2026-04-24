@@ -56,9 +56,7 @@ let eventsDB = [
     ends_at: '2025-06-14T20:00:00Z',
     status: 'upcoming',
     image: 'https://picsum.photos/seed/altcity/1200/800',
-    gallery: [
-      'https://picsum.photos/seed/tech-talk/1200/800',
-    ],
+    gallery: ['https://picsum.photos/seed/tech-talk/1200/800'],
     speakers: [],
     max_attendees: 100,
     active: true,

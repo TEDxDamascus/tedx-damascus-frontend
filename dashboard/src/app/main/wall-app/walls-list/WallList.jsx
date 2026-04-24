@@ -2,7 +2,11 @@ import { Button, Chip, CircularProgress, ToggleButton, ToggleButtonGroup } from 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../shared-components/breadcrumb';
-import { useDeleteWallQuestionMutation, useGetWallQuestionsQuery, useUpdateWallQuestionMutation } from '../WallApi';
+import {
+  useDeleteWallQuestionMutation,
+  useGetWallQuestionsQuery,
+  useUpdateWallQuestionMutation,
+} from '../WallApi';
 
 function extractItems(raw) {
   const candidates = [
@@ -72,7 +76,10 @@ function WallList() {
           </Button>
           <Button
             variant="contained"
-            sx={{ bgcolor: 'var(--color-primary)', '&:hover': { bgcolor: 'var(--color-primary-dark)' } }}
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+            }}
             onClick={() => navigate('/wall/add')}
           >
             New question
@@ -98,7 +105,10 @@ function WallList() {
                   className="flex flex-col gap-3 rounded-md border border-gray-100 p-3 sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+                    <div
+                      className="font-medium text-gray-900"
+                      dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                    >
                       {getLocalizedText(q.title, locale) || '(Untitled)'}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-2">

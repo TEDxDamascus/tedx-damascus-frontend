@@ -84,7 +84,9 @@ function getBlogTitle(blog) {
 
 export async function searchBlogOptions(query, { excludeId } = {}) {
   await wait(80);
-  const term = String(query || '').trim().toLowerCase();
+  const term = String(query || '')
+    .trim()
+    .toLowerCase();
   return mockBlogs
     .filter((blog) => !excludeId || !matchBlogId(blog, excludeId))
     .filter((blog) => {
@@ -169,8 +171,7 @@ const blogsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         const updated = {
           ...prev,
           ...data,
-          publishedAt:
-            data.status === 'published' && !prev.publishedAt ? now() : prev.publishedAt,
+          publishedAt: data.status === 'published' && !prev.publishedAt ? now() : prev.publishedAt,
           updatedAt: now(),
         };
         mockBlogs[index] = updated;

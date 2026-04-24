@@ -6,14 +6,14 @@ const TeamMember = lazy(() => import('./team-details/TeamMember.jsx'));
 const TeamAppConfig = {
   routes: [
     {
-      path: '/team', 
+      path: '/team',
       children: [
         {
-          path: '', 
+          path: '',
           element: <TeamList />,
         },
         {
-          path: ':memberId', 
+          path: ':memberId',
           element: <TeamMember />,
         },
       ],

@@ -44,8 +44,7 @@ const COLUMNS = [
     id: 'location',
     header: 'Location',
     sortable: true,
-    renderCell: (value) =>
-      typeof value === 'string' ? value : value?.en || value?.ar || '—',
+    renderCell: (value) => (typeof value === 'string' ? value : value?.en || value?.ar || '—'),
   },
   {
     id: 'active',

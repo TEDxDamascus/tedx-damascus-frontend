@@ -50,125 +50,125 @@ function App() {
                         ))}
                       </Route>
 
-                    {/* Protected routes */}
-                    <Route
-                      element={
-                        <AuthGuard>
-                          <MainLayout />
-                        </AuthGuard>
-                      }
-                    >
-                      {DashboardAppConfig.routes.map((route, index) => (
-                        <Route key={index} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {SpeakersAppConfig.routes.map((route, index) => (
-                        <Route key={`speaker-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {FormsAppConfig.routes.map((route, index) => (
-                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}{' '}
-                      {UsersAppConfig.routes.map((route, index) => (
-                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {EventsAppConfig.routes.map((route, index) => (
-                        <Route key={`events-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {BlogsAppConfig.routes.map((route, index) => (
-                        <Route key={`blogs-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {WallAppConfig.routes.map((route, index) => (
-                        <Route key={`wall-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                    </Route>
+                      {/* Protected routes */}
+                      <Route
+                        element={
+                          <AuthGuard>
+                            <MainLayout />
+                          </AuthGuard>
+                        }
+                      >
+                        {DashboardAppConfig.routes.map((route, index) => (
+                          <Route key={index} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {SpeakersAppConfig.routes.map((route, index) => (
+                          <Route key={`speaker-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {FormsAppConfig.routes.map((route, index) => (
+                          <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}{' '}
+                        {UsersAppConfig.routes.map((route, index) => (
+                          <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {EventsAppConfig.routes.map((route, index) => (
+                          <Route key={`events-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {BlogsAppConfig.routes.map((route, index) => (
+                          <Route key={`blogs-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {WallAppConfig.routes.map((route, index) => (
+                          <Route key={`wall-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      </Route>
 
-                    {/* Protected routes */}
-                    <Route
-                      element={
-                        <AuthGuard>
-                          <MainLayout />
-                        </AuthGuard>
-                      }
-                    >
-                      {DashboardAppConfig.routes.map((route, index) => (
-                        <Route key={index} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {SpeakersAppConfig.routes.map((route, index) => (
-                        <Route key={`speaker-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {FormsAppConfig.routes.map((route, index) => (
-                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}{' '}
-                      {UsersAppConfig.routes.map((route, index) => (
-                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {EventsAppConfig.routes.map((route, index) => (
-                        <Route key={`events-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      {TeamAppConfig.routes.map((route, index) => (
-                        <Route key={`team-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                           <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                         </Route>
-                       ))}
-                      {BlogsAppConfig.routes.map((route, index) => (
-                        <Route key={`blogs-${index}`} path={route.path} element={route.element}>
-                          {route.children?.map((child, childIndex) => (
-                            <Route key={childIndex} path={child.path} element={child.element} />
-                          ))}
-                        </Route>
-                      ))}
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                    </Route>
+                      {/* Protected routes */}
+                      <Route
+                        element={
+                          <AuthGuard>
+                            <MainLayout />
+                          </AuthGuard>
+                        }
+                      >
+                        {DashboardAppConfig.routes.map((route, index) => (
+                          <Route key={index} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {SpeakersAppConfig.routes.map((route, index) => (
+                          <Route key={`speaker-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {FormsAppConfig.routes.map((route, index) => (
+                          <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}{' '}
+                        {UsersAppConfig.routes.map((route, index) => (
+                          <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {EventsAppConfig.routes.map((route, index) => (
+                          <Route key={`events-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {TeamAppConfig.routes.map((route, index) => (
+                          <Route key={`team-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        {BlogsAppConfig.routes.map((route, index) => (
+                          <Route key={`blogs-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      </Route>
                       {/* Protected routes */}
                       <Route
                         element={

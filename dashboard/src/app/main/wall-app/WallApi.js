@@ -8,7 +8,10 @@ const wait = (ms = 100) => new Promise((resolve) => setTimeout(resolve, ms));
 let mockQuestions = [
   {
     id: 'wall-q-1',
-    title: { en: 'What idea would you share on a TEDx stage?', ar: 'ما الفكرة التي تشاركها على منصة TEDx؟' },
+    title: {
+      en: 'What idea would you share on a TEDx stage?',
+      ar: 'ما الفكرة التي تشاركها على منصة TEDx؟',
+    },
     status: 'published',
     createdAt: '2025-02-01T10:00:00Z',
     updatedAt: '2025-02-15T14:30:00Z',
@@ -181,7 +184,9 @@ const wallApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
     updateWallAnswerStatus: builder.mutation({
       async queryFn({ questionId, answerId, status }) {
         await wait();
-        const idx = mockAnswers.findIndex((a) => matchId(a, answerId) && a.questionId === questionId);
+        const idx = mockAnswers.findIndex(
+          (a) => matchId(a, answerId) && a.questionId === questionId,
+        );
         if (idx < 0) return { error: { status: 404, data: 'Answer not found' } };
         mockAnswers[idx] = { ...mockAnswers[idx], status };
         return { data: { success: true, data: mockAnswers[idx] } };
@@ -211,7 +216,9 @@ const wallApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       async queryFn({ questionId, answerId }) {
         await wait();
         const before = mockAnswers.length;
-        mockAnswers = mockAnswers.filter((a) => !(matchId(a, answerId) && a.questionId === questionId));
+        mockAnswers = mockAnswers.filter(
+          (a) => !(matchId(a, answerId) && a.questionId === questionId),
+        );
         if (before === mockAnswers.length) return { error: { status: 404, data: 'Not found' } };
         return { data: { success: true } };
       },

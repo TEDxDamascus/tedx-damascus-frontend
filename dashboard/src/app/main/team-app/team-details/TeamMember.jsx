@@ -87,8 +87,13 @@ function TeamMember() {
       <Breadcrumb items={[{ label: 'Team', href: '/team' }, { label: isNew ? 'Add' : 'Edit' }]} />
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">{isNew ? 'Add Member' : 'Edit Member'}</h1>
-        <Button variant="contained" startIcon={<Save />} onClick={handleSubmit(onSubmit)} disabled={isSaving}>
-           Save Member
+        <Button
+          variant="contained"
+          startIcon={<Save />}
+          onClick={handleSubmit(onSubmit)}
+          disabled={isSaving}
+        >
+          Save Member
         </Button>
       </div>
       <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>

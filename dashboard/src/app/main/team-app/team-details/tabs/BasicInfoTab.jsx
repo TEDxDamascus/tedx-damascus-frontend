@@ -11,7 +11,14 @@ function BasicInfoTab({ control, errors }) {
             name="name"
             control={control}
             render={({ field }) => (
-              <LocaleInput {...field} type={localeInputTypes.textField} label="Full Name" required error={!!errors.name} helperText={errors.name?.message} />
+              <LocaleInput
+                {...field}
+                type={localeInputTypes.textField}
+                label="Full Name"
+                required
+                error={!!errors.name}
+                helperText={errors.name?.message}
+              />
             )}
           />
         </Grid>
@@ -20,7 +27,14 @@ function BasicInfoTab({ control, errors }) {
             name="role"
             control={control}
             render={({ field }) => (
-              <LocaleInput {...field} type={localeInputTypes.textField} label="Role" required error={!!errors.role} helperText={errors.role?.message} />
+              <LocaleInput
+                {...field}
+                type={localeInputTypes.textField}
+                label="Role"
+                required
+                error={!!errors.role}
+                helperText={errors.role?.message}
+              />
             )}
           />
         </Grid>
@@ -29,7 +43,13 @@ function BasicInfoTab({ control, errors }) {
             name="department"
             control={control}
             render={({ field }) => (
-              <TextField {...field} label="Department" fullWidth error={!!errors.department} helperText={errors.department?.message} />
+              <TextField
+                {...field}
+                label="Department"
+                fullWidth
+                error={!!errors.department}
+                helperText={errors.department?.message}
+              />
             )}
           />
         </Grid>
@@ -38,7 +58,14 @@ function BasicInfoTab({ control, errors }) {
             name="bio"
             control={control}
             render={({ field }) => (
-              <LocaleInput {...field} type={localeInputTypes.textFieldMultiple} label="Bio" minRows={3} error={!!errors.bio} helperText={errors.bio?.message} />
+              <LocaleInput
+                {...field}
+                type={localeInputTypes.textFieldMultiple}
+                label="Bio"
+                minRows={3}
+                error={!!errors.bio}
+                helperText={errors.bio?.message}
+              />
             )}
           />
         </Grid>
@@ -47,7 +74,10 @@ function BasicInfoTab({ control, errors }) {
             name="active"
             control={control}
             render={({ field }) => (
-              <FormControlLabel control={<Switch {...field} checked={!!field.value} />} label="Active" />
+              <FormControlLabel
+                control={<Switch {...field} checked={!!field.value} />}
+                label="Active"
+              />
             )}
           />
         </Grid>

@@ -24,21 +24,35 @@ const baseSchema = z.object({
 
 const userSchema = baseSchema.superRefine((data, ctx) => {
   if (data.password && data.password.length < 6) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password must be at least 6 characters', path: ['password'] });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Password must be at least 6 characters',
+      path: ['password'],
+    });
   }
   if (data.password && data.password !== data.confirmPassword) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Passwords do not match', path: ['confirmPassword'] });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
+    });
   }
 });
 
-const newUserSchema = baseSchema.extend({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm the password'),
-}).superRefine((data, ctx) => {
-  if (data.password !== data.confirmPassword) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Passwords do not match', path: ['confirmPassword'] });
-  }
-});
+const newUserSchema = baseSchema
+  .extend({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm the password'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
 
 function User() {
   const { userId } = useParams();
@@ -53,7 +67,8 @@ function User() {
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
   const isUserDisabled = user?.status === 'disabled';
-  const isOwnSuperadmin = !isNew && currentUser?.role === 'superadmin' && currentUser?.id === userId;
+  const isOwnSuperadmin =
+    !isNew && currentUser?.role === 'superadmin' && currentUser?.id === userId;
 
   const {
     control,
@@ -119,7 +134,9 @@ function User() {
           </Button>
           <Button
             variant="contained"
-            startIcon={(isCreating || isUpdating) ? <CircularProgress size={14} color="inherit" /> : <Save />}
+            startIcon={
+              isCreating || isUpdating ? <CircularProgress size={14} color="inherit" /> : <Save />
+            }
             onClick={handleSubmit(onSubmit)}
             disabled={isCreating || isUpdating || !isDirty}
             sx={{
@@ -145,7 +162,13 @@ function User() {
           </Tabs>
         </Box>
 
-        <BasicInfoTab control={control} errors={errors} isDisabled={isUserDisabled} isOwnSuperadmin={isOwnSuperadmin} isNew={isNew} />
+        <BasicInfoTab
+          control={control}
+          errors={errors}
+          isDisabled={isUserDisabled}
+          isOwnSuperadmin={isOwnSuperadmin}
+          isNew={isNew}
+        />
       </Paper>
     </div>
   );

@@ -95,12 +95,7 @@ function BlogCategoriesList() {
 
   return (
     <div className="p-6 pt-8">
-      <Breadcrumb
-        items={[
-          { label: 'Blog', href: '/blogs' },
-          { label: 'Categories' },
-        ]}
-      />
+      <Breadcrumb items={[{ label: 'Blog', href: '/blogs' }, { label: 'Categories' }]} />
 
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-tedx-dark">Blog categories</h1>

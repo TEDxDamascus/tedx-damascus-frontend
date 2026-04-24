@@ -3,18 +3,17 @@ import { lazy } from 'react';
 const PartnersList = lazy(() => import('./partners-list/PartnersList'));
 const Partner = lazy(() => import('./partners-details/partner'));
 
-
 const PartnersAppConfig = {
   routes: [
     {
-      path: '/partners', 
+      path: '/partners',
       children: [
         {
-          path: '', 
+          path: '',
           element: <PartnersList />,
         },
         {
-          path: ':partnerId', 
+          path: ':partnerId',
           element: <Partner />,
         },
       ],
