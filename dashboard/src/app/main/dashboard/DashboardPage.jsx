@@ -73,6 +73,14 @@ function DashboardPage() {
   // const summary = data?.data?.summary ?? {};
   // const recentActivity = data?.data?.recentActivity ?? [];
 
+  const data = null;
+  const isLoading = false;
+  const summary = {};
+  const recentActivity = [];
+  // const { data, isLoading } = useGetAnalyticsQuery();
+  // const summary = data?.data?.summary ?? {};
+  // const recentActivity = data?.data?.recentActivity ?? [];
+
   const summary = {};
   const recentActivity = [];
   const isLoading = false;
@@ -143,6 +151,7 @@ function DashboardPage() {
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
+
         <Grid item xs={12} md={8}>
           <Paper
             elevation={0}
@@ -211,6 +220,7 @@ function DashboardPage() {
           </Paper>
         </Grid>
 
+
         <Grid item xs={12} md={4}>
           <Paper
             elevation={0}
@@ -227,6 +237,35 @@ function DashboardPage() {
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {/* (data?.data?.submissionsByForm ?? []).map((item, i) => ( */}
+                {/* {(data?.data?.submissionsByForm ?? []).map((item, i) => ( */}
+                {[].map((item, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      p: 1.5,
+                      borderRadius: 1.5,
+                      bgcolor: '#fafafa',
+                      border: '1px solid #f0f0f0',
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ color: '#444', flex: 1, mr: 1 }} noWrap>
+                      {item.formName}
+                    </Typography>
+                    <Chip
+                      label={item.count}
+                      size="small"
+                      sx={{
+                        bgcolor: '#EB002812',
+                        color: '#EB0028',
+                        fontWeight: 700,
+                        minWidth: 32,
+                      }}
+                    />
+                  </Box>
+                ))}
               </Box>
             )}
           </Paper>

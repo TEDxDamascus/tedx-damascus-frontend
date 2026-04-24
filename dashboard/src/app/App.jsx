@@ -19,6 +19,7 @@ import FormsAppConfig from './main/forms-app/FormsAppConfig';
 import BlogsAppConfig from './main/blog-app/BlogsAppConfig';
 import WallAppConfig from './main/wall-app/WallAppConfig';
 import EventsAppConfig from './main/events-app/EventsAppConfig.jsx';
+import TeamAppConfig from './main/team-app/teamAppConfig';
 import PartnersAppConfig from './main/partners-app/PartnersAppConfig';
 
 import NotFoundPage from './main/not-found/NotFoundPage';
@@ -101,6 +102,66 @@ function App() {
                       ))}
                       {WallAppConfig.routes.map((route, index) => (
                         <Route key={`wall-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    </Route>
+
+                    {/* Protected routes */}
+                    <Route
+                      element={
+                        <AuthGuard>
+                          <MainLayout />
+                        </AuthGuard>
+                      }
+                    >
+                      {DashboardAppConfig.routes.map((route, index) => (
+                        <Route key={index} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {SpeakersAppConfig.routes.map((route, index) => (
+                        <Route key={`speaker-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {FormsAppConfig.routes.map((route, index) => (
+                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}{' '}
+                      {UsersAppConfig.routes.map((route, index) => (
+                        <Route key={`forms-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {EventsAppConfig.routes.map((route, index) => (
+                        <Route key={`events-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                            <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                        </Route>
+                      ))}
+                      {TeamAppConfig.routes.map((route, index) => (
+                        <Route key={`team-${index}`} path={route.path} element={route.element}>
+                          {route.children?.map((child, childIndex) => (
+                           <Route key={childIndex} path={child.path} element={child.element} />
+                          ))}
+                         </Route>
+                       ))}
+                      {BlogsAppConfig.routes.map((route, index) => (
+                        <Route key={`blogs-${index}`} path={route.path} element={route.element}>
                           {route.children?.map((child, childIndex) => (
                             <Route key={childIndex} path={child.path} element={child.element} />
                           ))}

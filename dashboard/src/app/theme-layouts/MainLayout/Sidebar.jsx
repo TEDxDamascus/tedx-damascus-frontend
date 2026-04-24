@@ -26,7 +26,7 @@ import {
   Handshake,
   Forum,
 } from '@mui/icons-material';
-
+import GroupsIcon from '@mui/icons-material/Groups';
 const drawerWidth = 260;
 
 const menuItems = [
@@ -34,6 +34,7 @@ const menuItems = [
   { text: 'Speakers', icon: <RecordVoiceOver />, path: '/speakers' },
   { text: 'Partners', icon: <Handshake />, path: '/partners' },
   { text: 'Users', icon: <People />, path: '/users' },
+  { text: 'team', icon: <GroupsIcon />, path: '/team' },
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Wall', icon: <Forum />, path: '/wall' },
