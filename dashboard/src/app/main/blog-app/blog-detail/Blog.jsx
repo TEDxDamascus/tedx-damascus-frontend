@@ -12,6 +12,8 @@ import { ensureLocaleValue } from '../../../shared-components/locale-input';
 import { useSnackbar } from 'notistack';
 import { useCreateBlogMutation, useGetBlogQuery, useUpdateBlogMutation } from '../BlogsApi';
 import { searchBlogOptions } from '../BlogsApi';
+import { searchUserOptions } from '../../users-app/UsersApi';
+import { searchBlogCategoryOptions } from '../blog-categories/BlogCategoriesApi';
 
 const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
@@ -20,6 +22,9 @@ const blogSchema = z.object({
   slug: localeObjectSchema,
   blog_image: z.string().optional(),
   read_time: z.coerce.number().min(0).optional(),
+  tags: z.array(z.string()).optional(),
+  author_user: z.union([z.object({ id: z.string() }).passthrough(), z.null()]).optional(),
+  blog_category: z.union([z.object({ id: z.string() }).passthrough(), z.null()]).optional(),
   related_blogs: z.array(z.any()).optional(),
   description: localeObjectSchema,
   content: localeObjectSchema,
@@ -30,16 +35,7 @@ const blogSchema = z.object({
   og_image: z.string().optional(),
   og_title: localeObjectSchema,
   og_description: localeObjectSchema,
-  twitter_title: localeObjectSchema,
-  twitter_description: localeObjectSchema,
-  twitter_image: z.string().optional(),
-  twitter_card: z.string().optional(),
 });
-
-function pickLocaleText(value) {
-  const localeValue = ensureLocaleValue(value);
-  return localeValue.en?.trim() || localeValue.ar?.trim() || '';
-}
 
 function sanitizeLocaleObject(value) {
   const localeValue = ensureLocaleValue(value);
@@ -72,6 +68,31 @@ function mapBlogFromApi(raw) {
     title: ensureLocaleValue(source.title),
     slug: ensureLocaleValue(source.slug),
     blog_image: source.blog_image || '',
+    tags: Array.isArray(source.tags)
+      ? source.tags
+          .map((tag) => String(tag || '').trim())
+          .filter(Boolean)
+      : [],
+    author_user: source.author_user_id
+      ? {
+          id: String(source.author_user_id),
+          label:
+            source.author_user_name ||
+            source.author_user?.label ||
+            source.author_user?.name ||
+            String(source.author_user_id),
+        }
+      : null,
+    blog_category: source.category_id
+      ? {
+          id: String(source.category_id),
+          label:
+            (source.category_name || source.category || '').trim() ||
+            String(source.category_id),
+        }
+      : typeof source.category === 'string' && source.category.trim()
+        ? { id: source.category, label: source.category.trim() }
+        : null,
     related_blogs: Array.isArray(source.related_blogs)
       ? source.related_blogs
       : Array.isArray(source.related_blog_ids)
@@ -86,10 +107,6 @@ function mapBlogFromApi(raw) {
     og_image: source.og_image || '',
     og_title: ensureLocaleValue(source.og_title),
     og_description: ensureLocaleValue(source.og_description),
-    twitter_title: ensureLocaleValue(source.twitter_title),
-    twitter_description: ensureLocaleValue(source.twitter_description),
-    twitter_image: source.twitter_image || '',
-    twitter_card: source.twitter_card || 'summary_large_image',
   });
 }
 
@@ -147,8 +164,16 @@ function Blog() {
       description: sanitizeLocaleObject(data.description),
       content: sanitizeLocaleObject(data.content),
       status: data.status || 'draft',
-      category: data.category || undefined,
+      category_id: data.blog_category?.id ?? null,
+      category_name: data.blog_category?.label ?? null,
       read_time: Number(data.read_time) || undefined,
+      tags: Array.isArray(data.tags)
+        ? data.tags
+            .map((tag) => String(tag || '').trim())
+            .filter(Boolean)
+        : undefined,
+      author_user_id: data.author_user?.id || undefined,
+      author_user_name: data.author_user?.label || undefined,
       related_blogs: (data.related_blogs || [])
         .map((item) => item?.id ?? item?.value)
         .filter(Boolean),
@@ -159,10 +184,6 @@ function Blog() {
       og_image: data.og_image?.trim() || undefined,
       og_title: sanitizeLocaleObject(data.og_title),
       og_description: sanitizeLocaleObject(data.og_description),
-      twitter_title: sanitizeLocaleObject(data.twitter_title),
-      twitter_description: sanitizeLocaleObject(data.twitter_description),
-      twitter_image: data.twitter_image?.trim() || undefined,
-      twitter_card: data.twitter_card?.trim() || undefined,
       gallery: Array.isArray(data.gallery) ? data.gallery.filter(Boolean) : undefined,
     };
 
@@ -239,6 +260,8 @@ function Blog() {
             onGenerateSlug={handleGenerateSlug}
             slugPreviewBase="/blogs"
             fetchRelatedBlogsOptions={fetchRelatedBlogsOptions}
+            fetchUserOptions={searchUserOptions}
+            fetchCategoryOptions={searchBlogCategoryOptions}
           />
         </Box>
       </Paper>
