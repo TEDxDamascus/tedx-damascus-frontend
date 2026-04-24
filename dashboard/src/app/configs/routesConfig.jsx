@@ -4,6 +4,7 @@ import DashboardAppConfig from '../main/dashboard/DashboardAppConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import EventsAppConfig from '../main/events-app/EventsAppConfig';
 import UsersAppConfig from '../main/users-app/UsersAppConfig';
+import PartnersAppConfig from '../main/partners-app/PartnersAppConfig';
 
 const routeConfigs = [
   SignInConfig,
@@ -11,6 +12,7 @@ const routeConfigs = [
   SpeakersAppConfig,
   EventsAppConfig,
   UsersAppConfig,
+  PartnersAppConfig,
 ];
 
 const routes = [

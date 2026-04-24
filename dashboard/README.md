@@ -528,3 +528,5 @@ Built with modern web technologies and best practices for the TEDx Damascus comm
 ---
 
 Made with ❤️ for TEDx Damascus
+
+```

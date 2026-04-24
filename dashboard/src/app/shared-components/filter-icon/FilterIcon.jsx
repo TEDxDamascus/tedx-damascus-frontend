@@ -86,7 +86,7 @@ export default function FilterIcon({ items, filters, onFiltered }) {
                   size="small"
                   onClick={() => {
                     setValue('');
-                    setInputVisible(false); // إغلاق الحقل عند المسح
+                    setInputVisible(false); 
                     setActiveFilter(null);
                   }}
                 >
