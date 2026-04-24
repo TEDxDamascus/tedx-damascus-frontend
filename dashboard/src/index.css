@@ -81,8 +81,13 @@ input[type='week'] {
 }
 
 /* "Today" / "Clear" / "OK" action buttons in picker footer */
-.MuiPickersLayout-actionBar .MuiButton-root,
-.MuiDialogActions-root .MuiButton-root {
+.MuiPickersLayout-actionBar .MuiButton-root {
+  color: var(--color-primary) !important;
+}
+
+/* Dialog footer: theme text buttons only — do not force primary red on contained
+   (Save) buttons or label stays invisible on red background */
+.MuiDialogActions-root .MuiButton-root:not(.MuiButton-contained) {
   color: var(--color-primary) !important;
 }
 

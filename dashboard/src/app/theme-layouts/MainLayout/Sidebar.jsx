@@ -22,6 +22,7 @@ import {
   Menu,
   Assignment,
   Article,
+  LabelOutlined,
   Handshake,
 } from '@mui/icons-material';
 
@@ -35,6 +36,7 @@ const menuItems = [
   { text: 'Forms', icon: <Assignment />, path: '/forms' },
   { text: 'Events', icon: <Event />, path: '/events' },
   { text: 'Blog', icon: <Article />, path: '/blogs' },
+  { text: 'Blog categories', icon: <LabelOutlined />, path: '/blogs/categories' },
   // { text: 'Settings', icon: <Settings />, path: '/settings' },
 ];
 
@@ -81,7 +83,14 @@ function Sidebar() {
           <ListItem key={item.text} disablePadding sx={{ display: 'block', mb: 0.5 }}>
             <ListItemButton
               onClick={() => navigate(item.path)}
-              selected={location.pathname.startsWith(item.path)}
+              selected={
+                item.path === '/blogs/categories'
+                  ? location.pathname.startsWith('/blogs/categories')
+                  : item.path === '/blogs'
+                    ? location.pathname.startsWith('/blogs') &&
+                      !location.pathname.startsWith('/blogs/categories')
+                    : location.pathname.startsWith(item.path)
+              }
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',

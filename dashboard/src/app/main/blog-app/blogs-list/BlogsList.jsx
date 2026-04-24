@@ -102,7 +102,7 @@ function BlogsList() {
               return (
                 <div
                   key={id}
-                  className="flex items-center gap-4 rounded-md border border-gray-100 p-3"
+                  className="flex items-start gap-4 rounded-md border border-gray-100 p-3"
                 >
                   {/* Thumbnail — left of title */}
                   <div className="flex-shrink-0">
@@ -121,11 +121,21 @@ function BlogsList() {
 
                   {/* Text content */}
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-gray-900" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                       {getLocalizedText(blog.title, locale)}
                     </div>
                     {!!getLocalizedText(blog.description, locale) && (
-                      <div className="truncate text-sm text-gray-500">
+                      <div
+                        className="text-sm text-gray-500"
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {getLocalizedText(blog.description, locale)}
                       </div>
                     )}
@@ -141,8 +151,10 @@ function BlogsList() {
                           fontWeight: 600,
                         }}
                       />
-                      {blog.category && (
-                        <span className="text-xs text-gray-400">{blog.category}</span>
+                      {(blog.category_name || blog.category) && (
+                        <span className="text-xs text-gray-400">
+                          {blog.category_name || blog.category}
+                        </span>
                       )}
                       {formatReadTime(blog.read_time) && (
                         <span className="text-xs text-gray-400">

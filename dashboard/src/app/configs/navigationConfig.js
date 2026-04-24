@@ -1,4 +1,4 @@
-import { Dashboard, People, Handshake, Event, Settings, Article } from '@mui/icons-material';
+import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
 import { RecordVoiceOver } from '@mui/icons-material';
 
 
@@ -14,7 +14,7 @@ const navigationConfig = [
     id: 'speakers',
     title: 'Speakers',
     type: 'item',
-    icon: Dashboard,
+    icon: RecordVoiceOver,
     url: '/speakers',
   },
   {
@@ -44,6 +44,13 @@ const navigationConfig = [
     type: 'item',
     icon: Article,
     url: '/blogs',
+  },
+  {
+    id: 'blog-categories',
+    title: 'Blog categories',
+    type: 'item',
+    icon: LabelOutlined,
+    url: '/blogs/categories',
   },
   {
     id: 'settings',

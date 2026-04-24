@@ -1,6 +1,7 @@
 import { Controller } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import {
+  Autocomplete,
   Box,
   Grid,
   TextField,
@@ -28,6 +29,8 @@ function BlogContentSeoTab({
   onGenerateSlug,
   slugPreviewBase = '/blog',
   fetchRelatedBlogsOptions,
+  fetchUserOptions,
+  fetchCategoryOptions,
 }) {
   const titleValue = useWatch({ control, name: 'title' });
   const descriptionValue = useWatch({ control, name: 'description' });
@@ -223,6 +226,75 @@ function BlogContentSeoTab({
           />
         </Grid>
 
+        <Grid item xs={12} md={8}>
+          <Controller
+            name="tags"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                multiple
+                freeSolo
+                options={[]}
+                value={Array.isArray(field.value) ? field.value : []}
+                onChange={(_, newValue) => {
+                  field.onChange(
+                    (newValue || [])
+                      .map((tag) => String(tag || '').trim())
+                      .filter(Boolean),
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Tags"
+                    placeholder="Type and press Enter..."
+                    helperText="Optional. Add multiple tags as text."
+                    error={!!errors.tags}
+                  />
+                )}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={8}>
+          <Controller
+            name="blog_category"
+            control={control}
+            render={({ field }) => (
+              <CustomAutocomplete
+                {...field}
+                value={field.value ?? null}
+                scope="blog-category-picker"
+                fetchOptions={fetchCategoryOptions}
+                label="Category"
+                placeholder="Search categories..."
+                helperText="Optional. Choose from blog categories managed under Blog → Categories."
+                error={errors.blog_category}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={8}>
+          <Controller
+            name="author_user"
+            control={control}
+            render={({ field }) => (
+              <CustomAutocomplete
+                {...field}
+                value={field.value ?? null}
+                scope="blog-author-user"
+                fetchOptions={fetchUserOptions}
+                label="Author (user)"
+                placeholder="Search users..."
+                helperText="Optional. Link this article to a dashboard user as author."
+                error={errors.author_user}
+              />
+            )}
+          />
+        </Grid>
+
         <Grid item xs={12}>
           <Controller
             name="related_blogs"
@@ -252,7 +324,7 @@ function BlogContentSeoTab({
                 {...field}
                 type={localeInputTypes.textFieldMultiple}
                 label="Description"
-                minRows={3}
+                minRows={10}
                 error={!!errors.description}
                 helperText={errors.description?.message}
               />
@@ -306,7 +378,7 @@ function BlogContentSeoTab({
               <Box>
                 <Typography sx={{ fontWeight: 600 }}>SEO Settings</Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Manage metadata, canonical URL, OG and Twitter cards.
+                  Manage metadata, canonical URL, and Open Graph fields.
                 </Typography>
               </Box>
             </AccordionSummary>
@@ -565,72 +637,6 @@ function BlogContentSeoTab({
                   />
                 </Grid>
 
-                <Grid item xs={12}>
-                  <Controller
-                    name="twitter_title"
-                    control={control}
-                    render={({ field }) => (
-                      <LocaleInput
-                        {...field}
-                        type={localeInputTypes.textField}
-                        label="Twitter Title"
-                        error={!!errors.twitter_title}
-                        helperText={errors.twitter_title?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Controller
-                    name="twitter_description"
-                    control={control}
-                    render={({ field }) => (
-                      <LocaleInput
-                        {...field}
-                        type={localeInputTypes.textFieldMultiple}
-                        label="Twitter Description"
-                        minRows={3}
-                        error={!!errors.twitter_description}
-                        helperText={errors.twitter_description?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <Controller
-                    name="twitter_image"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Twitter Image URL"
-                        fullWidth
-                        placeholder="https://example.com/images/twitter-cover.jpg"
-                        error={!!errors.twitter_image}
-                        helperText={errors.twitter_image?.message}
-                      />
-                    )}
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <Controller
-                    name="twitter_card"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Twitter Card Type"
-                        fullWidth
-                        placeholder="summary_large_image"
-                        error={!!errors.twitter_card}
-                        helperText={errors.twitter_card?.message}
-                      />
-                    )}
-                  />
-                </Grid>
               </Grid>
             </AccordionDetails>
           </Accordion>
