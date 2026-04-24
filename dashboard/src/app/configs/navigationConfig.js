@@ -1,6 +1,16 @@
 import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
 import { RecordVoiceOver } from '@mui/icons-material';
 
+import {
+  Article,
+  Dashboard,
+  Event,
+  Forum,
+  LabelOutlined,
+  People,
+  RecordVoiceOver,
+  Settings,
+} from '@mui/icons-material';
 
 const navigationConfig = [
   {
@@ -37,6 +47,13 @@ const navigationConfig = [
     type: 'item',
     icon: Event,
     url: '/events',
+  },
+  {
+    id: 'wall',
+    title: 'Wall',
+    type: 'item',
+    icon: Forum,
+    url: '/wall',
   },
   {
     id: 'blog',
