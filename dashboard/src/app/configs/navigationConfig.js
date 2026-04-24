@@ -1,3 +1,6 @@
+import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
+import { RecordVoiceOver } from '@mui/icons-material';
+
 import {
   Article,
   Dashboard,
@@ -23,6 +26,13 @@ const navigationConfig = [
     type: 'item',
     icon: RecordVoiceOver,
     url: '/speakers',
+  },
+  {
+    id: 'partners',
+    title: 'Partners',
+    type: 'item',
+    icon: Handshake,
+    url: '/partners',
   },
   {
     id: 'users',
