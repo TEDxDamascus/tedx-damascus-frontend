@@ -18,7 +18,9 @@ let mockBlogs = [
     },
     status: 'published',
     publishedAt: '2025-03-01T10:00:00Z',
-    category: 'news',
+    category_id: 'cat-news',
+    category_name: 'news',
+    tags: ['tedx', 'launch', 'damascus'],
     views_count: 142,
     read_time: 4,
     blog_image: '',
@@ -32,6 +34,8 @@ let mockBlogs = [
     canonical_url: '',
     createdAt: '2025-03-01T10:00:00Z',
     updatedAt: '2025-03-01T10:00:00Z',
+    author_user_id: 'user-2',
+    author_user_name: 'Ahmad Admin',
   },
   {
     id: 'blog-2',
@@ -47,7 +51,9 @@ let mockBlogs = [
     },
     status: 'draft',
     publishedAt: null,
-    category: 'community',
+    category_id: 'cat-community',
+    category_name: 'community',
+    tags: ['community', 'ideas'],
     views_count: 0,
     read_time: 5,
     blog_image: '',
@@ -104,7 +110,13 @@ const blogsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         await wait();
         let filtered = mockBlogs.filter((blog) => {
           if (status && blog.status !== status) return false;
-          if (category && blog.category !== category) return false;
+          if (category) {
+            const matches =
+              blog.category_id === category ||
+              blog.category === category ||
+              blog.category_name === category;
+            if (!matches) return false;
+          }
           return true;
         });
         const start = (page - 1) * limit;

@@ -5,6 +5,7 @@ import SignInConfig from '../main/sign-in/SignInConfig';
 import EventsAppConfig from '../main/events-app/EventsAppConfig';
 import UsersAppConfig from '../main/users-app/UsersAppConfig';
 import teamAppConfig from '../main/team-app/teamAppConfig';
+import PartnersAppConfig from '../main/partners-app/PartnersAppConfig';
 
 const routeConfigs = [
   SignInConfig,
@@ -14,6 +15,7 @@ const routeConfigs = [
   EventsAppConfig,
   UsersAppConfig,
 
+  PartnersAppConfig,
 ];
 
 const routes = [

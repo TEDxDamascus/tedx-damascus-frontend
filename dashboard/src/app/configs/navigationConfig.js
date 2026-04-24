@@ -1,5 +1,17 @@
 import { Dashboard, People, Event, Settings, Article } from '@mui/icons-material';
 import { RecordVoiceOver } from '@mui/icons-material';
+
+import {
+  Article,
+  Dashboard,
+  Event,
+  Forum,
+  LabelOutlined,
+  People,
+  RecordVoiceOver,
+  Settings,
+} from '@mui/icons-material';
+
 import GroupsIcon from '@mui/icons-material/Groups';
 const navigationConfig = [
   {
@@ -13,8 +25,15 @@ const navigationConfig = [
     id: 'speakers',
     title: 'Speakers',
     type: 'item',
-    icon: Dashboard,
+    icon: RecordVoiceOver,
     url: '/speakers',
+  },
+  {
+    id: 'partners',
+    title: 'Partners',
+    type: 'item',
+    icon: Handshake,
+    url: '/partners',
   },
   {
     id: 'users',
@@ -38,11 +57,25 @@ const navigationConfig = [
     url: '/events',
   },
   {
+    id: 'wall',
+    title: 'Wall',
+    type: 'item',
+    icon: Forum,
+    url: '/wall',
+  },
+  {
     id: 'blog',
     title: 'Blog',
     type: 'item',
     icon: Article,
     url: '/blogs',
+  },
+  {
+    id: 'blog-categories',
+    title: 'Blog categories',
+    type: 'item',
+    icon: LabelOutlined,
+    url: '/blogs/categories',
   },
   {
     id: 'settings',

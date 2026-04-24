@@ -66,6 +66,24 @@ let usersDB = [
   },
 ];
 
+/** Options for blog author autocomplete (search by name or email). */
+export async function searchUserOptions(query) {
+  await wait(80);
+  const term = String(query || '').trim().toLowerCase();
+  return usersDB
+    .filter((u) => {
+      if (!term) return true;
+      return (
+        u.name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term)
+      );
+    })
+    .slice(0, 20)
+    .map((u) => ({
+      id: u.id,
+      label: u.name || u.email || u.id,
+    }));
+}
+
 const usersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
