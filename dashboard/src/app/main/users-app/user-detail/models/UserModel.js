@@ -1,4 +1,16 @@
-const PERMISSION_RESOURCES = ['blogs', 'users', 'speakers', 'forms', 'events', 'files', 'images'];
+const PERMISSION_RESOURCES = [
+  'blogs',
+  'users',
+  'speakers',
+  'forms',
+  'events',
+  'files',
+  'images',
+  'volunteer',
+  'partner',
+  'general-settings',
+  'wall',
+];
 const PERMISSION_ACTIONS = ['view', 'create', 'edit', 'delete'];
 
 export function buildDefaultPermissions(allTrue = false) {

@@ -13,7 +13,7 @@ import {
   useUpdateSpeakerMutation,
 } from '../SpeakersApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
-import MediaLinksTab from './tabs/MediaLinksTab';
+import MediaLinksTab from './tabs/SocialLinksTab';
 import SpeakerModel from './models/SpeakerModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 
@@ -28,7 +28,6 @@ const speakerSchema = z.object({
   social_links: z.array(z.string()).optional(),
   gallery: z.array(z.string()).optional(),
   video_link: z.string().optional(),
-  company: z.string().optional(),
   phone: z.string().optional(),
   featured: z.boolean().optional(),
   active: z.boolean().optional(),
