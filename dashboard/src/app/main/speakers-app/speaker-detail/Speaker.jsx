@@ -13,7 +13,7 @@ import {
   useUpdateSpeakerMutation,
 } from '../SpeakersApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
-import MediaLinksTab from './tabs/MediaLinksTab';
+import MediaLinksTab from './tabs/SocialLinksTab';
 import SpeakerModel from './models/SpeakerModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 

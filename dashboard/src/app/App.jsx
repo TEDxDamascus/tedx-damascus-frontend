@@ -21,7 +21,7 @@ import WallAppConfig from './main/wall-app/WallAppConfig';
 import EventsAppConfig from './main/events-app/EventsAppConfig.jsx';
 import TeamAppConfig from './main/team-app/teamAppConfig';
 import PartnersAppConfig from './main/partners-app/PartnersAppConfig';
-
+import organizersAppConfig from './main/organizers-app/organizersAppConfig.jsx' ; 
 import NotFoundPage from './main/not-found/NotFoundPage';
 import UsersAppConfig from './main/users-app/UsersAppConfig';
 
@@ -155,6 +155,13 @@ function App() {
                         ))}
                         {TeamAppConfig.routes.map((route, index) => (
                           <Route key={`team-${index}`} path={route.path} element={route.element}>
+                            {route.children?.map((child, childIndex) => (
+                              <Route key={childIndex} path={child.path} element={child.element} />
+                            ))}
+                          </Route>
+                        ))}
+                         {organizersAppConfig.routes.map((route, index) => (
+                          <Route key={`speaker-${index}`} path={route.path} element={route.element}>
                             {route.children?.map((child, childIndex) => (
                               <Route key={childIndex} path={child.path} element={child.element} />
                             ))}
