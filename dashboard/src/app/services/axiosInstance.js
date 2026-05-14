@@ -10,6 +10,10 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = tokenService.getAccessToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    // Let the browser set multipart boundary (otherwise Nest returns "File is required").
+    if (config.data instanceof FormData && config.headers) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => Promise.reject(error),

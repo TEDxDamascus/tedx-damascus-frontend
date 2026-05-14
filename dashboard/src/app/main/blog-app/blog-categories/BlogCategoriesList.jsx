@@ -6,7 +6,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   Table,
   TableBody,
   TableCell,
@@ -17,6 +16,8 @@ import {
   IconButton,
   Typography,
   Box,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import Breadcrumb from '../../../shared-components/breadcrumb';
@@ -27,9 +28,22 @@ import {
   useUpdateBlogCategoryMutation,
   useDeleteBlogCategoryMutation,
 } from './BlogCategoriesApi';
+import {
+  LocaleInput,
+  defaultLocaleValue,
+  ensureLocaleValue,
+  localeInputTypes,
+} from '../../../shared-components/locale-input';
+
+function getLocalizedText(value, locale = 'en') {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') return value[locale] || value.en || value.ar || '';
+  return '';
+}
 
 function emptyForm() {
-  return { name: '', description: '' };
+  return { name: defaultLocaleValue(), description: defaultLocaleValue() };
 }
 
 function BlogCategoriesList() {
@@ -44,9 +58,14 @@ function BlogCategoriesList() {
     return Array.isArray(raw) ? raw : [];
   }, [data]);
 
+  const [listLocale, setListLocale] = useState('en');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
+
+  const handleListLocaleChange = (_, value) => {
+    if (value) setListLocale(value);
+  };
 
   const openCreate = () => {
     setEditingId(null);
@@ -56,7 +75,12 @@ function BlogCategoriesList() {
 
   const openEdit = (row) => {
     setEditingId(row.id);
-    setForm({ name: row.name ?? '', description: row.description ?? '' });
+    setForm({
+      name: ensureLocaleValue(row.nameLocales ?? { en: row.name, ar: row.name }),
+      description: ensureLocaleValue(
+        row.descriptionLocales ?? { en: row.description, ar: row.description },
+      ),
+    });
     setDialogOpen(true);
   };
 
@@ -97,19 +121,31 @@ function BlogCategoriesList() {
     <div className="p-6 pt-8">
       <Breadcrumb items={[{ label: 'Blog', href: '/blogs' }, { label: 'Categories' }]} />
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-3xl font-bold text-tedx-dark">Blog categories</h1>
-        <Button
-          variant="contained"
-          sx={{
-            bgcolor: 'var(--color-primary)',
-            color: '#fff',
-            '&:hover': { bgcolor: 'var(--color-primary-dark)', color: '#fff' },
-          }}
-          onClick={openCreate}
-        >
-          Add category
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ToggleButtonGroup
+            size="small"
+            exclusive
+            value={listLocale}
+            onChange={handleListLocaleChange}
+            aria-label="category list locale"
+          >
+            <ToggleButton value="en">EN</ToggleButton>
+            <ToggleButton value="ar">AR</ToggleButton>
+          </ToggleButtonGroup>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              color: '#fff',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)', color: '#fff' },
+            }}
+            onClick={openCreate}
+          >
+            Add category
+          </Button>
+        </div>
       </div>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -140,8 +176,20 @@ function BlogCategoriesList() {
               ) : (
                 items.map((row) => (
                   <TableRow key={row.id} hover>
-                    <TableCell>{dash(row.name)}</TableCell>
-                    <TableCell sx={{ maxWidth: 480 }}>{dash(row.description)}</TableCell>
+                    <TableCell dir={listLocale === 'ar' ? 'rtl' : 'ltr'}>
+                      {dash(getLocalizedText(row.nameLocales ?? { en: row.name, ar: row.name }, listLocale))}
+                    </TableCell>
+                    <TableCell sx={{ maxWidth: 480 }} dir={listLocale === 'ar' ? 'rtl' : 'ltr'}>
+                      {dash(
+                        getLocalizedText(
+                          row.descriptionLocales ?? {
+                            en: row.description,
+                            ar: row.description,
+                          },
+                          listLocale,
+                        ),
+                      )}
+                    </TableCell>
                     <TableCell align="right">
                       <IconButton size="small" aria-label="Edit" onClick={() => openEdit(row)}>
                         <Edit fontSize="small" />
@@ -192,20 +240,19 @@ function BlogCategoriesList() {
 function StackFields({ form, setForm }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-      <TextField
+      <LocaleInput
         label="Name"
+        type={localeInputTypes.textField}
         value={form.name}
-        onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+        onChange={(v) => setForm((f) => ({ ...f, name: v }))}
         placeholder="Optional"
-        fullWidth
       />
-      <TextField
+      <LocaleInput
         label="Description"
+        type={localeInputTypes.textFieldMultiple}
         value={form.description}
-        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+        onChange={(v) => setForm((f) => ({ ...f, description: v }))}
         placeholder="Optional"
-        fullWidth
-        multiline
         minRows={2}
       />
     </Box>

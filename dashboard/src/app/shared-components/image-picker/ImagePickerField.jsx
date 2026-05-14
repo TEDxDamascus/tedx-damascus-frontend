@@ -1,31 +1,54 @@
 import { useState } from 'react';
 import { Image } from '@mui/icons-material';
 import ImagePickerDialog from './ImagePickerDialog';
+import { mediaFormValueToPreviewSrc, normalizeMediaFormValue } from './mediaRefUtils';
 
+/**
+ * @param {'url' | 'mediaRef'} valueMode
+ *   `url` (default): form stores a single URL string (events, legacy).
+ *   `mediaRef`: form stores `{ id, url }` with Mongo id for APIs that expect `blog_image` as ObjectId.
+ */
 export default function ImagePickerField({
   value,
   onChange,
+  valueMode = 'url',
   label = 'Image',
   error,
   helperText,
   disabled,
 }) {
   const [open, setOpen] = useState(false);
-  const hasValue = !!value;
+
+  const previewSrc =
+    valueMode === 'mediaRef'
+      ? mediaFormValueToPreviewSrc(value)
+      : typeof value === 'string'
+        ? value
+        : mediaFormValueToPreviewSrc(value);
+
+  const hasValue = Boolean((previewSrc || '').trim());
+
+  const handleDialogSelect = (ref) => {
+    if (valueMode === 'mediaRef') {
+      const { id, url } = normalizeMediaFormValue(ref);
+      onChange?.({ id, url });
+    } else {
+      const { url, id } = normalizeMediaFormValue(ref);
+      onChange?.(url || id || '');
+    }
+  };
 
   return (
     <>
       <div className="flex items-stretch gap-3">
-        {/* Thumbnail — same height as the input row */}
         <div className="flex w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50">
           {hasValue ? (
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img src={previewSrc} alt="" className="h-full w-full object-cover" />
           ) : (
             <Image className="text-gray-300" style={{ fontSize: 24 }} />
           )}
         </div>
 
-        {/* URL input + browse */}
         <div className="flex-1">
           <div
             className={[
@@ -38,8 +61,23 @@ export default function ImagePickerField({
           >
             <input
               type="text"
-              value={value ?? ''}
-              onChange={(e) => onChange(e.target.value)}
+              value={
+                valueMode === 'mediaRef'
+                  ? (normalizeMediaFormValue(value).url ||
+                      normalizeMediaFormValue(value).id ||
+                      '')
+                  : typeof value === 'string'
+                    ? (value ?? '')
+                    : mediaFormValueToPreviewSrc(value)
+              }
+              onChange={(e) => {
+                const t = e.target.value;
+                if (valueMode === 'mediaRef') {
+                  onChange?.({ id: '', url: t });
+                } else {
+                  onChange?.(t);
+                }
+              }}
               disabled={disabled || hasValue}
               placeholder={label}
               className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-gray-700 placeholder-gray-400 outline-none disabled:cursor-default disabled:select-none"
@@ -54,9 +92,7 @@ export default function ImagePickerField({
             </button>
           </div>
           {helperText && (
-            <p className={`mt-1 text-xs ${error ? 'text-red-500' : 'text-gray-400'}`}>
-              {helperText}
-            </p>
+            <p className={`mt-1 text-xs ${error ? 'text-red-500' : 'text-gray-400'}`}>{helperText}</p>
           )}
         </div>
       </div>
@@ -64,8 +100,8 @@ export default function ImagePickerField({
       <ImagePickerDialog
         open={open}
         onClose={() => setOpen(false)}
-        onSelect={onChange}
-        currentUrl={value ?? ''}
+        onSelect={handleDialogSelect}
+        currentValue={value}
       />
     </>
   );

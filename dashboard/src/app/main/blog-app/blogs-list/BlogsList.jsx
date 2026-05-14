@@ -1,8 +1,25 @@
-import { Button, CircularProgress, ToggleButton, ToggleButtonGroup, Chip } from '@mui/material';
-import { useState } from 'react';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  ToggleButton,
+  ToggleButtonGroup,
+  Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Pagination,
+  Typography,
+} from '@mui/material';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useDeleteBlogMutation, useGetBlogsQuery, useUpdateBlogMutation } from '../BlogsApi';
+import { useGetBlogCategoriesQuery } from '../blog-categories/BlogCategoriesApi';
+import { mediaFieldToDisplayUrl } from '../../../shared-components/image-picker';
+
 
 function extractItems(raw) {
   const candidates = [
@@ -26,18 +43,89 @@ function getLocalizedText(value, locale = 'en') {
   return '';
 }
 
+function getBlogCategoryDisplay(blog, locale = 'en') {
+  if (blog.category_id && typeof blog.category_id === 'object' && !Array.isArray(blog.category_id)) {
+    return (
+      getLocalizedText(blog.category_id.name, locale) ||
+      getLocalizedText(blog.category_id.slug, locale) ||
+      ''
+    );
+  }
+  if (blog.category_name) {
+    if (typeof blog.category_name === 'string') return blog.category_name;
+    return getLocalizedText(blog.category_name, locale);
+  }
+  if (typeof blog.category === 'string') return blog.category;
+  if (blog.category && typeof blog.category === 'object') {
+    return (
+      getLocalizedText(blog.category.name, locale) ||
+      getLocalizedText(blog.category.slug, locale)
+    );
+  }
+  return '';
+}
+
 function formatReadTime(readTime) {
   const minutes = Number(readTime);
   if (!Number.isFinite(minutes) || minutes <= 0) return null;
   return `${minutes} min read`;
 }
 
+const SORT_FIELD_OPTIONS = [
+  { value: 'createdAt', label: 'Created' },
+  { value: 'updatedAt', label: 'Updated' },
+];
+
 function BlogsList() {
   const navigate = useNavigate();
   const [locale, setLocale] = useState('en');
-  const { data, isLoading } = useGetBlogsQuery({ page: 1, limit: 20 });
+  const [categoryId, setCategoryId] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 400);
+    return () => window.clearTimeout(t);
+  }, [searchInput]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, sortBy, categoryId, debouncedSearch, pageSize, locale]);
+
+  const queryArgs = useMemo(
+    () => ({
+      page,
+      limit: pageSize,
+      language: locale,
+      sort: sortBy,
+      order: 'desc',
+      ...(statusFilter ? { status: statusFilter } : {}),
+      ...(categoryId ? { category_id: categoryId } : {}),
+      ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    }),
+    [page, pageSize, statusFilter, categoryId, debouncedSearch, locale, sortBy],
+  );
+
+  const { data, isLoading } = useGetBlogsQuery(queryArgs);
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetBlogCategoriesQuery();
   const [deleteBlog, { isLoading: isDeleting }] = useDeleteBlogMutation();
   const [updateBlog, { isLoading: isUpdating }] = useUpdateBlogMutation();
+
+  const categoryOptions = useMemo(() => {
+    const raw = categoriesData?.data?.items ?? [];
+    return Array.isArray(raw) ? raw : [];
+  }, [categoriesData]);
+
+  const total = Number(data?.data?.total ?? 0);
+  const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
+
+  useEffect(() => {
+    setPage((p) => (p > totalPages ? totalPages : p));
+  }, [totalPages]);
 
   const blogs = extractItems(data);
   const safeBlogs = Array.isArray(blogs) ? blogs : [];
@@ -64,30 +152,116 @@ function BlogsList() {
     <div className="p-6 pt-8">
       <Breadcrumb items={[{ label: 'Blog' }]} />
 
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-tedx-dark">Blog</h1>
-        <div className="flex items-center gap-2">
-          <ToggleButtonGroup
-            size="small"
-            exclusive
-            value={locale}
-            onChange={handleLocaleChange}
-            aria-label="blog locale toggle"
-          >
-            <ToggleButton value="en">EN</ToggleButton>
-            <ToggleButton value="ar">AR</ToggleButton>
-          </ToggleButtonGroup>
-          <Button
-            variant="contained"
-            sx={{
-              bgcolor: 'var(--color-primary)',
-              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
-            }}
-            onClick={() => navigate('/blogs/add')}
-          >
-            Add New Article
-          </Button>
+      <div className="mb-6 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h1 className="text-3xl font-bold text-tedx-dark">Blog</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <ToggleButtonGroup
+              size="small"
+              exclusive
+              value={locale}
+              onChange={handleLocaleChange}
+              aria-label="blog locale toggle"
+            >
+              <ToggleButton value="en">EN</ToggleButton>
+              <ToggleButton value="ar">AR</ToggleButton>
+            </ToggleButtonGroup>
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: 'var(--color-primary)',
+                '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+              }}
+              onClick={() => navigate('/blogs/add')}
+            >
+              Add New Article
+            </Button>
+          </div>
         </div>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1.5,
+            alignItems: 'center',
+            p: 2,
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'grey.50',
+          }}
+        >
+          <TextField
+            size="small"
+            placeholder="Search…"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            sx={{ minWidth: 200 }}
+            inputProps={{ 'aria-label': 'Search blogs' }}
+          />
+          <FormControl size="small" sx={{ minWidth: 160 }} disabled={categoriesLoading}>
+            <InputLabel id="blog-list-category-filter">Category</InputLabel>
+            <Select
+              labelId="blog-list-category-filter"
+              label="Category"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>All categories</em>
+              </MenuItem>
+              {categoryOptions.map((c) => (
+                <MenuItem key={c.id} value={c.id}>
+                  {(c.name || '').trim() || c.id}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel id="blog-list-status-filter">Status</InputLabel>
+            <Select
+              labelId="blog-list-status-filter"
+              label="Status"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value="">
+                <em>All</em>
+              </MenuItem>
+              <MenuItem value="draft">Draft</MenuItem>
+              <MenuItem value="published">Published</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel id="blog-list-sort">Sort by</InputLabel>
+            <Select
+              labelId="blog-list-sort"
+              label="Sort by"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              {SORT_FIELD_OPTIONS.map((o) => (
+                <MenuItem key={o.value} value={o.value}>
+                  {o.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <InputLabel id="blog-list-limit">Per page</InputLabel>
+            <Select
+              labelId="blog-list-limit"
+              label="Per page"
+              value={String(pageSize)}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+            >
+              <MenuItem value="10">10</MenuItem>
+              <MenuItem value="20">20</MenuItem>
+              <MenuItem value="50">50</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -105,13 +279,23 @@ function BlogsList() {
               return (
                 <div
                   key={id}
-                  className="flex items-start gap-4 rounded-md border border-gray-100 p-3"
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Open article: ${getLocalizedText(blog.title, locale) || id}`}
+                  className="flex cursor-pointer items-start gap-4 rounded-md border border-gray-100 p-3 transition-colors hover:bg-gray-50"
+                  onClick={() => navigate(`/blogs/${id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(`/blogs/${id}`);
+                    }
+                  }}
                 >
                   {/* Thumbnail — left of title */}
-                  <div className="flex-shrink-0">
-                    {blog.blog_image ? (
+                  <div className="pointer-events-none flex-shrink-0">
+                    {mediaFieldToDisplayUrl(blog.blog_image) ? (
                       <img
-                        src={blog.blog_image}
+                        src={mediaFieldToDisplayUrl(blog.blog_image)}
                         alt={getLocalizedText(blog.title, locale)}
                         className="h-16 w-24 rounded-md object-cover"
                       />
@@ -123,7 +307,7 @@ function BlogsList() {
                   </div>
 
                   {/* Text content */}
-                  <div className="min-w-0 flex-1">
+                  <div className="pointer-events-none min-w-0 flex-1">
                     <div
                       className="font-medium text-gray-900"
                       dir={locale === 'ar' ? 'rtl' : 'ltr'}
@@ -157,9 +341,9 @@ function BlogsList() {
                           fontWeight: 600,
                         }}
                       />
-                      {(blog.category_name || blog.category) && (
+                      {!!getBlogCategoryDisplay(blog, locale) && (
                         <span className="text-xs text-gray-400">
-                          {blog.category_name || blog.category}
+                          {getBlogCategoryDisplay(blog, locale)}
                         </span>
                       )}
                       {formatReadTime(blog.read_time) && (
@@ -171,11 +355,15 @@ function BlogsList() {
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex flex-shrink-0 flex-col gap-1.5">
+                  <div
+                    className="flex flex-shrink-0 flex-col gap-1.5"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
                     <Button
                       size="small"
                       variant="outlined"
-                      onClick={() => navigate(`/blogs/${id}`)}
+                      onClick={() => navigate(`/blogs/${id}/edit`)}
                       sx={{ minWidth: 80 }}
                     >
                       Edit
@@ -211,6 +399,32 @@ function BlogsList() {
               );
             })}
           </div>
+        )}
+        {!isLoading && total > 0 && totalPages > 1 && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 1,
+              pt: 2,
+              mt: 2,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {total} articles · Page {page} of {totalPages}
+            </Typography>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Box>
         )}
       </div>
     </div>

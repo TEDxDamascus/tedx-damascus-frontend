@@ -9,7 +9,7 @@ const now = () => new Date().toISOString();
 // ── Mock database ─────────────────────────────────────────────────────────────
 let usersDB = [
   {
-    id: 'user-1',
+    id: '507f191e810c19729de860e1',
     name: 'Super Admin',
     email: 'superadmin@tedxdamascus.com',
     role: 'superadmin',
@@ -19,7 +19,7 @@ let usersDB = [
     updatedAt: '2025-01-01T00:00:00Z',
   },
   {
-    id: 'user-2',
+    id: '507f191e810c19729de860e2',
     name: 'Ahmad Admin',
     email: 'ahmad@tedxdamascus.com',
     role: 'admin',
@@ -37,7 +37,7 @@ let usersDB = [
     updatedAt: '2025-02-10T08:00:00Z',
   },
   {
-    id: 'user-3',
+    id: '507f191e810c19729de860e3',
     name: 'Layla Coordinator',
     email: 'layla@tedxdamascus.com',
     role: 'user',
@@ -55,7 +55,7 @@ let usersDB = [
     updatedAt: '2025-03-15T12:00:00Z',
   },
   {
-    id: 'user-4',
+    id: '507f191e810c19729de860e4',
     name: 'Omar Volunteer',
     email: 'omar@tedxdamascus.com',
     role: 'user',
@@ -130,7 +130,8 @@ const usersApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         await wait();
         const newUser = {
           ...data,
-          id: `user-${Date.now()}`,
+          id: Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join('') +
+            Array.from({ length: 12 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
           permissions: data.permissions ?? [],
           createdAt: now(),
           updatedAt: now(),

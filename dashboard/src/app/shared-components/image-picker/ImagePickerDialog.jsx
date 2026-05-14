@@ -20,18 +20,21 @@ import {
   useDeleteMediaMutation,
 } from '../../main/storage/StorageApi';
 import ConfirmModal from '../confirm-modal';
+import { mediaSelectionMatches } from './mediaRefUtils';
 
 function formatBytes(bytes) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function ImageCard({ item, currentUrl, onSelect, onDelete }) {
-  const isActive = currentUrl === item.url;
+function ImageCard({ item, currentValue, onSelect, onDelete }) {
+  const isActive = mediaSelectionMatches(currentValue, item);
 
   return (
     <div
-      onClick={() => onSelect(item.url)}
+      onClick={() =>
+        onSelect({ id: String(item._id ?? item.id ?? '').trim(), url: String(item.url ?? '').trim() })
+      }
       className={[
         'group relative cursor-pointer overflow-hidden rounded',
         'aspect-square bg-gray-100',
@@ -73,7 +76,7 @@ function ImageCard({ item, currentUrl, onSelect, onDelete }) {
   );
 }
 
-function LibraryTab({ currentUrl, onSelect }) {
+function LibraryTab({ currentValue, onSelect }) {
   const [page, setPage] = useState(1);
   const [confirmItem, setConfirmItem] = useState(null);
   const { data, isLoading, isFetching } = useGetMediaItemsQuery({ page, limit: 20 });
@@ -84,9 +87,19 @@ function LibraryTab({ currentUrl, onSelect }) {
 
   const handleDeleteConfirm = async () => {
     if (!confirmItem) return;
-    await deleteMedia(confirmItem.id);
-    if (currentUrl === confirmItem.url) onSelect('');
-    setConfirmItem(null);
+    const mid = String(confirmItem.id ?? confirmItem._id ?? '').trim();
+    if (!mid) {
+      setConfirmItem(null);
+      return;
+    }
+    try {
+      await deleteMedia(mid).unwrap();
+      if (mediaSelectionMatches(currentValue, confirmItem)) onSelect({ id: '', url: '' });
+    } catch {
+      /* backend error — modal closes; optional: toast */
+    } finally {
+      setConfirmItem(null);
+    }
   };
 
   if (isLoading) {
@@ -113,7 +126,7 @@ function LibraryTab({ currentUrl, onSelect }) {
             <Grid item xs={6} sm={4} md={3} key={item.id}>
               <ImageCard
                 item={item}
-                currentUrl={currentUrl}
+                currentValue={currentValue}
                 onSelect={onSelect}
                 onDelete={setConfirmItem}
               />
@@ -186,7 +199,7 @@ function UploadTab({ onFileSelect, preview }) {
   );
 }
 
-export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl = '' }) {
+export default function ImagePickerDialog({ open, onClose, onSelect, currentValue }) {
   const [tab, setTab] = useState(0);
   const [pendingFile, setPendingFile] = useState(null);
   const [pendingPreview, setPendingPreview] = useState('');
@@ -205,8 +218,8 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
     setPendingPreview(URL.createObjectURL(file));
   };
 
-  const handleLibrarySelect = (url) => {
-    onSelect(url);
+  const handleLibrarySelect = (ref) => {
+    onSelect(ref);
     onClose();
   };
 
@@ -214,10 +227,17 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
     if (!pendingFile) return;
     const formData = new FormData();
     formData.append('file', pendingFile);
-    const result = await uploadMedia(formData);
-    if (result.data?.data?.url) {
-      onSelect(result.data.data.url);
-      onClose();
+    try {
+      const body = await uploadMedia(formData).unwrap();
+      const d = body?.data ?? body ?? {};
+      const id = String(d._id ?? d.id ?? '').trim();
+      const url = String(d.url ?? '').trim();
+      if (id || url) {
+        onSelect({ id, url });
+        onClose();
+      }
+    } catch {
+      // Error surfaced by RTK / global handlers if wired; keep dialog open for retry.
     }
   };
 
@@ -245,7 +265,7 @@ export default function ImagePickerDialog({ open, onClose, onSelect, currentUrl 
       </div>
 
       <DialogContent className="min-h-[360px]">
-        {tab === 0 && <LibraryTab currentUrl={currentUrl} onSelect={handleLibrarySelect} />}
+        {tab === 0 && <LibraryTab currentValue={currentValue} onSelect={handleLibrarySelect} />}
         {tab === 1 && <UploadTab onFileSelect={handleFileSelect} preview={pendingPreview} />}
       </DialogContent>
 
