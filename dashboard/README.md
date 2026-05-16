@@ -530,3 +530,248 @@ Built with modern web technologies and best practices for the TEDx Damascus comm
 Made with ❤️ for TEDx Damascus
 
 ```
+
+
+```
+dashboard
+├─ .eslintrc.cjs
+├─ .prettierignore
+├─ .prettierrc
+├─ eslint.config.js
+├─ index.html
+├─ jsconfig.json
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ images
+│  │  ├─ login-background.jpg
+│  │  └─ tedx-logo.jpg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ README.md
+├─ src
+│  ├─ @mock-api
+│  │  └─ index.js
+│  ├─ app
+│  │  ├─ App.jsx
+│  │  ├─ auth
+│  │  │  ├─ AuthContext.jsx
+│  │  │  ├─ AuthGuard.jsx
+│  │  │  ├─ PermissionGate.jsx
+│  │  │  └─ store
+│  │  │     └─ userSlice.js
+│  │  ├─ configs
+│  │  │  ├─ navigationConfig.js
+│  │  │  ├─ routesConfig.jsx
+│  │  │  └─ themeConfig.js
+│  │  ├─ main
+│  │  │  ├─ analytics-app
+│  │  │  │  └─ AnalyticsApi.js
+│  │  │  ├─ blog-app
+│  │  │  │  ├─ blog-categories
+│  │  │  │  │  ├─ BlogCategoriesApi.js
+│  │  │  │  │  └─ BlogCategoriesList.jsx
+│  │  │  │  ├─ blog-detail
+│  │  │  │  │  ├─ Blog.jsx
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ BlogModel.js
+│  │  │  │  │  └─ tabs
+│  │  │  │  │     └─ BlogContentSeoTab.jsx
+│  │  │  │  ├─ blogs-list
+│  │  │  │  │  └─ BlogsList.jsx
+│  │  │  │  ├─ BlogsApi.js
+│  │  │  │  └─ BlogsAppConfig.jsx
+│  │  │  ├─ dashboard
+│  │  │  │  ├─ DashboardAppConfig.jsx
+│  │  │  │  └─ DashboardPage.jsx
+│  │  │  ├─ events-app
+│  │  │  │  ├─ events-detail
+│  │  │  │  │  ├─ Event.jsx
+│  │  │  │  │  ├─ EventHeader.jsx
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ events-model.js
+│  │  │  │  │  └─ tabs
+│  │  │  │  │     ├─ BasicInfoTab.jsx
+│  │  │  │  │     └─ SocialLinksTab.jsx
+│  │  │  │  ├─ events-list
+│  │  │  │  │  ├─ EventsList.jsx
+│  │  │  │  │  ├─ EventsListHeader.jsx
+│  │  │  │  │  └─ EventsListTable.jsx
+│  │  │  │  ├─ EventsApi.js
+│  │  │  │  └─ EventsAppConfig.jsx
+│  │  │  ├─ forms-app
+│  │  │  │  ├─ form-builder
+│  │  │  │  │  ├─ AddQuestionPanel.jsx
+│  │  │  │  │  ├─ FormBuilder.jsx
+│  │  │  │  │  ├─ FormBuilderHeader.jsx
+│  │  │  │  │  ├─ FormSettings.jsx
+│  │  │  │  │  ├─ QuestionCard.jsx
+│  │  │  │  │  ├─ QuestionList.jsx
+│  │  │  │  │  ├─ questionUtils.js
+│  │  │  │  │  └─ useFormBuilder.js
+│  │  │  │  ├─ form-submissions
+│  │  │  │  │  └─ FormSubmissions.jsx
+│  │  │  │  ├─ forms-list
+│  │  │  │  │  ├─ FormsList.jsx
+│  │  │  │  │  ├─ FormsListHeader.jsx
+│  │  │  │  │  └─ FormsListTable.jsx
+│  │  │  │  ├─ FormsApi.js
+│  │  │  │  └─ FormsAppConfig.jsx
+│  │  │  ├─ not-found
+│  │  │  │  └─ NotFoundPage.jsx
+│  │  │  ├─ partners-app
+│  │  │  │  ├─ partners-details
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ PartnerModel.js
+│  │  │  │  │  ├─ Partner.jsx
+│  │  │  │  │  ├─ PartnerHeader.jsx
+│  │  │  │  │  └─ tabs
+│  │  │  │  │     ├─ BasicInfoTab.jsx
+│  │  │  │  │     └─ SocialLinksTab.jsx
+│  │  │  │  ├─ partners-list
+│  │  │  │  │  ├─ PartnersList.jsx
+│  │  │  │  │  ├─ PartnersListHeader.jsx
+│  │  │  │  │  └─ PartnersListTable.jsx
+│  │  │  │  ├─ PartnersApi.js
+│  │  │  │  └─ PartnersAppConfig.jsx
+│  │  │  ├─ sign-in
+│  │  │  │  ├─ SignInConfig.jsx
+│  │  │  │  └─ SignInPage.jsx
+│  │  │  ├─ speakers-app
+│  │  │  │  ├─ speaker-detail
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ SpeakerModel.js
+│  │  │  │  │  ├─ Speaker.jsx
+│  │  │  │  │  ├─ SpeakerHeader.jsx
+│  │  │  │  │  └─ tabs
+│  │  │  │  │     ├─ BasicInfoTab.jsx
+│  │  │  │  │     └─ SocialLinksTab.jsx
+│  │  │  │  ├─ speakers-list
+│  │  │  │  │  ├─ SpeakersList.jsx
+│  │  │  │  │  ├─ SpeakersListHeader.jsx
+│  │  │  │  │  └─ SpeakersListTable.jsx
+│  │  │  │  ├─ SpeakersApi.js
+│  │  │  │  └─ SpeakersAppConfig.jsx
+│  │  │  ├─ storage
+│  │  │  │  └─ StorageApi.js
+│  │  │  ├─ team-app
+│  │  │  │  ├─ team-details
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ TeamMemberModel.js
+│  │  │  │  │  ├─ tabs
+│  │  │  │  │  │  ├─ BasicInfoTab.jsx
+│  │  │  │  │  │  └─ SocialLinksTab.jsx
+│  │  │  │  │  └─ TeamMember.jsx
+│  │  │  │  ├─ team-list
+│  │  │  │  │  ├─ TeamList.jsx
+│  │  │  │  │  ├─ TeamListHeader.jsx
+│  │  │  │  │  └─ TeamListTable.jsx
+│  │  │  │  ├─ teamApi.js
+│  │  │  │  └─ teamAppConfig.jsx
+│  │  │  ├─ users-app
+│  │  │  │  ├─ user-detail
+│  │  │  │  │  ├─ models
+│  │  │  │  │  │  └─ UserModel.js
+│  │  │  │  │  ├─ tabs
+│  │  │  │  │  │  └─ BasicInfoTab.jsx
+│  │  │  │  │  └─ User.jsx
+│  │  │  │  ├─ users-list
+│  │  │  │  │  ├─ UsersList.jsx
+│  │  │  │  │  ├─ UsersListHeader.jsx
+│  │  │  │  │  └─ UsersListTable.jsx
+│  │  │  │  ├─ UsersApi.js
+│  │  │  │  └─ UsersAppConfig.jsx
+│  │  │  └─ wall-app
+│  │  │     ├─ banned-words
+│  │  │     │  └─ BannedWordsPage.jsx
+│  │  │     ├─ wall-question
+│  │  │     │  └─ WallQuestion.jsx
+│  │  │     ├─ WallApi.js
+│  │  │     ├─ WallAppConfig.jsx
+│  │  │     └─ walls-list
+│  │  │        └─ WallList.jsx
+│  │  ├─ providers
+│  │  │  └─ IntlProviderWrapper.jsx
+│  │  ├─ services
+│  │  │  ├─ authService.js
+│  │  │  ├─ axiosInstance.js
+│  │  │  └─ tokenService.js
+│  │  ├─ shared-components
+│  │  │  ├─ breadcrumb
+│  │  │  │  ├─ Breadcrumb.jsx
+│  │  │  │  └─ index.js
+│  │  │  ├─ confirm-modal
+│  │  │  │  ├─ ConfirmModal.jsx
+│  │  │  │  └─ index.js
+│  │  │  ├─ custom-autocomplete
+│  │  │  │  ├─ autocompleteSlice.js
+│  │  │  │  ├─ autocompleteUtils.js
+│  │  │  │  ├─ CustomAutocomplete.jsx
+│  │  │  │  └─ index.js
+│  │  │  ├─ custom-table
+│  │  │  │  ├─ CustomTable.jsx
+│  │  │  │  ├─ index.js
+│  │  │  │  ├─ tableSlice.js
+│  │  │  │  └─ useTableState.js
+│  │  │  ├─ Dialog
+│  │  │  │  ├─ Dialog.jsx
+│  │  │  │  └─ DialogProvider.jsx
+│  │  │  ├─ filter-icon
+│  │  │  │  └─ FilterIcon.jsx
+│  │  │  ├─ image-picker
+│  │  │  │  ├─ ImagePickerDialog.jsx
+│  │  │  │  ├─ ImagePickerField.jsx
+│  │  │  │  └─ index.js
+│  │  │  ├─ loading-spinner
+│  │  │  │  ├─ index.js
+│  │  │  │  └─ LoadingSpinner.jsx
+│  │  │  ├─ locale-input
+│  │  │  │  ├─ index.js
+│  │  │  │  ├─ LocaleInput.jsx
+│  │  │  │  ├─ translations.js
+│  │  │  │  └─ utils.js
+│  │  │  ├─ locale-switcher
+│  │  │  │  ├─ index.js
+│  │  │  │  └─ LocaleSwitcher.jsx
+│  │  │  ├─ page-layout
+│  │  │  │  ├─ index.js
+│  │  │  │  └─ PageLayout.jsx
+│  │  │  ├─ rich-text-editor
+│  │  │  │  ├─ index.js
+│  │  │  │  └─ RichTextEditor.jsx
+│  │  │  └─ status-badge
+│  │  │     ├─ index.js
+│  │  │     └─ StatusBadge.jsx
+│  │  ├─ store
+│  │  │  ├─ apiService.js
+│  │  │  ├─ index.js
+│  │  │  ├─ localeSlice.js
+│  │  │  └─ store.js
+│  │  └─ theme-layouts
+│  │     ├─ AuthLayout
+│  │     │  └─ AuthLayout.jsx
+│  │     └─ MainLayout
+│  │        ├─ Header.jsx
+│  │        ├─ MainLayout.jsx
+│  │        └─ Sidebar.jsx
+│  ├─ assets
+│  │  └─ img
+│  │     └─ no-section.png
+│  ├─ index.css
+│  ├─ locales
+│  │  ├─ ar.js
+│  │  ├─ en.js
+│  │  └─ index.js
+│  ├─ main.jsx
+│  ├─ styles
+│  │  └─ index.css
+│  └─ utils
+│     └─ helpers.js
+├─ tailwind.config.js
+└─ vite.config.js
+
+```
