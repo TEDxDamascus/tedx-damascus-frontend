@@ -9,11 +9,11 @@ import {
     SocialIcons,
 } from '@/lib/components/coming-soon';
 
-export default function ComingSoonClient() {
+export default function ComingSoonClient({ locale }: { locale: string }) {
     const [showFinalText, setShowFinalText] = useState(false);
 
     return (
-        <div className="relative min-h-screen w-full bg-black overflow-hidden" dir="rtl">
+        <div className="relative min-h-screen w-full bg-black overflow-hidden" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
             <ImageGrid />
 
             <motion.header

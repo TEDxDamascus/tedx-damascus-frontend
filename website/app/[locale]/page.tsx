@@ -1,5 +1,10 @@
 import { redirect } from 'next/navigation';
 
-export default function HomePage() {
-  redirect('/ar/coming-soon');
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function LocaleRootPage({ params }: Props) {
+  const { locale } = await params;
+  redirect(`/${locale}/home`);
 }
