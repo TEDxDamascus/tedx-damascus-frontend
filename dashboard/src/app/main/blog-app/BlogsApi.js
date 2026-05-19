@@ -1,74 +1,7 @@
 import { apiService } from 'app/store/apiService';
+import axiosInstance from '../../services/axiosInstance';
 
-export const addTagTypes = ['Blogs', 'Blog'];
-
-const now = () => new Date().toISOString();
-const wait = (ms = 120) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// ── Mock database (aligned with Blog backend entity) ──────────────────────────
-let mockBlogs = [
-  {
-    id: 'blog-1',
-    title: { en: 'TEDx Damascus Launch', ar: 'إطلاق TEDx Damascus' },
-    slug: { en: 'tedx-damascus-launch', ar: 'اطلاق-تيدكس-دمشق' },
-    description: { en: 'Launch recap and highlights.', ar: 'ملخص الإطلاق وأهم اللحظات.' },
-    content: {
-      en: 'TEDx Damascus held its first event, bringing together visionaries from across Syria and the region.',
-      ar: 'أقامت TEDx Damascus أول فعالياتها، جامعةً رواد الفكر من أنحاء سوريا والمنطقة.',
-    },
-    status: 'published',
-    publishedAt: '2025-03-01T10:00:00Z',
-    category_id: 'cat-news',
-    category_name: 'news',
-    tags: ['tedx', 'launch', 'damascus'],
-    views_count: 142,
-    read_time: 4,
-    blog_image: '',
-    og_image: '',
-    gallery: [],
-    meta_title: { en: 'TEDx Damascus Launch', ar: 'إطلاق TEDx Damascus' },
-    meta_description: { en: 'Launch recap', ar: 'ملخص الإطلاق' },
-    meta_keywords: { en: 'tedx,damascus,launch', ar: 'تيدكس,دمشق,إطلاق' },
-    og_title: { en: 'TEDx Damascus', ar: 'TEDx Damascus' },
-    og_description: { en: 'Official launch post', ar: 'منشور الإطلاق الرسمي' },
-    canonical_url: '',
-    createdAt: '2025-03-01T10:00:00Z',
-    updatedAt: '2025-03-01T10:00:00Z',
-    author_user_id: 'user-2',
-    author_user_name: 'Ahmad Admin',
-  },
-  {
-    id: 'blog-2',
-    title: { en: 'Ideas Worth Spreading in Damascus', ar: 'أفكار تستحق الانتشار في دمشق' },
-    slug: { en: 'ideas-worth-spreading', ar: 'افكار-تستحق-الانتشار' },
-    description: {
-      en: 'How TEDx is changing the conversation in Syria.',
-      ar: 'كيف تغيّر TEDx مسار الحوار في سوريا.',
-    },
-    content: {
-      en: 'Since its founding, TEDx Damascus has become a platform for bold ideas and inspiring stories.',
-      ar: 'منذ تأسيسها، أصبحت TEDx Damascus منصةً للأفكار الجريئة والقصص الملهمة.',
-    },
-    status: 'draft',
-    publishedAt: null,
-    category_id: 'cat-community',
-    category_name: 'community',
-    tags: ['community', 'ideas'],
-    views_count: 0,
-    read_time: 5,
-    blog_image: '',
-    og_image: '',
-    gallery: [],
-    meta_title: { en: 'Ideas Worth Spreading', ar: 'أفكار تستحق الانتشار' },
-    meta_description: { en: '', ar: '' },
-    meta_keywords: { en: '', ar: '' },
-    og_title: { en: '', ar: '' },
-    og_description: { en: '', ar: '' },
-    canonical_url: '',
-    createdAt: '2025-04-01T09:00:00Z',
-    updatedAt: '2025-04-01T09:00:00Z',
-  },
-];
+export const addTagTypes = ['Blogs', 'Blog', 'BlogReferences', 'BlogReference'];
 
 function matchBlogId(blog, id) {
   return String(blog.id) === String(id) || String(blog._id) === String(id);
@@ -82,113 +15,182 @@ function getBlogTitle(blog) {
   return 'Untitled';
 }
 
+function extractBlogArrayFromResponseBody(body) {
+  const d = body?.data;
+  if (Array.isArray(d)) return d;
+  if (d && Array.isArray(d.items)) return d.items;
+  if (d && Array.isArray(d.blogs)) return d.blogs;
+  if (d && Array.isArray(d.results)) return d.results;
+  return [];
+}
+
+function normalizeBlogListResponse(response) {
+  const items = extractBlogArrayFromResponseBody(response);
+  const d = response?.data;
+  const total =
+    (d && typeof d === 'object' && !Array.isArray(d) && (d.total ?? d.count)) ?? items.length;
+  const page = (d && typeof d === 'object' && !Array.isArray(d) && d.page) ?? 1;
+  const limit = (d && typeof d === 'object' && !Array.isArray(d) && d.limit) ?? items.length;
+  return {
+    ...response,
+    data: { items, total: Number(total) || items.length, page, limit },
+  };
+}
+
 export async function searchBlogOptions(query, { excludeId } = {}) {
-  await wait(80);
-  const term = String(query || '')
-    .trim()
-    .toLowerCase();
-  return mockBlogs
-    .filter((blog) => !excludeId || !matchBlogId(blog, excludeId))
-    .filter((blog) => {
-      if (!term) return true;
-      const title = getBlogTitle(blog).toLowerCase();
-      const slug =
-        typeof blog.slug === 'string'
-          ? blog.slug.toLowerCase()
-          : `${blog?.slug?.en || ''} ${blog?.slug?.ar || ''}`.toLowerCase();
-      return title.includes(term) || slug.includes(term);
-    })
-    .slice(0, 20)
-    .map((blog) => ({
-      id: blog.id || blog._id,
-      label: getBlogTitle(blog),
-    }));
+  try {
+    const term = String(query || '').trim();
+    const { data: body } = await axiosInstance({
+      url: '/blogs',
+      method: 'get',
+      params: {
+        page: 1,
+        limit: 100,
+        ...(term ? { search: term } : {}),
+      },
+    });
+    const list = extractBlogArrayFromResponseBody(body);
+    return list
+      .filter((blog) => !excludeId || !matchBlogId(blog, excludeId))
+      .slice(0, 20)
+      .map((blog) => ({
+        id: blog._id || blog.id,
+        label: getBlogTitle(blog),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+/** GET `/blog-references` returns `{ data: Reference[] }`. */
+function normalizeBlogReferencesListResponse(response) {
+  const d = response?.data;
+  const items = Array.isArray(d) ? d : [];
+  return { ...response, data: items };
+}
+
+function invalidateBlogReferenceTags(blogId, referenceId) {
+  const tags = ['Blogs'];
+  if (blogId) tags.push({ type: 'BlogReferences', id: String(blogId) });
+  if (referenceId) tags.push({ type: 'BlogReference', id: String(referenceId) });
+  return tags;
 }
 
 const blogsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (builder) => ({
     getBlogs: builder.query({
-      async queryFn({ page = 1, limit = 10, status, category } = {}) {
-        await wait();
-        let filtered = mockBlogs.filter((blog) => {
-          if (status && blog.status !== status) return false;
-          if (category) {
-            const matches =
-              blog.category_id === category ||
-              blog.category === category ||
-              blog.category_name === category;
-            if (!matches) return false;
-          }
-          return true;
-        });
-        const start = (page - 1) * limit;
-        const items = filtered.slice(start, start + limit);
-        return {
-          data: {
-            success: true,
-            statusCode: 200,
-            message: 'Blogs list',
-            data: { items, total: filtered.length, page, limit },
-          },
-        };
-      },
+      query: ({
+        page = 1,
+        limit = 10,
+        status,
+        category_id,
+        search,
+        language,
+        sort,
+        order,
+      } = {}) => ({
+        url: '/blogs',
+        method: 'get',
+        params: {
+          page,
+          limit,
+          ...(status ? { status } : {}),
+          ...(category_id ? { category_id } : {}),
+          ...(search ? { search: String(search).trim() } : {}),
+          ...(language ? { language } : {}),
+          ...(sort ? { sort } : {}),
+          ...(order ? { order } : {}),
+        },
+      }),
+      transformResponse: normalizeBlogListResponse,
       providesTags: ['Blogs'],
     }),
 
     getBlog: builder.query({
-      async queryFn(blogId) {
-        await wait();
-        const blog = mockBlogs.find((item) => matchBlogId(item, blogId));
-        if (!blog) return { error: { status: 404, data: 'Blog not found' } };
-        return { data: { success: true, statusCode: 200, data: blog } };
-      },
-      providesTags: ['Blog'],
+      query: (blogId) => ({ url: `/blogs/${blogId}`, method: 'get' }),
+      providesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
     }),
 
     createBlog: builder.mutation({
-      async queryFn(data) {
-        await wait();
-        const newBlog = {
-          ...data,
-          id: `blog-${Date.now()}`,
-          views_count: 0,
-          publishedAt: data.status === 'published' ? now() : null,
-          createdAt: now(),
-          updatedAt: now(),
-        };
-        mockBlogs = [newBlog, ...mockBlogs];
-        return { data: { success: true, statusCode: 201, message: 'Blog created', data: newBlog } };
-      },
+      query: (data) => ({
+        url: '/blogs',
+        method: 'post',
+        data,
+      }),
       invalidatesTags: ['Blogs'],
     }),
 
     updateBlog: builder.mutation({
-      async queryFn({ id, data }) {
-        await wait();
-        const index = mockBlogs.findIndex((item) => matchBlogId(item, id));
-        if (index < 0) return { error: { status: 404, data: 'Blog not found' } };
-        const prev = mockBlogs[index];
-        const updated = {
-          ...prev,
-          ...data,
-          publishedAt: data.status === 'published' && !prev.publishedAt ? now() : prev.publishedAt,
-          updatedAt: now(),
-        };
-        mockBlogs[index] = updated;
-        return { data: { success: true, statusCode: 200, message: 'Blog updated', data: updated } };
-      },
-      invalidatesTags: ['Blogs', 'Blog'],
+      query: ({ id, data }) => ({
+        url: `/blogs/${id}`,
+        method: 'patch',
+        data,
+      }),
+      invalidatesTags: (result, error, { id }) => ['Blogs', { type: 'Blog', id }],
     }),
 
     deleteBlog: builder.mutation({
-      async queryFn(id) {
-        await wait();
-        const before = mockBlogs.length;
-        mockBlogs = mockBlogs.filter((item) => !matchBlogId(item, id));
-        if (before === mockBlogs.length) return { error: { status: 404, data: 'Blog not found' } };
-        return { data: { success: true, statusCode: 200, message: 'Blog deleted' } };
-      },
-      invalidatesTags: ['Blogs'],
+      query: (id) => ({
+        url: `/blogs/${id}`,
+        method: 'delete',
+      }),
+      invalidatesTags: (result, error, id) => ['Blogs', { type: 'Blog', id }],
+    }),
+
+    /** GET `/blog-references?blog_id=` — list references for one blog. */
+    getBlogReferencesByBlog: builder.query({
+      query: (blogId) => ({
+        url: '/blog-references',
+        method: 'get',
+        params: { blog_id: blogId },
+      }),
+      transformResponse: normalizeBlogReferencesListResponse,
+      providesTags: (result, error, blogId) => [{ type: 'BlogReferences', id: String(blogId) }],
+    }),
+
+    /** GET `/blog-references/:id` — single reference. */
+    getBlogReferenceById: builder.query({
+      query: (referenceId) => ({
+        url: `/blog-references/${referenceId}`,
+        method: 'get',
+      }),
+      providesTags: (result, error, referenceId) => [
+        { type: 'BlogReference', id: String(referenceId) },
+      ],
+    }),
+
+    /** POST body: `{ blog_id, name, desc, url }`. */
+    createBlogReference: builder.mutation({
+      query: (body) => ({
+        url: '/blog-references',
+        method: 'post',
+        data: body,
+      }),
+      invalidatesTags: (result, error, arg) =>
+        invalidateBlogReferenceTags(arg?.blog_id, null).concat(
+          arg?.blog_id ? [{ type: 'Blog', id: String(arg.blog_id) }] : [],
+        ),
+    }),
+
+    /** PATCH `/blog-references/:id` — body `{ name, desc, url }`. */
+    updateBlogReference: builder.mutation({
+      query: ({ referenceId, data }) => ({
+        url: `/blog-references/${referenceId}`,
+        method: 'patch',
+        data,
+      }),
+      invalidatesTags: (result, error, arg) =>
+        invalidateBlogReferenceTags(arg?.blogId, arg?.referenceId),
+    }),
+
+    /** DELETE `/blog-references/:id`. */
+    deleteBlogReference: builder.mutation({
+      query: ({ referenceId }) => ({
+        url: `/blog-references/${referenceId}`,
+        method: 'delete',
+      }),
+      invalidatesTags: (result, error, arg) =>
+        invalidateBlogReferenceTags(arg?.blogId, arg?.referenceId),
     }),
   }),
   overrideExisting: false,
@@ -200,6 +202,11 @@ export const {
   useCreateBlogMutation,
   useUpdateBlogMutation,
   useDeleteBlogMutation,
+  useGetBlogReferencesByBlogQuery,
+  useGetBlogReferenceByIdQuery,
+  useCreateBlogReferenceMutation,
+  useUpdateBlogReferenceMutation,
+  useDeleteBlogReferenceMutation,
 } = blogsApi;
 
 export default blogsApi;

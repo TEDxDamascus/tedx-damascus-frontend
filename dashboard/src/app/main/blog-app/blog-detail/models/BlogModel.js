@@ -14,8 +14,8 @@ const BlogModel = (data) =>
     tags: [],
     views_count: 0,
     read_time: 0,
-    blog_image: '',
-    og_image: '',
+    blog_image: { id: '', url: '' },
+    og_image: { id: '', url: '' },
     gallery: [],
     meta_title: defaultLocaleValue(),
     meta_description: defaultLocaleValue(),
@@ -26,6 +26,8 @@ const BlogModel = (data) =>
     author_user: null,
     // Frontend-only fields (ask backend to add):
     related_blogs: [],
+    /** { reference_id?: string, name, desc, url } — reference_id set when loaded from API */
+    blog_references: [],
   });
 
 export default BlogModel;

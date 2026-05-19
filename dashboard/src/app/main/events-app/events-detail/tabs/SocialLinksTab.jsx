@@ -9,7 +9,9 @@ function GalleryPicker({ control, name }) {
   const { field } = useController({ control, name });
   const images = Array.isArray(field.value) ? field.value : [];
 
-  const handleAdd = (url) => {
+  const handleAdd = (ref) => {
+    const url =
+      typeof ref === 'string' ? ref.trim() : String(ref?.url || ref?.id || '').trim();
     if (url && !images.includes(url)) {
       field.onChange([...images, url]);
     }
@@ -82,7 +84,7 @@ function GalleryPicker({ control, name }) {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onSelect={handleAdd}
-        currentUrl=""
+        currentValue=""
       />
     </Box>
   );

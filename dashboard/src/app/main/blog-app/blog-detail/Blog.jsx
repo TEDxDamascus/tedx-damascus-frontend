@@ -1,40 +1,65 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, Paper, Button, CircularProgress, Typography } from '@mui/material';
+import { Box, Paper, Button, CircularProgress, Typography, Alert } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import Breadcrumb from '../../../shared-components/breadcrumb';
 import BlogContentSeoTab from './tabs/BlogContentSeoTab';
 import BlogModel from './models/BlogModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 import { useSnackbar } from 'notistack';
-import { useCreateBlogMutation, useGetBlogQuery, useUpdateBlogMutation } from '../BlogsApi';
+import {
+  useCreateBlogMutation,
+  useCreateBlogReferenceMutation,
+  useDeleteBlogReferenceMutation,
+  useGetBlogQuery,
+  useGetBlogReferencesByBlogQuery,
+  useUpdateBlogMutation,
+  useUpdateBlogReferenceMutation,
+} from '../BlogsApi';
 import { searchBlogOptions } from '../BlogsApi';
 import { searchUserOptions } from '../../users-app/UsersApi';
 import { searchBlogCategoryOptions } from '../blog-categories/BlogCategoriesApi';
+import {
+  blogReferencesFromApi,
+  mapBlogFromApi,
+  mapBlogReferenceApiItemToForm,
+} from './blogMapper';
+import { mediaFormValueToApiId, isLikelyMongoObjectId } from '../../../shared-components/image-picker';
 
 const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
+
+const mediaRefSchema = z.object({ id: z.string().optional(), url: z.string().optional() });
+
+const blogReferenceRowSchema = z.object({
+  reference_id: z.string().optional(),
+  name: z.string().optional(),
+  desc: z.string().optional(),
+  url: z.string().optional(),
+});
 
 const blogSchema = z.object({
   title: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Title is required'),
   slug: localeObjectSchema,
-  blog_image: z.string().optional(),
+  blog_image: z.union([mediaRefSchema, z.string()]).optional(),
   read_time: z.coerce.number().min(0).optional(),
   tags: z.array(z.string()).optional(),
   author_user: z.union([z.object({ id: z.string() }).passthrough(), z.null()]).optional(),
   blog_category: z.union([z.object({ id: z.string() }).passthrough(), z.null()]).optional(),
   related_blogs: z.array(z.any()).optional(),
   description: localeObjectSchema,
-  content: localeObjectSchema,
+  content: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Content is required'),
+  status: z.enum(['draft', 'published']).optional(),
   meta_title: localeObjectSchema,
   meta_description: localeObjectSchema,
   meta_keywords: localeObjectSchema,
   canonical_url: z.string().optional(),
-  og_image: z.string().optional(),
+  og_image: z.union([mediaRefSchema, z.string()]).optional(),
   og_title: localeObjectSchema,
   og_description: localeObjectSchema,
+  blog_references: z.array(blogReferenceRowSchema).optional(),
 });
 
 function sanitizeLocaleObject(value) {
@@ -61,50 +86,166 @@ function generateSlugLocaleFromTitle(titleValue) {
   };
 }
 
-function mapBlogFromApi(raw) {
-  const source = raw?.data ?? raw ?? {};
-  return BlogModel({
-    ...source,
-    title: ensureLocaleValue(source.title),
-    slug: ensureLocaleValue(source.slug),
-    blog_image: source.blog_image || '',
-    tags: Array.isArray(source.tags)
-      ? source.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
-      : [],
-    author_user: source.author_user_id
-      ? {
-          id: String(source.author_user_id),
-          label:
-            source.author_user_name ||
-            source.author_user?.label ||
-            source.author_user?.name ||
-            String(source.author_user_id),
-        }
-      : null,
-    blog_category: source.category_id
-      ? {
-          id: String(source.category_id),
-          label:
-            (source.category_name || source.category || '').trim() || String(source.category_id),
-        }
-      : typeof source.category === 'string' && source.category.trim()
-        ? { id: source.category, label: source.category.trim() }
-        : null,
-    related_blogs: Array.isArray(source.related_blogs)
-      ? source.related_blogs
-      : Array.isArray(source.related_blog_ids)
-        ? source.related_blog_ids.map((id) => ({ id, label: String(id) }))
-        : [],
-    description: ensureLocaleValue(source.description),
-    content: ensureLocaleValue(source.content),
-    meta_title: ensureLocaleValue(source.meta_title),
-    meta_description: ensureLocaleValue(source.meta_description),
-    meta_keywords: ensureLocaleValue(source.meta_keywords),
-    canonical_url: source.canonical_url || '',
-    og_image: source.og_image || '',
-    og_title: ensureLocaleValue(source.og_title),
-    og_description: ensureLocaleValue(source.og_description),
-  });
+/** Split free-form tags into ar/en arrays (Arabic script → ar, otherwise → en). */
+function tagsFlatToLocalized(flatTags) {
+  const list = (flatTags || []).map((t) => String(t || '').trim()).filter(Boolean);
+  const ar = [];
+  const en = [];
+  const arabic =
+    /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  for (const s of list) {
+    if (arabic.test(s)) ar.push(s);
+    else en.push(s);
+  }
+  return { ar, en };
+}
+
+/** Form meta keywords (comma-separated per locale) → API shape { ar: string[], en: string[] }. */
+function metaKeywordsToKeywordArrays(metaKw) {
+  const m = ensureLocaleValue(metaKw);
+  const parse = (s) =>
+    String(s || '')
+      .split(/[,،]/)
+      .map((x) => x.trim())
+      .filter(Boolean);
+  return { ar: parse(m.ar), en: parse(m.en) };
+}
+
+function omitUndefined(obj) {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
+}
+
+/**
+ * Sync form `blog_references` with TedX backend: DELETE removed, PATCH changed rows, POST new.
+ * `initialReferenceIds` is the set of reference `_id`s loaded when the form was hydrated.
+ */
+async function syncBlogReferencesWithServer({
+  blogId,
+  formRefs,
+  initialReferenceIds,
+  createBlogReference,
+  updateBlogReference,
+  deleteBlogReference,
+}) {
+  const bid = String(blogId || '');
+  if (!bid) return 0;
+
+  const refs = formRefs || [];
+  const initialSet =
+    initialReferenceIds instanceof Set
+      ? initialReferenceIds
+      : new Set(initialReferenceIds || []);
+
+  const currentIds = new Set(
+    refs.map((r) => (r?.reference_id ? String(r.reference_id) : null)).filter(Boolean),
+  );
+
+  let failures = 0;
+
+  for (const id of initialSet) {
+    const sid = String(id);
+    if (!currentIds.has(sid)) {
+      try {
+        await deleteBlogReference({ referenceId: sid, blogId: bid }).unwrap();
+      } catch {
+        failures += 1;
+      }
+    }
+  }
+
+  for (const r of refs) {
+    if (!r?.reference_id) continue;
+    const name = String(r.name || '').trim();
+    const url = String(r.url || '').trim();
+    if (!name || !url) continue;
+    try {
+      await updateBlogReference({
+        referenceId: String(r.reference_id),
+        blogId: bid,
+        data: {
+          name,
+          desc: String(r.desc || '').trim(),
+          url,
+        },
+      }).unwrap();
+    } catch {
+      failures += 1;
+    }
+  }
+
+  for (const r of refs) {
+    if (r?.reference_id) continue;
+    const name = String(r?.name || '').trim();
+    const url = String(r?.url || '').trim();
+    if (!name || !url) continue;
+    try {
+      await createBlogReference({
+        blog_id: bid,
+        name,
+        desc: String(r.desc || '').trim(),
+        url,
+      }).unwrap();
+    } catch {
+      failures += 1;
+    }
+  }
+
+  return failures;
+}
+
+/** Payload shape expected by POST/PUT `/blogs` (TedX backend). */
+function buildBlogApiPayload(data) {
+  const status = data.status || 'draft';
+  const title = sanitizeLocaleObject(data.title);
+  const content = sanitizeLocaleObject(data.content);
+  const description = sanitizeLocaleObject(data.description);
+
+  const payload = {
+    title,
+    content,
+    status,
+    description,
+    tags: tagsFlatToLocalized(data.tags),
+    meta_title: sanitizeLocaleObject(data.meta_title),
+    meta_description: sanitizeLocaleObject(data.meta_description),
+    meta_keywords: metaKeywordsToKeywordArrays(data.meta_keywords),
+    canonical_url: data.canonical_url?.trim() || '',
+    og_title: sanitizeLocaleObject(data.og_title),
+    og_description: sanitizeLocaleObject(data.og_description),
+    gallery: Array.isArray(data.gallery) ? data.gallery.filter(Boolean) : [],
+    related_blogs_ids: (data.related_blogs || [])
+      .map((item) => item?.id ?? item?.value)
+      .filter(Boolean),
+  };
+
+  if (status === 'published') {
+    payload.publishedAt = new Date().toISOString();
+  }
+
+  const rt = Number(data.read_time);
+  if (Number.isFinite(rt) && rt > 0) {
+    payload.read_time = rt;
+  }
+
+  if (data.blog_category?.id) {
+    payload.category_id = String(data.blog_category.id);
+  }
+
+  const uid = data.author_user?.id && isLikelyMongoObjectId(String(data.author_user.id).trim());
+  if (uid) {
+    payload.user_id = String(data.author_user.id).trim();
+  }
+
+  const blogImgId = mediaFormValueToApiId(data.blog_image);
+  if (blogImgId) {
+    payload.blog_image = blogImgId;
+  }
+  const ogImgId = mediaFormValueToApiId(data.og_image);
+  if (ogImgId) {
+    payload.og_image = ogImgId;
+  }
+
+  return omitUndefined(payload);
 }
 
 function formatReadTime(readTime) {
@@ -116,12 +257,28 @@ function formatReadTime(readTime) {
 function Blog() {
   const { blogId } = useParams();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { enqueueSnackbar } = useSnackbar();
-  const isNew = blogId === 'add';
-  const { data: blogData, isLoading } = useGetBlogQuery(blogId, { skip: isNew });
+  const isNew = pathname.endsWith('/blogs/add');
+  const {
+    data: blogData,
+    isLoading,
+    isError,
+    error: loadError,
+  } = useGetBlogQuery(blogId, { skip: isNew });
   const [createBlog, { isLoading: isCreating }] = useCreateBlogMutation();
   const [updateBlog, { isLoading: isUpdating }] = useUpdateBlogMutation();
-  const isSaving = isCreating || isUpdating;
+  const [createBlogReference] = useCreateBlogReferenceMutation();
+  const [updateBlogReference] = useUpdateBlogReferenceMutation();
+  const [deleteBlogReference] = useDeleteBlogReferenceMutation();
+  const [syncingRefs, setSyncingRefs] = useState(false);
+
+  const refQuery = useGetBlogReferencesByBlogQuery(blogId, {
+    skip: isNew || !blogId,
+  });
+
+  const lastHydratedBlogIdRef = useRef(null);
+  const initialReferenceIdsRef = useRef(new Set());
 
   const {
     control,
@@ -134,13 +291,41 @@ function Blog() {
     resolver: zodResolver(blogSchema),
     defaultValues: BlogModel(),
   });
-  const currentReadTime = useWatch({ control, name: 'read_time' });
+
+  const isSaving = isCreating || isUpdating;
+  const busySaving = isSaving || syncingRefs;
+  /** RTK Query hooks here do not expose `isFetched`; use settled flags instead. */
+  const refsQuerySettled = refQuery.isSuccess || refQuery.isError;
+  const refsBlockingLoad = !isNew && !refsQuerySettled;
+  const pageLoading = isLoading || refsBlockingLoad;
 
   useEffect(() => {
-    if (blogData && !isNew) {
-      reset(mapBlogFromApi(blogData));
-    }
-  }, [blogData, isNew, reset]);
+    lastHydratedBlogIdRef.current = null;
+  }, [blogId]);
+
+  useEffect(() => {
+    if (isNew || !blogData || !blogId) return;
+    if (!refsQuerySettled) return;
+    if (lastHydratedBlogIdRef.current === blogId) return;
+
+    const raw = blogData?.data ?? blogData;
+    const fromGet =
+      !refQuery.isError && Array.isArray(refQuery.data?.data) ? refQuery.data.data : null;
+    const mapped =
+      fromGet != null
+        ? fromGet.map(mapBlogReferenceApiItemToForm).filter(Boolean)
+        : blogReferencesFromApi(raw);
+
+    const base = mapBlogFromApi(blogData);
+    const { blog_references: _drop, ...rest } = base;
+    reset({ ...rest, blog_references: mapped });
+    initialReferenceIdsRef.current = new Set(
+      mapped.map((r) => r.reference_id).filter(Boolean).map(String),
+    );
+    lastHydratedBlogIdRef.current = blogId;
+  }, [isNew, blogId, blogData, refsQuerySettled, refQuery.isError, refQuery.data, reset]);
+
+  const currentReadTime = useWatch({ control, name: 'read_time' });
 
   const handleGenerateSlug = () => {
     const generatedSlug = generateSlugLocaleFromTitle(getValues('title'));
@@ -150,56 +335,95 @@ function Blog() {
   const fetchRelatedBlogsOptions = (query) => searchBlogOptions(query, { excludeId: blogId });
 
   const onSubmit = async (data) => {
-    const slugValue = ensureLocaleValue(data.slug);
-    const hasManualSlug = slugValue.en?.trim() || slugValue.ar?.trim();
-    const finalSlug = hasManualSlug ? slugValue : generateSlugLocaleFromTitle(data.title);
-
-    const payload = {
-      title: sanitizeLocaleObject(data.title),
-      slug: finalSlug,
-      blog_image: data.blog_image || undefined,
-      description: sanitizeLocaleObject(data.description),
-      content: sanitizeLocaleObject(data.content),
-      status: data.status || 'draft',
-      category_id: data.blog_category?.id ?? null,
-      category_name: data.blog_category?.label ?? null,
-      read_time: Number(data.read_time) || undefined,
-      tags: Array.isArray(data.tags)
-        ? data.tags.map((tag) => String(tag || '').trim()).filter(Boolean)
-        : undefined,
-      author_user_id: data.author_user?.id || undefined,
-      author_user_name: data.author_user?.label || undefined,
-      related_blogs: (data.related_blogs || [])
-        .map((item) => item?.id ?? item?.value)
-        .filter(Boolean),
-      meta_title: sanitizeLocaleObject(data.meta_title),
-      meta_description: sanitizeLocaleObject(data.meta_description),
-      meta_keywords: sanitizeLocaleObject(data.meta_keywords),
-      canonical_url: data.canonical_url?.trim() || undefined,
-      og_image: data.og_image?.trim() || undefined,
-      og_title: sanitizeLocaleObject(data.og_title),
-      og_description: sanitizeLocaleObject(data.og_description),
-      gallery: Array.isArray(data.gallery) ? data.gallery.filter(Boolean) : undefined,
-    };
+    const payload = buildBlogApiPayload(data);
 
     try {
       if (isNew) {
-        await createBlog(payload).unwrap();
-        enqueueSnackbar('Blog created successfully', { variant: 'success' });
+        const res = await createBlog(payload).unwrap();
+        const newId = res?.data?._id ?? res?.data?.id;
+        setSyncingRefs(true);
+        let refFailures = 0;
+        try {
+          refFailures = await syncBlogReferencesWithServer({
+            blogId: newId,
+            formRefs: data.blog_references,
+            initialReferenceIds: initialReferenceIdsRef.current,
+            createBlogReference,
+            updateBlogReference,
+            deleteBlogReference,
+          });
+        } finally {
+          setSyncingRefs(false);
+        }
+        if (refFailures > 0) {
+          enqueueSnackbar(
+            `Blog created, but ${refFailures} reference operation(s) failed. You can fix them by editing the article.`,
+            { variant: 'warning' },
+          );
+        } else {
+          enqueueSnackbar('Blog created successfully', { variant: 'success' });
+        }
+        navigate(newId ? `/blogs/${newId}` : '/blogs');
       } else {
         await updateBlog({ id: blogId, data: payload }).unwrap();
-        enqueueSnackbar('Blog updated successfully', { variant: 'success' });
+        setSyncingRefs(true);
+        let refFailures = 0;
+        try {
+          refFailures = await syncBlogReferencesWithServer({
+            blogId,
+            formRefs: data.blog_references,
+            initialReferenceIds: initialReferenceIdsRef.current,
+            createBlogReference,
+            updateBlogReference,
+            deleteBlogReference,
+          });
+        } finally {
+          setSyncingRefs(false);
+        }
+        if (refFailures > 0) {
+          enqueueSnackbar(
+            `Article updated, but ${refFailures} reference operation(s) failed.`,
+            { variant: 'warning' },
+          );
+        } else {
+          enqueueSnackbar('Blog updated successfully', { variant: 'success' });
+        }
+        navigate(`/blogs/${blogId}`);
       }
-      navigate('/blogs');
     } catch {
       enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} blog`, { variant: 'error' });
     }
   };
 
-  if (isLoading) {
+  if (pageLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <CircularProgress className="text-tedx-red" />
+      </div>
+    );
+  }
+
+  if (!isNew && isError) {
+    const message =
+      typeof loadError?.data === 'string'
+        ? loadError.data
+        : loadError?.data?.message || loadError?.message || 'Could not load this article.';
+    return (
+      <div className="p-6 pt-8">
+        <Breadcrumb items={[{ label: 'Blog', href: '/blogs' }, { label: 'Article' }]} />
+        <Alert severity="error" sx={{ mt: 2, maxWidth: 560 }}>
+          {message}
+        </Alert>
+        <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <Button variant="contained" onClick={() => navigate('/blogs')}>
+            Back to blog list
+          </Button>
+          {!isNew && blogId && (
+            <Button variant="outlined" onClick={() => navigate(`/blogs/${blogId}`)}>
+              Open read-only view
+            </Button>
+          )}
+        </Box>
       </div>
     );
   }
@@ -209,7 +433,12 @@ function Blog() {
       <Breadcrumb
         items={[
           { label: 'Blog', href: '/blogs' },
-          { label: isNew ? 'Add New Article' : 'Edit Article' },
+          ...(isNew
+            ? [{ label: 'Add New Article' }]
+            : [
+                { label: 'Article', href: `/blogs/${blogId}` },
+                { label: 'Edit' },
+              ]),
         ]}
       />
 
@@ -227,19 +456,19 @@ function Blog() {
         <div className="flex gap-2">
           <Button
             variant="outlined"
-            onClick={() => navigate('/blogs')}
+            onClick={() => navigate(isNew ? '/blogs' : `/blogs/${blogId}`)}
             className="border-gray-300 text-gray-500"
           >
             Cancel
           </Button>
           <Button
             variant="contained"
-            startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
+            startIcon={busySaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
             onClick={handleSubmit(onSubmit)}
-            disabled={isSubmitting || isSaving}
+            disabled={isSubmitting || busySaving}
             className="bg-tedx-red hover:bg-tedx-red-dark"
           >
-            {isSubmitting || isSaving ? 'Saving...' : 'Save Article'}
+            {isSubmitting || busySaving ? 'Saving...' : 'Save Article'}
           </Button>
         </div>
       </div>

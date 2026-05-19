@@ -1,10 +1,10 @@
-import { Controller } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
+import { Controller, useFieldArray, useWatch } from 'react-hook-form';
 import {
   Autocomplete,
   Box,
   Grid,
   TextField,
+  MenuItem,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -13,14 +13,15 @@ import {
   Stack,
   Chip,
   LinearProgress,
+  IconButton,
 } from '@mui/material';
-import { ExpandMore } from '@mui/icons-material';
+import { ExpandMore, Add, DeleteOutline } from '@mui/icons-material';
 import {
   LocaleInput,
   localeInputTypes,
   ensureLocaleValue,
 } from '../../../../shared-components/locale-input';
-import { ImagePickerField } from '../../../../shared-components/image-picker';
+import { ImagePickerField, mediaFormValueToPreviewSrc } from '../../../../shared-components/image-picker';
 import { CustomAutocomplete } from '../../../../shared-components/custom-autocomplete';
 
 function BlogContentSeoTab({
@@ -40,9 +41,14 @@ function BlogContentSeoTab({
   const ogDescriptionValue = useWatch({ control, name: 'og_description' });
   const coverImage = useWatch({ control, name: 'blog_image' });
   const ogImage = useWatch({ control, name: 'og_image' });
-  const previewImage = ogImage || coverImage || '';
-  const usesCoverFallback = !ogImage && !!coverImage;
-  const seoImageValue = ogImage || coverImage;
+  const coverPreview = mediaFormValueToPreviewSrc(coverImage);
+  const ogPreview = mediaFormValueToPreviewSrc(ogImage);
+  const previewImage = ogPreview || coverPreview || '';
+  const usesCoverFallback = !ogPreview && !!coverPreview;
+  const seoImageValue = ogPreview || coverPreview;
+
+  const { fields, append, remove } = useFieldArray({ control, name: 'blog_references' });
+  const watchedReferences = useWatch({ control, name: 'blog_references' });
 
   const getPreferredLocaleText = (value) => {
     const localized = ensureLocaleValue(value);
@@ -208,6 +214,33 @@ function BlogContentSeoTab({
           />
         </Grid>
 
+        <Grid item xs={12} sm={6} md={4}>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value === 'published' ? 'published' : 'draft'}
+                onChange={(e) => field.onChange(e.target.value)}
+                select
+                fullWidth
+                label="Publication status"
+                error={!!errors.status}
+                helperText={
+                  errors.status?.message ||
+                  (field.value === 'published'
+                    ? 'Article is visible when published on the site (per your backend rules).'
+                    : 'Draft: save without publishing; you can publish later.')
+                }
+              >
+                <MenuItem value="draft">Draft</MenuItem>
+                <MenuItem value="published">Published</MenuItem>
+              </TextField>
+            )}
+          />
+        </Grid>
+
         <Grid item xs={12} md={4}>
           <Controller
             name="read_time"
@@ -314,6 +347,138 @@ function BlogContentSeoTab({
         </Grid>
 
         <Grid item xs={12}>
+          <Accordion
+            defaultExpanded={Boolean(fields.length)}
+            disableGutters
+            sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}
+          >
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Box>
+                <Typography sx={{ fontWeight: 600 }}>References & sources</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Optional external links (name, description, URL). New rows are sent to the API when
+                  you save the article.
+                </Typography>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack spacing={2}>
+                {fields.length === 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    No references yet. Add one or more for citations and further reading.
+                  </Typography>
+                )}
+                {fields.map((item, index) => {
+                  const row = watchedReferences?.[index];
+                  const isSynced = Boolean(row?.reference_id);
+                  const nameErr = errors.blog_references?.[index]?.name;
+                  const urlErr = errors.blog_references?.[index]?.url;
+                  return (
+                    <Box
+                      key={item.id}
+                      sx={{
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        p: 2,
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{ mb: 1.5 }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Typography variant="subtitle2">Reference {index + 1}</Typography>
+                          {isSynced && (
+                            <Chip size="small" label="Saved" color="success" variant="outlined" />
+                          )}
+                        </Stack>
+                        <IconButton
+                          size="small"
+                          aria-label="Remove reference"
+                          onClick={() => remove(index)}
+                          color="default"
+                        >
+                          <DeleteOutline fontSize="small" />
+                        </IconButton>
+                      </Stack>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={4}>
+                          <Controller
+                            name={`blog_references.${index}.name`}
+                            control={control}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                value={field.value ?? ''}
+                                label="Name"
+                                fullWidth
+                                size="small"
+                                placeholder="e.g. TED Talk source"
+                                error={!!nameErr}
+                                helperText={nameErr?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <Controller
+                            name={`blog_references.${index}.url`}
+                            control={control}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                value={field.value ?? ''}
+                                label="URL"
+                                fullWidth
+                                size="small"
+                                placeholder="https://"
+                                error={!!urlErr}
+                                helperText={urlErr?.message || 'Required for new references'}
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Controller
+                            name={`blog_references.${index}.desc`}
+                            control={control}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                value={field.value ?? ''}
+                                label="Description"
+                                fullWidth
+                                size="small"
+                                multiline
+                                minRows={2}
+                                placeholder="Short note about this source"
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  );
+                })}
+                <Box>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<Add />}
+                    onClick={() => append({ name: '', desc: '', url: '', reference_id: undefined })}
+                  >
+                    Add reference
+                  </Button>
+                </Box>
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+
+        <Grid item xs={12}>
           <Controller
             name="description"
             control={control}
@@ -354,6 +519,7 @@ function BlogContentSeoTab({
             control={control}
             render={({ field }) => (
               <ImagePickerField
+                valueMode="mediaRef"
                 value={field.value}
                 onChange={field.onChange}
                 label="Cover Image"
@@ -454,6 +620,7 @@ function BlogContentSeoTab({
                     control={control}
                     render={({ field }) => (
                       <ImagePickerField
+                        valueMode="mediaRef"
                         value={field.value}
                         onChange={field.onChange}
                         label="OG Image"
