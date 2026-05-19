@@ -13,76 +13,55 @@ const COLUMNS = [
   {
     id: 'image',
     header: '',
-    renderCell: (value, row) => {
-      const titleText = row.title?.en || row.title?.ar || '';
-      return (
-        <div className="flex items-center">
-          {value ? (
-            <img src={value} alt={titleText} className="h-10 w-10 rounded-full object-cover" />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
-              {titleText.charAt(0) || '?'}
-            </div>
-          )}
-        </div>
-      );
-    },
-    headerClassName: 'w-16',
-  },
-  {
-    id: 'title',
-    header: 'Event Title',
-    sortable: true,
-    renderCell: (value) => (
-      <span className="font-medium text-tedx-dark">
-        {typeof value === 'string' ? value : value?.en || value?.ar || '—'}
-      </span>
+    renderCell: (value, row) => (
+      <div className="flex items-center">
+        {value ? (
+          <img src={value} className="h-10 w-10 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white">
+            {row.title?.charAt(0) || '?'}
+          </div>
+        )}
+      </div>
     ),
   },
-  { id: 'date', header: 'Date', sortable: true },
+  { id: 'title', header: 'Event Title' },
+  { id: 'date', header: 'Date' },
+  { id: 'location', header: 'Location' },
   {
-    id: 'location',
-    header: 'Location',
-    sortable: true,
-    renderCell: (value) => (typeof value === 'string' ? value : value?.en || value?.ar || '—'),
-  },
-  {
-    id: 'active',
+    id: 'status',
     header: 'Status',
-    renderCell: (value) => <StatusBadge status={value ? 'active' : 'inactive'} />,
+    renderCell: (v) => <StatusBadge status={v} />,
   },
 ];
 
 function EventsListTable({ data, totalCount, isLoading }) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteEvent, { isLoading: isDeleting }] = useDeleteEventMutation();
+  const [deleteEvent] = useDeleteEventMutation();
   const [confirmItem, setConfirmItem] = useState(null);
 
-  const handleDeleteConfirm = async () => {
+  const handleDelete = async () => {
     try {
       await deleteEvent(confirmItem.id).unwrap();
-      enqueueSnackbar('Event deleted successfully', { variant: 'success' });
+      enqueueSnackbar('Deleted successfully', { variant: 'success' });
       setConfirmItem(null);
     } catch {
-      enqueueSnackbar('Failed to delete event', { variant: 'error' });
+      enqueueSnackbar('Delete failed', { variant: 'error' });
     }
   };
 
-  const rowActions = (row) => [
+  const actions = (row) => [
     {
-      icon: <Visibility style={{ fontSize: 18 }} />,
-      label: 'View',
+      icon: <Visibility />,
       onClick: () => navigate(`/events/${row.id}`),
     },
     {
-      icon: <Edit style={{ fontSize: 18 }} />,
-      label: 'Edit',
-      onClick: () => navigate(`/events/${row.id}`),
+      icon: <Edit />,
+      onClick: () => navigate(`/events/${row.id}?mode=edit`),
     },
     {
-      icon: <DeleteOutline style={{ fontSize: 18 }} />,
-      label: 'Delete',
+      icon: <DeleteOutline />,
       danger: true,
       onClick: () => setConfirmItem(row),
     },
@@ -96,17 +75,14 @@ function EventsListTable({ data, totalCount, isLoading }) {
         data={data}
         totalCount={totalCount}
         isLoading={isLoading}
-        rowActions={rowActions}
-        emptyMessage="No events found. Add your first event!"
+        rowActions={actions}
       />
 
       <ConfirmModal
         open={!!confirmItem}
         onClose={() => setConfirmItem(null)}
-        onConfirm={handleDeleteConfirm}
-        loading={isDeleting}
+        onConfirm={handleDelete}
         title="Delete Event"
-        description={`Are you sure you want to delete "${confirmItem?.title?.en || confirmItem?.title?.ar || confirmItem?.title || 'this event'}"? This action cannot be undone.`}
       />
     </>
   );

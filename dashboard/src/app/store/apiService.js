@@ -5,22 +5,32 @@ const axiosBaseQuery =
   () =>
   async ({ url, method, data, params, headers }) => {
     try {
-      const result = await axiosInstance({ url, method, data, params, headers });
+      const result = await axiosInstance({
+        url,
+        method,
+        data,
+        params,
+        headers,
+      });
+
       return { data: result.data };
     } catch (error) {
       return {
         error: {
-          status: error.status,
-          data: error.message,
+          status: error.response?.status,
+          data: error.response?.data || error.message,
         },
       };
     }
   };
 
 export const apiService = createApi({
-  baseQuery: axiosBaseQuery(),
-  endpoints: () => ({}),
   reducerPath: 'apiService',
+  baseQuery: axiosBaseQuery(),
+
+  tagTypes: ['Events', 'Event'],
+
+  endpoints: () => ({}),
 });
 
 export default apiService;
