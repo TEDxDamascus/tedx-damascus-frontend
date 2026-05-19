@@ -8,5 +8,5 @@ type Props = {
 export default async function ComingSoonPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <ComingSoonClient />;
+  return <ComingSoonClient locale={locale} />;
 }

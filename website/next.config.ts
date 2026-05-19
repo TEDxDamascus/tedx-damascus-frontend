@@ -6,11 +6,12 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
+  poweredByHeader: false,
   images: {
     unoptimized: true,
   },
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   outputFileTracingRoot: require('path').join(__dirname, '../'),
 };
