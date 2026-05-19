@@ -52,6 +52,9 @@ function Header() {
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             {user?.email || 'Admin'}
           </Typography>
+          <IconButton onClick={handleLogout} color="inherit" sx={{ mr: 1 }}>
+            <Logout />
+          </IconButton>
           <IconButton size="large" onClick={handleMenu} color="inherit">
             <Avatar sx={{ width: 32, height: 32, backgroundColor: '#EB0028' }}>
               {user?.name?.charAt(0) || 'A'}

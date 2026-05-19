@@ -1,27 +1,41 @@
 import { Controller } from 'react-hook-form';
 import { FormControlLabel, Switch, Grid, Box } from '@mui/material';
+
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+
 import { parse, format, isValid } from 'date-fns';
+
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
+
 import { CustomAutocomplete } from '../../../../shared-components/custom-autocomplete';
 import { ImagePickerField } from '../../../../shared-components/image-picker';
+
 import { searchSpeakerOptions } from '../../../speakers-app/SpeakersApi';
 
 const pickerSx = {
   width: '100%',
   '& .MuiOutlinedInput-root': {
-    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--color-primary)' },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'var(--color-primary)',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'var(--color-primary)',
+    },
   },
-  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-primary)' },
-  '& .MuiIconButton-root': { color: 'var(--color-primary)' },
+  '& .MuiInputLabel-root.Mui-focused': {
+    color: 'var(--color-primary)',
+  },
+  '& .MuiIconButton-root': {
+    color: 'var(--color-primary)',
+  },
 };
 
 function BasicInfoTab({ control, errors }) {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
+        {/* TITLE */}
         <Grid item xs={12}>
           <Controller
             name="title"
@@ -38,7 +52,6 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <Controller
             name="date"
@@ -50,6 +63,7 @@ function BasicInfoTab({ control, errors }) {
                     return isValid(d) ? d : null;
                   })()
                 : null;
+
               return (
                 <DatePicker
                   label="Event Date *"
@@ -70,7 +84,6 @@ function BasicInfoTab({ control, errors }) {
             }}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <Controller
             name="time"
@@ -82,6 +95,7 @@ function BasicInfoTab({ control, errors }) {
                     return isValid(d) ? d : null;
                   })()
                 : null;
+
               return (
                 <TimePicker
                   label="Event Time"
@@ -102,7 +116,6 @@ function BasicInfoTab({ control, errors }) {
             }}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Controller
             name="location"
@@ -118,7 +131,6 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Controller
             name="image"
@@ -134,7 +146,6 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Controller
             name="speakers"
@@ -147,13 +158,13 @@ function BasicInfoTab({ control, errors }) {
                 multiple
                 label="Event Speakers"
                 placeholder="Search speakers..."
-                error={errors.speakers}
+                error={!!errors.speakers}
                 helperText={errors.speakers?.message}
+                onChange={(value) => field.onChange(value.map((s) => s.id))}
               />
             )}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Controller
             name="brief"
@@ -170,7 +181,7 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
+        {/* DESCRIPTION */}
         <Grid item xs={12}>
           <Controller
             name="description"
@@ -187,7 +198,6 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <Controller
             name="status"
@@ -196,7 +206,6 @@ function BasicInfoTab({ control, errors }) {
               <FormControlLabel
                 control={
                   <Switch
-                    {...field}
                     checked={field.value === 'active'}
                     onChange={(e) => field.onChange(e.target.checked ? 'active' : 'upcoming')}
                   />
@@ -206,14 +215,18 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <Controller
             name="active"
             control={control}
             render={({ field }) => (
               <FormControlLabel
-                control={<Switch {...field} checked={field.value} />}
+                control={
+                  <Switch
+                    checked={!!field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                  />
+                }
                 label="Published"
               />
             )}

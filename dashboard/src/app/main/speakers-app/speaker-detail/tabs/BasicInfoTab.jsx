@@ -89,21 +89,6 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="company"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Company / Organization"
-                fullWidth
-                error={!!errors.company}
-                helperText={errors.company?.message}
-              />
-            )}
-          />
-        </Grid>
 
         <Grid item xs={12} md={6}>
           <Controller

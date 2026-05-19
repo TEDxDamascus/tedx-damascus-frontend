@@ -27,6 +27,10 @@ const RESOURCE_LABELS = {
   events: 'Events',
   files: 'Files',
   images: 'Images',
+  volunteer: 'Volunteer',
+  partner: 'Partner',
+  'general-settings': 'General Settings',
+  wall: 'Wall',
 };
 
 function PermissionsTable({ control, isDisabled }) {

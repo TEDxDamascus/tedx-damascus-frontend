@@ -7,7 +7,7 @@ import {
   RecordVoiceOver,
   Settings,
 } from '@mui/icons-material';
-
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import GroupsIcon from '@mui/icons-material/Groups';
 const navigationConfig = [
   {
@@ -43,6 +43,13 @@ const navigationConfig = [
     type: 'item',
     icon: GroupsIcon,
     url: '/team',
+  },
+  {
+    id: 'organizers',
+    title: 'organizers',
+    type: 'organizers',
+    icon: ManageAccountsIcon,
+    url: '/organizers',
   },
   {
     id: 'events',
