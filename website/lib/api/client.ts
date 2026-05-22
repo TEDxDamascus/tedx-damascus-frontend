@@ -142,3 +142,8 @@ export const authApi = {
   getCurrentUser: () =>
     apiClient.get('/auth/me'),
 };
+
+export const newsletterApi = {
+  subscribe: (email: string) =>
+    apiClient.post('/newsletter/subscribe', { email }),
+};

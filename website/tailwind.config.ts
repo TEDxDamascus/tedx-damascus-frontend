@@ -30,7 +30,8 @@ const config: Config = {
         'scroll-wheel': 'scroll-wheel 1.8s ease-in-out infinite',
       },
       colors: {
-        'page-bg': 'var(--page-bg)', // #101010
+        'page-bg':   'var(--page-bg)',   // #101010
+        'footer-bg': 'var(--footer-bg)', // #EB0028
         'card-bg': '#1A1A1A',
 
         'tedx-red':   '#E21E2C',
@@ -68,7 +69,9 @@ const config: Config = {
         sans:           ['var(--font-inter)'],
         arabic:         ['var(--font-cairo)',   'sans-serif'],
         alamani:        ['var(--font-almarai)', 'sans-serif'],
-        helvetica:      ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        // System font stack — uses Helvetica Neue when installed (macOS).
+        // var(--font-inter) is the loaded web font fallback for other platforms.
+        helvetica:      ['Helvetica Neue', 'Helvetica', 'Arial', 'var(--font-inter)', 'sans-serif'],
         'arial-rounded': ['"Arial Rounded MT Bold"', 'Arial', 'sans-serif'],
         manrope:        ['var(--font-manrope)', 'sans-serif'],
       },

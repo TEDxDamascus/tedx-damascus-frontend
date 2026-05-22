@@ -31,7 +31,7 @@ function VoiceCard({ ghostIcon, children }: { ghostIcon: string; children: React
   return (
     <div className="relative w-[498.6px] h-[311.96px]">
       <CardShapes />
-      <div className="absolute w-[340px] h-[200px] left-[57px] top-[33px] px-6 py-8 bg-card-bg overflow-hidden flex flex-col justify-center items-start gap-[31px] shadow-[1.724px_1.724px_4.311px_0.862px_rgba(0,0,0,0.50)]">
+      <div className="absolute w-[340px] h-[200px] left-[57px] top-[33px] px-[42px] py-[36px] bg-card-bg overflow-hidden flex flex-col justify-between items-start shadow-[1.724px_1.724px_4.311px_0.862px_rgba(0,0,0,0.50)]">
         <div aria-hidden className="absolute right-0 top-1/2 -translate-y-1/2 w-[190px] h-[190px] opacity-[0.35]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={ghostIcon} alt="" className="w-full h-full" draggable={false} loading="lazy" />
@@ -82,7 +82,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
             <div className="flex items-center gap-1">
               <Link
                 href={`/${locale}/speakers`}
-                className="w-[177px] text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
+                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
               >
                 {t('nominateCta')}
               </Link>
@@ -100,7 +100,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
             <div className="flex items-center gap-1">
               <Link
                 href={`/${locale}/volunteer`}
-                className="w-[169px] text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
+                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
               >
                 {t('applyCta')}
               </Link>

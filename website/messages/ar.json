@@ -60,12 +60,16 @@
     "tagline": "من مدينة التاريخ إلى مستقبل الأفكار، ابقَ على تواصل مع ما يُشكّل الغد",
     "emailLabel": "عنوان بريدك الإلكتروني",
     "submit": "إرسال",
-    "submitted": "شكراً! سنتواصل معك قريباً.",
+    "subscribe": "اشترك",
+    "submitted": "تم الاشتراك!",
     "license": "هذا الحدث المستقل TEDx يعمل بموجب ترخيص من TED",
     "about": "عن TEDxDamascus",
     "description": "TEDxDamascus هو حدث TED محلي منظم بشكل مستقل يجمع ألمع العقول من دمشق وخارجها.",
     "followUs": "تابعنا",
-    "rights": "جميع الحقوق محفوظة"
+    "rights": "جميع الحقوق محفوظة",
+    "dialogTitle": "شكراً على اشتراكك!",
+    "dialogMessage": "أنت الآن جزء من مجتمع TEDxDamascus. سنبقيك على تواصل مع الأفكار التي تستحق الانتشار.",
+    "dialogClose": "إغلاق"
   },
   "CallForVoices": {
     "title": "نداء الأصوات",
@@ -89,9 +93,9 @@
   },
   "AddYourLine": {
     "question": "ما الفكرة الصاعدة من دمشق التي يجب أن تصل إلى العالم",
-    "emailPlaceholder": "عنوان بريدك الإلكتروني",
+    "inputPlaceholder": "شاركنا فكرتك...",
     "submit": "إرسال",
-    "submitted": "شكراً! سنتواصل معك قريباً.",
+    "submitted": "تمت إضافة سطرك!",
     "viewAll": "عرض جميع الإجابات"
   },
   "UsSection": {
@@ -106,6 +110,10 @@
     "organizersSubtitle": "العقول التي تصنع التجربة",
     "speakersSubtitle": "أصوات تُشعل الحوار",
     "partnersSubtitle": "الداعمون الذين يجعلون ذلك ممكناً"
+  },
+  "LatestEvents": {
+    "title": "أحدث الفعاليات",
+    "seeAll": "عرض الكل"
   },
   "Gallery": {
     "title": "معرض الصور",
