@@ -42,7 +42,7 @@ const eventSchema = z.object({
 function Event() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar: _enqueueSnackbar } = useSnackbar();
 
   const [currentTab, setCurrentTab] = useState(0);
 

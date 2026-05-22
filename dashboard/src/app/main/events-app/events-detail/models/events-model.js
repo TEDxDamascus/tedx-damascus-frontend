@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import { defaultLocaleValue } from '../../../../shared-components/locale-input';
+
 const EventModel = () => ({
   title: '',
   description: '',
@@ -13,6 +12,5 @@ const EventModel = () => ({
   status: 'draft',
   active: false,
 });
-
 
 export default EventModel;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Controller, useController } from 'react-hook-form';
-import { TextField, Grid, Box, Typography, IconButton, Button } from '@mui/material';
+import { useController } from 'react-hook-form';
+import { Grid, Box, Typography, IconButton, Button } from '@mui/material';
 import { Add, DeleteOutline } from '@mui/icons-material';
 import { ImagePickerDialog } from '../../../../shared-components/image-picker';
 
@@ -10,8 +10,7 @@ function GalleryPicker({ control, name }) {
   const images = Array.isArray(field.value) ? field.value : [];
 
   const handleAdd = (ref) => {
-    const url =
-      typeof ref === 'string' ? ref.trim() : String(ref?.url || ref?.id || '').trim();
+    const url = typeof ref === 'string' ? ref.trim() : String(ref?.url || ref?.id || '').trim();
     if (url && !images.includes(url)) {
       field.onChange([...images, url]);
     }
@@ -90,15 +89,13 @@ function GalleryPicker({ control, name }) {
   );
 }
 
-function LinksTab({ control, errors }) {
+function LinksTab({ control, errors: _errors }) {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <GalleryPicker control={control} name="gallery" />
         </Grid>
-
-
       </Grid>
     </Box>
   );

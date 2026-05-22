@@ -1,31 +1,31 @@
 import { Controller } from 'react-hook-form';
-import { TextField, Grid, Box, Typography } from '@mui/material';
+import { TextField, Grid, Box } from '@mui/material';
 
 function SocialLinksTab({ control, errors }) {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-        <Controller
-  name="social_links"
-  control={control}
-  render={({ field }) => (
-    <TextField
-      fullWidth
-      label="Social Links"
-      placeholder="https://linkedin.com/... , https://facebook.com/..."
-      value={field.value?.join(', ') || ''}
-      onChange={(e) =>
-        field.onChange(
-          e.target.value
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        )
-      }
-    />
-  )}
-/>
+          <Controller
+            name="social_links"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                fullWidth
+                label="Social Links"
+                placeholder="https://linkedin.com/... , https://facebook.com/..."
+                value={field.value?.join(', ') || ''}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  )
+                }
+              />
+            )}
+          />
         </Grid>
 
         <Grid item xs={12} md={6}>

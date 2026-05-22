@@ -36,7 +36,12 @@ function BlogView() {
   const { blogId } = useParams();
   const navigate = useNavigate();
   const [locale, setLocale] = useState('en');
-  const { data: blogData, isLoading, isError, error: loadError } = useGetBlogQuery(blogId, {
+  const {
+    data: blogData,
+    isLoading,
+    isError,
+    error: loadError,
+  } = useGetBlogQuery(blogId, {
     skip: !blogId,
   });
 
@@ -83,10 +88,7 @@ function BlogView() {
   return (
     <div className="p-6 pt-8">
       <Breadcrumb
-        items={[
-          { label: 'Blog', href: '/blogs' },
-          { label: title.trim() || 'Article' },
-        ]}
+        items={[{ label: 'Blog', href: '/blogs' }, { label: title.trim() || 'Article' }]}
       />
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

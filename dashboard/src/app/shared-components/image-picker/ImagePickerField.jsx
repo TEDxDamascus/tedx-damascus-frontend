@@ -38,25 +38,13 @@ export default function ImagePickerField({
     }
   };
 
-  const hasValue = !!value;
-
-  const handleChange = (val) => {
-    onChange(val || '');
-  };
-
   return (
     <>
       <div className="flex items-stretch gap-3">
-
         {/* Thumbnail */}
         <div className="flex w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50">
           {hasValue ? (
             <img src={previewSrc} alt="" className="h-full w-full object-cover" />
-            <img
-              src={value}
-              alt="preview"
-              className="h-full w-full object-cover"
-            />
           ) : (
             <Image className="text-gray-300" style={{ fontSize: 24 }} />
           )}
@@ -75,14 +63,9 @@ export default function ImagePickerField({
           >
             <input
               type="text"
-              value={value ?? ''}
-              onChange={(e) => handleChange(e.target.value)}
-              disabled={disabled}
               value={
                 valueMode === 'mediaRef'
-                  ? (normalizeMediaFormValue(value).url ||
-                      normalizeMediaFormValue(value).id ||
-                      '')
+                  ? normalizeMediaFormValue(value).url || normalizeMediaFormValue(value).id || ''
                   : typeof value === 'string'
                     ? (value ?? '')
                     : mediaFormValueToPreviewSrc(value)
@@ -111,12 +94,7 @@ export default function ImagePickerField({
           </div>
 
           {helperText && (
-            <p className={`mt-1 text-xs ${error ? 'text-red-500' : 'text-gray-400'}`}>{helperText}</p>
-            <p
-              className={`mt-1 text-xs ${
-                error ? 'text-red-500' : 'text-gray-400'
-              }`}
-            >
+            <p className={`mt-1 text-xs ${error ? 'text-red-500' : 'text-gray-400'}`}>
               {helperText}
             </p>
           )}
@@ -126,8 +104,6 @@ export default function ImagePickerField({
       <ImagePickerDialog
         open={open}
         onClose={() => setOpen(false)}
-        onSelect={handleChange}
-        currentUrl={value ?? ''}
         onSelect={handleDialogSelect}
         currentValue={value}
       />

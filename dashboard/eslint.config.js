@@ -4,7 +4,7 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 
 export default [
-  { ignores: ['dist/**', 'build/**', 'node_modules/**'] },
+  { ignores: ['dist/**', 'build/**', 'node_modules/**', 'public/assets/**'] },
 
   {
     files: ['vite.config.js', 'postcss.config.js', 'tailwind.config.js'],

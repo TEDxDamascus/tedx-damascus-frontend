@@ -22,12 +22,11 @@ import {
 import { searchBlogOptions } from '../BlogsApi';
 import { searchUserOptions } from '../../users-app/UsersApi';
 import { searchBlogCategoryOptions } from '../blog-categories/BlogCategoriesApi';
+import { blogReferencesFromApi, mapBlogFromApi, mapBlogReferenceApiItemToForm } from './blogMapper';
 import {
-  blogReferencesFromApi,
-  mapBlogFromApi,
-  mapBlogReferenceApiItemToForm,
-} from './blogMapper';
-import { mediaFormValueToApiId, isLikelyMongoObjectId } from '../../../shared-components/image-picker';
+  mediaFormValueToApiId,
+  isLikelyMongoObjectId,
+} from '../../../shared-components/image-picker';
 
 const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
@@ -91,8 +90,7 @@ function tagsFlatToLocalized(flatTags) {
   const list = (flatTags || []).map((t) => String(t || '').trim()).filter(Boolean);
   const ar = [];
   const en = [];
-  const arabic =
-    /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const arabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
   for (const s of list) {
     if (arabic.test(s)) ar.push(s);
     else en.push(s);
@@ -132,9 +130,7 @@ async function syncBlogReferencesWithServer({
 
   const refs = formRefs || [];
   const initialSet =
-    initialReferenceIds instanceof Set
-      ? initialReferenceIds
-      : new Set(initialReferenceIds || []);
+    initialReferenceIds instanceof Set ? initialReferenceIds : new Set(initialReferenceIds || []);
 
   const currentIds = new Set(
     refs.map((r) => (r?.reference_id ? String(r.reference_id) : null)).filter(Boolean),
@@ -320,7 +316,10 @@ function Blog() {
     const { blog_references: _drop, ...rest } = base;
     reset({ ...rest, blog_references: mapped });
     initialReferenceIdsRef.current = new Set(
-      mapped.map((r) => r.reference_id).filter(Boolean).map(String),
+      mapped
+        .map((r) => r.reference_id)
+        .filter(Boolean)
+        .map(String),
     );
     lastHydratedBlogIdRef.current = blogId;
   }, [isNew, blogId, blogData, refsQuerySettled, refQuery.isError, refQuery.data, reset]);
@@ -381,10 +380,9 @@ function Blog() {
           setSyncingRefs(false);
         }
         if (refFailures > 0) {
-          enqueueSnackbar(
-            `Article updated, but ${refFailures} reference operation(s) failed.`,
-            { variant: 'warning' },
-          );
+          enqueueSnackbar(`Article updated, but ${refFailures} reference operation(s) failed.`, {
+            variant: 'warning',
+          });
         } else {
           enqueueSnackbar('Blog updated successfully', { variant: 'success' });
         }
@@ -435,10 +433,7 @@ function Blog() {
           { label: 'Blog', href: '/blogs' },
           ...(isNew
             ? [{ label: 'Add New Article' }]
-            : [
-                { label: 'Article', href: `/blogs/${blogId}` },
-                { label: 'Edit' },
-              ]),
+            : [{ label: 'Article', href: `/blogs/${blogId}` }, { label: 'Edit' }]),
         ]}
       />
 

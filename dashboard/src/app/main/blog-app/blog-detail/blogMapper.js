@@ -27,7 +27,12 @@ function pickLocalizedCategoryName(value) {
 function mapBlogCategoryFromApi(source) {
   const cidRaw = source.category_id;
 
-  if (cidRaw && typeof cidRaw === 'object' && !Array.isArray(cidRaw) && (cidRaw._id != null || cidRaw.id != null)) {
+  if (
+    cidRaw &&
+    typeof cidRaw === 'object' &&
+    !Array.isArray(cidRaw) &&
+    (cidRaw._id != null || cidRaw.id != null)
+  ) {
     const cid = cidRaw._id ?? cidRaw.id;
     return {
       id: String(cid),
@@ -38,7 +43,11 @@ function mapBlogCategoryFromApi(source) {
     };
   }
 
-  if (cidRaw != null && cidRaw !== '' && (typeof cidRaw === 'string' || typeof cidRaw === 'number')) {
+  if (
+    cidRaw != null &&
+    cidRaw !== '' &&
+    (typeof cidRaw === 'string' || typeof cidRaw === 'number')
+  ) {
     const nameFromRoot =
       typeof source.category_name === 'string'
         ? source.category_name.trim()
@@ -46,10 +55,7 @@ function mapBlogCategoryFromApi(source) {
     const flatName = nameFromRoot || '';
     return {
       id: String(cidRaw),
-      label:
-        flatName ||
-        pickLocalizedCategoryName(source.category?.name) ||
-        String(cidRaw),
+      label: flatName || pickLocalizedCategoryName(source.category?.name) || String(cidRaw),
     };
   }
 
@@ -90,8 +96,14 @@ function metaKeywordsFromApi(meta) {
     const en = Array.isArray(meta.en) ? meta.en : [];
     if (ar.length || en.length) {
       return {
-        ar: ar.map((s) => String(s || '').trim()).filter(Boolean).join(', '),
-        en: en.map((s) => String(s || '').trim()).filter(Boolean).join(', '),
+        ar: ar
+          .map((s) => String(s || '').trim())
+          .filter(Boolean)
+          .join(', '),
+        en: en
+          .map((s) => String(s || '').trim())
+          .filter(Boolean)
+          .join(', '),
       };
     }
   }
@@ -100,7 +112,8 @@ function metaKeywordsFromApi(meta) {
 
 function pickMetaKeywords(primary, seoFallback) {
   const fromPrimary = metaKeywordsFromApi(primary);
-  if (String(fromPrimary.en || '').trim() || String(fromPrimary.ar || '').trim()) return fromPrimary;
+  if (String(fromPrimary.en || '').trim() || String(fromPrimary.ar || '').trim())
+    return fromPrimary;
   if (seoFallback != null) return metaKeywordsFromApi(seoFallback);
   return fromPrimary;
 }

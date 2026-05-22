@@ -7,10 +7,13 @@ const PAGE_SIZE = 10;
 
 function FormsList() {
   const { data, isLoading } = useGetFormsQuery();
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [page, _setPage] = useState(1);
+  const [search, _setSearch] = useState('');
 
-  const allForms = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+  const allForms = useMemo(
+    () => (Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : []),
+    [data],
+  );
 
   const filtered = useMemo(() => {
     if (!search.trim()) return allForms;

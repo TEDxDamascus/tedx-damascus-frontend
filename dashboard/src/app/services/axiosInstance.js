@@ -23,9 +23,7 @@ axiosInstance.interceptors.request.use(
 let isRefreshing = false;
 let refreshQueue = [];
 function processQueue(error, token = null) {
-  refreshQueue.forEach(({ resolve, reject }) =>
-    error ? reject(error) : resolve(token),
-  );
+  refreshQueue.forEach(({ resolve, reject }) => (error ? reject(error) : resolve(token)));
   refreshQueue = [];
 }
 function forceLogout() {
@@ -35,10 +33,7 @@ function forceLogout() {
 function normalizeError(error) {
   return {
     status: error.response?.status,
-    message:
-      error.response?.data?.message ||
-      error.message ||
-      'An unexpected error occurred',
+    message: error.response?.data?.message || error.message || 'An unexpected error occurred',
     data: error.response?.data,
     raw: error,
   };
@@ -48,7 +43,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const original = error.config;
     const status = error.response?.status;
-    if (status !== 401 || original._retry) {
+    if (status !== 401 || original._retry || original.url?.includes('/auth/login')) {
       return Promise.reject(normalizeError(error));
     }
     if (isRefreshing) {
@@ -64,19 +59,15 @@ axiosInstance.interceptors.response.use(
     try {
       const refreshToken = tokenService.getRefreshToken();
       if (!refreshToken) throw new Error('No refresh token');
-      const { data } = await axios.post(
-        `${BASE_URL}/auth/refresh`,
-        {
-          refresh_token: refreshToken,
-        },
-      );
+      const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
+        refresh_token: refreshToken,
+      });
       const { access_token, refresh_token: newRefresh } = data.data;
       tokenService.setTokens({
         access_token,
         refresh_token: newRefresh,
       });
-      axiosInstance.defaults.headers.common.Authorization =
-        `Bearer ${access_token}`;
+      axiosInstance.defaults.headers.common.Authorization = `Bearer ${access_token}`;
       processQueue(null, access_token);
       original.headers.Authorization = `Bearer ${access_token}`;
       return axiosInstance(original);

@@ -3,10 +3,7 @@
 import { Controller } from 'react-hook-form';
 import { TextField, Grid, Box } from '@mui/material';
 
-import {
-  LocaleInput,
-  localeInputTypes,
-} from '../../../../shared-components/locale-input';
+import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
 
 function BasicInfoTab({ control, errors }) {
   return (

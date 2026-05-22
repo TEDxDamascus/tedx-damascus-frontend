@@ -15,9 +15,13 @@ function normalizeLocalePair(raw) {
 
 /** Build PATCH/POST body; `name` / `description` may be `{ ar, en }` or plain strings (same value both locales). */
 function toLocalePayload(name, description) {
-  const n = ensureLocaleValue(typeof name === 'object' && name !== null ? name : { en: name, ar: name });
+  const n = ensureLocaleValue(
+    typeof name === 'object' && name !== null ? name : { en: name, ar: name },
+  );
   const d = ensureLocaleValue(
-    typeof description === 'object' && description !== null ? description : { en: description, ar: description },
+    typeof description === 'object' && description !== null
+      ? description
+      : { en: description, ar: description },
   );
   return {
     name: { ar: String(n.ar || '').trim(), en: String(n.en || '').trim() },

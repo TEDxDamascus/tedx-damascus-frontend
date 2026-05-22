@@ -21,7 +21,10 @@ import {
   localeInputTypes,
   ensureLocaleValue,
 } from '../../../../shared-components/locale-input';
-import { ImagePickerField, mediaFormValueToPreviewSrc } from '../../../../shared-components/image-picker';
+import {
+  ImagePickerField,
+  mediaFormValueToPreviewSrc,
+} from '../../../../shared-components/image-picker';
 import { CustomAutocomplete } from '../../../../shared-components/custom-autocomplete';
 
 function BlogContentSeoTab({
@@ -356,8 +359,8 @@ function BlogContentSeoTab({
               <Box>
                 <Typography sx={{ fontWeight: 600 }}>References & sources</Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Optional external links (name, description, URL). New rows are sent to the API when
-                  you save the article.
+                  Optional external links (name, description, URL). New rows are sent to the API
+                  when you save the article.
                 </Typography>
               </Box>
             </AccordionSummary>
