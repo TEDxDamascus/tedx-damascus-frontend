@@ -39,8 +39,7 @@ function sanitizeMessage(raw: string): string {
     .slice(0, MAX_CHARS);
 }
 
-// Each card has LTR and RTL variants for absolute position and gradient direction.
-// Gradient: red is concentrated at the corner closest to the section center, descends quickly to dark.
+// Gradient: red is concentrated at the corner closest to the section center.
 const ANSWER_CARDS: {
   text: string;
   ltr: { posClass: string; gradient: string };
@@ -49,34 +48,34 @@ const ANSWER_CARDS: {
   {
     text: 'Kindness in difficult environments is one of the strongest forces in the world.',
     ltr: {
-      posClass: 'left-[110px] top-[53px]',
-      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)', // red at top-right corner
+      posClass: 'left-[110px] top-[54px]',
+      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
     },
     rtl: {
-      posClass: 'right-[110px] top-[53px]',
-      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)', // red at top-left corner (mirrored)
+      posClass: 'right-[110px] top-[54px]',
+      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
     },
   },
   {
     text: "That culture is not something we inherit — it's something we actively shape every day, Beauty still exists, even in the hardest places.",
     ltr: {
       posClass: 'right-[78px] top-[11px]',
-      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)', // red at top-left corner
+      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
     },
     rtl: {
       posClass: 'left-[78px] top-[11px]',
-      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)', // red at top-right corner (mirrored)
+      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
     },
   },
   {
     text: 'Kindness in difficult environments is one of the strongest forces in the world.',
     ltr: {
       posClass: 'right-[107px] top-[464px]',
-      gradient: 'linear-gradient(to right, #101010 40%, #DF2127 100%)', // red on full right side
+      gradient: 'linear-gradient(to right, #101010 40%, #DF2127 100%)',
     },
     rtl: {
       posClass: 'left-[107px] top-[464px]',
-      gradient: 'linear-gradient(to left, #101010 40%, #DF2127 100%)', // red on full left side (mirrored)
+      gradient: 'linear-gradient(to left, #101010 40%, #DF2127 100%)',
     },
   },
 ];
@@ -105,7 +104,6 @@ const CARD_TEXT_STYLE: React.CSSProperties = {
   wordWrap: 'break-word',
 };
 
-// User card: white concentrated on right side in LTR, left side in RTL
 const USER_CARD_GRADIENT_LTR = 'linear-gradient(to right, #101010 40%, #FFFFFF 100%)';
 const USER_CARD_GRADIENT_RTL = 'linear-gradient(to left,  #101010 40%, #FFFFFF 100%)';
 
@@ -172,6 +170,19 @@ export function AddYourLine({ locale }: AddYourLineProps) {
             </div>
           );
         })}
+        {submitted && submittedMessage && (
+          <motion.div
+            className={`absolute ${isRtl ? 'right-[77px]' : 'left-[77px]'} top-[404px]`}
+            style={{ padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR, display: 'inline-flex' }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
+            <div style={USER_CARD_INNER_STYLE}>
+              <p style={USER_CARD_TEXT_STYLE}>{submittedMessage}</p>
+            </div>
+          </motion.div>
+        )}
       </div>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -231,27 +242,8 @@ export function AddYourLine({ locale }: AddYourLineProps) {
               'lg:absolute lg:top-[190px] lg:left-1/2 lg:-translate-x-1/2',
             ].join(' ')}
           >
-            <div className={`flex flex-col gap-[6px] w-[240px] sm:w-[300px] lg:w-[360px] ${submitted ? 'items-center' : isRtl ? 'items-end' : 'items-start'}`}>
-              {submitted ? (
-                <>
-                  <p className={`text-white text-[18px] lg:text-[20px] font-medium leading-[1.2] tracking-[0.15px] text-center ${isRtl ? 'font-arabic' : 'font-helvetica'}`}>
-                    {t('submitted')}
-                  </p>
-                  {submittedMessage && (
-                    <motion.div
-                      className="hidden lg:inline-flex"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.35, ease: 'easeOut' }}
-                      style={{ padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR }}
-                    >
-                      <div style={{ ...USER_CARD_INNER_STYLE, minWidth: 180 }}>
-                        <p style={{ ...USER_CARD_TEXT_STYLE, width: 'auto', maxWidth: 280, textAlign: 'center' }}>{submittedMessage}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </>
-              ) : (
+            <div className={`flex flex-col gap-[6px] w-[240px] sm:w-[300px] lg:w-[360px] ${isRtl ? 'items-end' : 'items-start'}`}>
+              {!submitted && (
                 <input
                   type="text"
                   value={message}
@@ -284,10 +276,10 @@ export function AddYourLine({ locale }: AddYourLineProps) {
 
       {submitted && submittedMessage && (
         <motion.div
-          className="lg:hidden relative z-10 mt-6"
+          className="lg:hidden inline-flex relative z-10 mt-6"
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{ scaleY: 1, opacity: 1 }}
-          style={{ transformOrigin: 'top', padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR, display: 'inline-flex' }}
+          style={{ transformOrigin: 'top', padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
           <div style={{ ...USER_CARD_INNER_STYLE, minWidth: 200, justifyContent: 'center' }}>

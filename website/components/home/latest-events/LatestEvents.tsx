@@ -50,11 +50,12 @@ export function LatestEvents({ locale }: LatestEventsProps) {
   return (
     <section
       className={[
-        'w-full bg-page-bg flex flex-col justify-center items-center',
+        'w-full bg-page-bg',
+        'flex flex-col justify-center items-center',
         'px-6 sm:px-12 lg:px-[160px]',
         'py-10',
+        'gap-[22px]',
       ].join(' ')}
-      style={{ gap: 22 }}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* Title */}
@@ -72,8 +73,10 @@ export function LatestEvents({ locale }: LatestEventsProps) {
         {t('title')}
       </div>
 
-      {/* Cards */}
-      <div className="w-full flex flex-col lg:flex-row justify-center items-stretch gap-6">
+      {/* Cards row */}
+      <div
+        className="w-full flex flex-col lg:flex-row justify-center items-stretch gap-6"
+      >
         {EVENTS.map((event) => (
           <div
             key={event.id}
@@ -84,31 +87,32 @@ export function LatestEvents({ locale }: LatestEventsProps) {
               background: '#1A1A1A',
               boxShadow: '0px 0px 23px rgba(0,0,0,0.08)',
               borderRadius: 18,
-              display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-start',
               alignItems: 'center',
               gap: 12,
+              display: 'inline-flex',
             }}
           >
-            {/* Image with bottom gradient */}
+            {/* Image with gradient overlay — matches Figma img structure */}
             <div
               style={{
                 alignSelf: 'stretch',
                 height: 240,
-                position: 'relative',
                 borderRadius: 13,
                 overflow: 'hidden',
+                position: 'relative',
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/events/event-bg.jpg"
                 alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 draggable={false}
                 loading="lazy"
               />
+              {/* Gradient overlay matching Figma */}
               <div
                 aria-hidden
                 style={{
@@ -119,17 +123,17 @@ export function LatestEvents({ locale }: LatestEventsProps) {
               />
             </div>
 
-            {/* Content below image */}
+            {/* Body: tag + title */}
             <div
               style={{
                 alignSelf: 'stretch',
                 paddingLeft: 12,
                 paddingRight: 12,
-                display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'flex-start',
                 gap: 10,
+                display: 'flex',
               }}
             >
               {/* Tag pill */}
@@ -141,10 +145,10 @@ export function LatestEvents({ locale }: LatestEventsProps) {
                   paddingBottom: 6,
                   background: 'rgba(255,255,255,0.10)',
                   borderRadius: 20,
-                  display: 'inline-flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   gap: 8,
+                  display: 'inline-flex',
                 }}
               >
                 <span
@@ -166,9 +170,9 @@ export function LatestEvents({ locale }: LatestEventsProps) {
               <div
                 style={{
                   alignSelf: 'stretch',
-                  display: 'inline-flex',
                   justifyContent: 'flex-start',
                   alignItems: 'center',
+                  display: 'inline-flex',
                 }}
               >
                 <span
@@ -188,22 +192,24 @@ export function LatestEvents({ locale }: LatestEventsProps) {
               </div>
             </div>
 
-            {/* Absolute date + time overlay on image */}
+            {/* Absolute date + time overlay (left: 12.17, top: 164 per Figma) */}
             <div
               style={{
-                left: 12,
+                left: 12.17,
                 top: 164,
                 position: 'absolute',
-                display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
+                display: 'flex',
               }}
             >
               <span
-                className={isRtl ? 'font-arabic' : 'font-helvetica'}
                 style={{
-                  color: 'white',
+                  color: 'transparent',
+                  WebkitTextStroke: '1px white',
+                  paintOrder: 'stroke fill',
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                   fontSize: 34,
                   fontWeight: 500,
                   lineHeight: '41.99px',
@@ -213,19 +219,21 @@ export function LatestEvents({ locale }: LatestEventsProps) {
               >
                 {isRtl ? event.dateAr : event.date}
               </span>
+
+              {/* Calendar icon + time */}
               <div
                 style={{
-                  display: 'inline-flex',
                   justifyContent: 'flex-start',
                   alignItems: 'center',
                   gap: 3,
+                  display: 'inline-flex',
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/events/calendar.png"
                   alt=""
-                  style={{ width: 24, height: 24, objectFit: 'contain' }}
+                  style={{ width: 24, height: 24, objectFit: 'contain', flexShrink: 0 }}
                   draggable={false}
                 />
                 <span
@@ -256,10 +264,10 @@ export function LatestEvents({ locale }: LatestEventsProps) {
           paddingTop: 16,
           paddingBottom: 16,
           background: '#EB0028',
-          display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
+          display: 'flex',
           textDecoration: 'none',
         }}
       >
