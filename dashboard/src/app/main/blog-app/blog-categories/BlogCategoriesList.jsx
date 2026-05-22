@@ -177,7 +177,12 @@ function BlogCategoriesList() {
                 items.map((row) => (
                   <TableRow key={row.id} hover>
                     <TableCell dir={listLocale === 'ar' ? 'rtl' : 'ltr'}>
-                      {dash(getLocalizedText(row.nameLocales ?? { en: row.name, ar: row.name }, listLocale))}
+                      {dash(
+                        getLocalizedText(
+                          row.nameLocales ?? { en: row.name, ar: row.name },
+                          listLocale,
+                        ),
+                      )}
                     </TableCell>
                     <TableCell sx={{ maxWidth: 480 }} dir={listLocale === 'ar' ? 'rtl' : 'ltr'}>
                       {dash(

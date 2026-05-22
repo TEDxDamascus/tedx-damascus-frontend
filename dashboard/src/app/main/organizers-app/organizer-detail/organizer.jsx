@@ -28,10 +28,7 @@ const localeObjectSchema = z.object({
 });
 
 const organizerSchema = z.object({
-  name: localeObjectSchema.refine(
-    (v) => v?.en?.trim() || v?.ar?.trim(),
-    'Name is required'
-  ),
+  name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
   bio: localeObjectSchema.optional(),
   image: z.string().optional(),
   social_links: z.array(z.string()).optional(),
@@ -40,23 +37,21 @@ const organizerSchema = z.object({
 });
 
 function Organizer() {
- const { organizerId } = useParams();
+  const { organizerId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
   const [currentTab, setCurrentTab] = useState(0);
 
-const isNew = organizerId === 'add';
+  const isNew = organizerId === 'add';
 
   const { data: organizer, isLoading } = useGetOrganizerQuery(organizerId, {
     skip: isNew,
   });
 
-  const [createOrganizer, { isLoading: isCreating }] =
-    useCreateOrganizerMutation();
+  const [createOrganizer, { isLoading: isCreating }] = useCreateOrganizerMutation();
 
-  const [updateOrganizer, { isLoading: isUpdating }] =
-    useUpdateOrganizerMutation();
+  const [updateOrganizer, { isLoading: isUpdating }] = useUpdateOrganizerMutation();
 
   const isSaving = isCreating || isUpdating;
 
@@ -77,12 +72,8 @@ const isNew = organizerId === 'add';
         name: ensureLocaleValue(organizer.name),
         bio: ensureLocaleValue(organizer.bio),
         image: organizer.image || '',
-        social_links: Array.isArray(organizer.social_links)
-          ? organizer.social_links
-          : [],
-        gallery: Array.isArray(organizer.gallery)
-          ? organizer.gallery
-          : [],
+        social_links: Array.isArray(organizer.social_links) ? organizer.social_links : [],
+        gallery: Array.isArray(organizer.gallery) ? organizer.gallery : [],
         role: organizer.role || '',
       });
     }
@@ -109,12 +100,9 @@ const isNew = organizerId === 'add';
 
       navigate('/organizers');
     } catch {
-      enqueueSnackbar(
-        `Failed to ${isNew ? 'create' : 'update'} organizer`,
-        {
-          variant: 'error',
-        }
-      );
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} organizer`, {
+        variant: 'error',
+      });
     }
   };
 
@@ -151,13 +139,7 @@ const isNew = organizerId === 'add';
 
           <Button
             variant="contained"
-            startIcon={
-              isSaving ? (
-                <CircularProgress size={14} color="inherit" />
-              ) : (
-                <Save />
-              )
-            }
+            startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
             onClick={handleSubmit(onSubmit)}
             disabled={isSaving}
             sx={{
@@ -200,13 +182,9 @@ const isNew = organizerId === 'add';
         </Tabs>
 
         <Box>
-          {currentTab === 0 && (
-            <BasicInfoTab control={control} errors={errors} />
-          )}
+          {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
 
-          {currentTab === 1 && (
-            <MediaLinksTab control={control} errors={errors} />
-          )}
+          {currentTab === 1 && <MediaLinksTab control={control} errors={errors} />}
         </Box>
       </Paper>
     </div>

@@ -6,11 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
 
-import {
-  Edit,
-  Visibility,
-  DeleteOutline,
-} from '@mui/icons-material';
+import { Edit, Visibility, DeleteOutline } from '@mui/icons-material';
 import { useDeleteOrganizerMutation } from '../organizersApi';
 import CustomTable from '../../../shared-components/custom-table';
 import ConfirmModal from '../../../shared-components/confirm-modal';
@@ -22,19 +18,12 @@ const COLUMNS = [
     id: 'image',
     header: '',
     renderCell: (value, row) => {
-      const nameText =
-        typeof row.name === 'string'
-          ? row.name
-          : row.name?.en || row.name?.ar || '';
+      const nameText = typeof row.name === 'string' ? row.name : row.name?.en || row.name?.ar || '';
 
       return (
         <div className="flex items-center">
           {value ? (
-            <img
-              src={value}
-              alt={nameText}
-              className="h-10 w-10 rounded-full object-cover"
-            />
+            <img src={value} alt={nameText} className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
               {nameText.charAt(0) || '?'}
@@ -52,9 +41,7 @@ const COLUMNS = [
     sortable: true,
     renderCell: (value) => (
       <span className="font-medium text-tedx-dark">
-        {typeof value === 'string'
-          ? value
-          : value?.en || value?.ar || '—'}
+        {typeof value === 'string' ? value : value?.en || value?.ar || '—'}
       </span>
     ),
   },
@@ -66,17 +53,12 @@ const COLUMNS = [
   },
 ];
 
-function OrganizersListTable({
-  data,
-  totalCount,
-  isLoading,
-}) {
+function OrganizersListTable({ data, totalCount, isLoading }) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [deleteOrganizer, { isLoading: isDeleting }] =
-    useDeleteOrganizerMutation();
+  const [deleteOrganizer, { isLoading: isDeleting }] = useDeleteOrganizerMutation();
 
   const [confirmItem, setConfirmItem] = useState(null);
 
@@ -136,9 +118,7 @@ function OrganizersListTable({
         loading={isDeleting}
         title="Delete Organizer"
         description={`Are you sure you want to delete "${
-          confirmItem?.name?.en ||
-          confirmItem?.name?.ar ||
-          'this organizer'
+          confirmItem?.name?.en || confirmItem?.name?.ar || 'this organizer'
         }"?`}
       />
     </>

@@ -33,7 +33,10 @@ function ImageCard({ item, currentValue, onSelect, onDelete }) {
   return (
     <div
       onClick={() =>
-        onSelect({ id: String(item._id ?? item.id ?? '').trim(), url: String(item.url ?? '').trim() })
+        onSelect({
+          id: String(item._id ?? item.id ?? '').trim(),
+          url: String(item.url ?? '').trim(),
+        })
       }
       className={[
         'group relative cursor-pointer overflow-hidden rounded',

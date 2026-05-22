@@ -6,6 +6,8 @@ import { tokenService } from '../services/tokenService';
 import { login as authLogin } from '../services/authService';
 import { setUser, logout as logoutAction } from './store/userSlice';
 
+const ALLOWED_ROLES = ['superadmin', 'admin'];
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -24,9 +26,17 @@ export function AuthProvider({ children }) {
 
   const signIn = async (email, password) => {
     const { data } = await authLogin(email, password);
-    const { access_token, refresh_token, user } = data;
+    const { access_token, refresh_token } = data;
+
     tokenService.setTokens({ access_token, refresh_token });
-    dispatch(setUser(user));
+    const tokenUser = tokenService.getUserFromToken();
+
+    if (!ALLOWED_ROLES.includes(tokenUser?.role)) {
+      tokenService.clearTokens();
+      throw new Error('Access denied. Only administrators can access this dashboard.');
+    }
+
+    dispatch(setUser(tokenUser));
     navigate('/dashboard');
   };
 

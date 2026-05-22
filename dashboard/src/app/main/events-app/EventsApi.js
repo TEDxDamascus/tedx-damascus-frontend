@@ -2,7 +2,6 @@ import { apiService } from 'app/store/apiService';
 
 const eventsApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
-
     // GET ALL EVENTS
     getEvents: builder.query({
       query: ({ page = 1, pageSize = 10, search } = {}) => ({

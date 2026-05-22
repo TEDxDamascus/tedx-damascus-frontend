@@ -20,7 +20,6 @@ import { useDeleteBlogMutation, useGetBlogsQuery, useUpdateBlogMutation } from '
 import { useGetBlogCategoriesQuery } from '../blog-categories/BlogCategoriesApi';
 import { mediaFieldToDisplayUrl } from '../../../shared-components/image-picker';
 
-
 function extractItems(raw) {
   const candidates = [
     raw?.data?.items,
@@ -44,7 +43,11 @@ function getLocalizedText(value, locale = 'en') {
 }
 
 function getBlogCategoryDisplay(blog, locale = 'en') {
-  if (blog.category_id && typeof blog.category_id === 'object' && !Array.isArray(blog.category_id)) {
+  if (
+    blog.category_id &&
+    typeof blog.category_id === 'object' &&
+    !Array.isArray(blog.category_id)
+  ) {
     return (
       getLocalizedText(blog.category_id.name, locale) ||
       getLocalizedText(blog.category_id.slug, locale) ||
@@ -58,8 +61,7 @@ function getBlogCategoryDisplay(blog, locale = 'en') {
   if (typeof blog.category === 'string') return blog.category;
   if (blog.category && typeof blog.category === 'object') {
     return (
-      getLocalizedText(blog.category.name, locale) ||
-      getLocalizedText(blog.category.slug, locale)
+      getLocalizedText(blog.category.name, locale) || getLocalizedText(blog.category.slug, locale)
     );
   }
   return '';

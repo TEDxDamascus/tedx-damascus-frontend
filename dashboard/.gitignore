@@ -3,6 +3,7 @@
 # =========================
 website/node_modules
 dashboard/node_modules
+public/assets
 /.pnp
 .pnp.*
 
@@ -31,6 +32,7 @@ dashboard/out
 # =========================
 website/build
 dashboard/build
+dashboard/dist
 
 # =========================
 # Environment files

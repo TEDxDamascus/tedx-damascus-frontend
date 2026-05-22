@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { TextField, Button, Typography, Box } from '@mui/material';
+import { TextField, Button, Typography, Box, Alert } from '@mui/material';
 import { useAuth } from '../../auth/AuthContext';
 
 const signInSchema = z.object({
@@ -11,6 +12,7 @@ const signInSchema = z.object({
 
 function SignInPage() {
   const { signIn } = useAuth();
+  const [loginError, setLoginError] = useState('');
 
   const {
     control,
@@ -18,24 +20,20 @@ function SignInPage() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: 'admin@tedxdamascus.com',
-      password: 'password',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
   const onSubmit = async (data) => {
-    await signIn(data.email, data.password);
+    setLoginError('');
+    try {
+      await signIn(data.email, data.password);
+    } catch (err) {
+      setLoginError(err?.message || 'Invalid email or password. Please try again.');
+    }
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        minHeight: '100vh',
-        width: '100%',
-      }}
-    >
+    <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
       <Box
         sx={{
           flex: 1,
@@ -48,37 +46,20 @@ function SignInPage() {
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 480 }}>
-          {/* Logo */}
           <Box sx={{ mb: 6, textAlign: 'center' }}>
-            {/* <img
-              src="/images/tedx-logo.jpg"
-              alt="TEDx Damascus"
-              style={{
-                maxWidth: '200px',
-                height: 'auto',
-                marginBottom: '16px'
-              }}
-            /> */}
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 600,
-                color: '#1a1a1a',
-                mt: 2,
-              }}
-            >
+            <Typography variant="h5" sx={{ fontWeight: 600, color: '#1a1a1a', mt: 2 }}>
               Dashboard Login
             </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: '#666',
-                mt: 1,
-              }}
-            >
+            <Typography variant="body2" sx={{ color: '#666', mt: 1 }}>
               Sign in to manage your TEDx Damascus content
             </Typography>
           </Box>
+
+          {loginError && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {loginError}
+            </Alert>
+          )}
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -94,14 +75,8 @@ function SignInPage() {
                     error={!!errors.email}
                     helperText={errors.email?.message}
                     sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#EB0028',
-                        },
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#EB0028',
-                      },
+                      '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: '#EB0028' },
+                      '& .MuiInputLabel-root.Mui-focused': { color: '#EB0028' },
                     }}
                   />
                 )}
@@ -119,14 +94,8 @@ function SignInPage() {
                     error={!!errors.password}
                     helperText={errors.password?.message}
                     sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#EB0028',
-                        },
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#EB0028',
-                      },
+                      '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: '#EB0028' },
+                      '& .MuiInputLabel-root.Mui-focused': { color: '#EB0028' },
                     }}
                   />
                 )}
@@ -152,12 +121,6 @@ function SignInPage() {
               </Button>
             </Box>
           </form>
-
-          <Box sx={{ mt: 4, textAlign: 'center' }}>
-            <Typography variant="caption" sx={{ color: '#999', fontSize: '0.875rem' }}>
-              Demo: admin@tedxdamascus.com / password
-            </Typography>
-          </Box>
         </Box>
       </Box>
 
@@ -173,10 +136,7 @@ function SignInPage() {
           '&::before': {
             content: '""',
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: 'rgba(235, 0, 40, 0.1)',
           },
         }}
