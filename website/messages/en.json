@@ -31,7 +31,14 @@
     "past": "Past Events",
     "details": "Event Details",
     "date": "Date",
-    "location": "Location"
+    "location": "Location",
+    "searchPlaceholder": "Search for an event ...",
+    "loadMore": "Load More",
+    "noResults": "No events match your search.",
+    "cardDate": "16 Jan",
+    "cardTime": "10 am - 4:00 pm",
+    "cardBadge": "Damascus where the story began",
+    "cardTitle": "From War to Big Dreams: Syrian Adults drew their road despite every single obstacle."
   },
   "Blog": {
     "title": "Blog",
