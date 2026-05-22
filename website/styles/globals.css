@@ -7,6 +7,9 @@
     /* Consumed by the Tailwind `bg-page-bg` token in tailwind.config.ts */
     --page-bg: #101010;
 
+    /* Consumed by the Tailwind `bg-footer-bg` token in tailwind.config.ts */
+    --footer-bg: #EB0028;
+
     /* Hero gradient overlays — used in HeroSection via bg-[image:var(...)] */
     --hero-gradient:     linear-gradient(271deg, #101010 62%, rgba(128, 128, 128, 0.61) 78%, rgba(255, 255, 255, 0) 100%);
     --hero-gradient-rtl: linear-gradient(89deg,  #101010 62%, rgba(128, 128, 128, 0.61) 78%, rgba(255, 255, 255, 0) 100%);
@@ -56,6 +59,34 @@
   input:-webkit-autofill::selection {
     background-color: #E21E2C;
     color: #ffffff;
+  }
+
+  /* Kill the blue ring + border-color change that @tailwindcss/forms injects on
+   * [type='email']:focus. These !important declarations override the plugin's
+   * specificity. Individual components add their own focus indicator via border
+   * or outline styles. */
+  [type='email']:focus,
+  [type='email']:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: inherit !important;
+  }
+
+  /* Footer email inputs sit on a red background — override autofill to match */
+  .footer-input:-webkit-autofill,
+  .footer-input:-webkit-autofill:hover,
+  .footer-input:-webkit-autofill:focus,
+  .footer-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #EB0028 inset !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #000000 !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+  }
+
+  /* Suppress the browser blue/dark selection highlight on the footer email field */
+  .footer-input::selection {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #000000;
   }
 
   /* Focus outline reset — individual components apply explicit focus-visible styles */

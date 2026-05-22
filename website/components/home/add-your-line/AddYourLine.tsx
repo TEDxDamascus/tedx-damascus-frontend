@@ -30,35 +30,127 @@ const Q_MARKS = [
   { left: 459.66, top: 173.4,  size: 121.437, rotation: -25.02 },
 ] as const;
 
-const ANSWER_CARDS: { text: string; posClass: string; isUser?: boolean }[] = [
+const MAX_CHARS = 150;
+
+function sanitizeMessage(raw: string): string {
+  return raw
+    .replace(/<[^>]*>/g, '')
+    .replace(/[^\p{L}\p{N}\p{P}\p{Z}\s]/gu, '')
+    .slice(0, MAX_CHARS);
+}
+
+// Each card has LTR and RTL variants for absolute position and gradient direction.
+// Gradient: red is concentrated at the corner closest to the section center, descends quickly to dark.
+const ANSWER_CARDS: {
+  text: string;
+  ltr: { posClass: string; gradient: string };
+  rtl: { posClass: string; gradient: string };
+}[] = [
   {
     text: 'Kindness in difficult environments is one of the strongest forces in the world.',
-    posClass: 'left-[110px] top-[53px]',
+    ltr: {
+      posClass: 'left-[110px] top-[53px]',
+      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)', // red at top-right corner
+    },
+    rtl: {
+      posClass: 'right-[110px] top-[53px]',
+      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)', // red at top-left corner (mirrored)
+    },
   },
   {
-    text: "That culture is not something we inherit — it's something we actively shape every day.",
-    posClass: 'right-[78px] top-[11px]',
-  },
-  {
-    text: "That culture is not something we inherit — it's something we actively shape every day.",
-    posClass: 'left-[77px] top-[404px]',
-    isUser: true,
+    text: "That culture is not something we inherit — it's something we actively shape every day, Beauty still exists, even in the hardest places.",
+    ltr: {
+      posClass: 'right-[78px] top-[11px]',
+      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)', // red at top-left corner
+    },
+    rtl: {
+      posClass: 'left-[78px] top-[11px]',
+      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)', // red at top-right corner (mirrored)
+    },
   },
   {
     text: 'Kindness in difficult environments is one of the strongest forces in the world.',
-    posClass: 'right-[107px] top-[464px]',
+    ltr: {
+      posClass: 'right-[107px] top-[464px]',
+      gradient: 'linear-gradient(to right, #101010 40%, #DF2127 100%)', // red on full right side
+    },
+    rtl: {
+      posClass: 'left-[107px] top-[464px]',
+      gradient: 'linear-gradient(to left, #101010 40%, #DF2127 100%)', // red on full left side (mirrored)
+    },
   },
 ];
+
+const CARD_INNER_STYLE: React.CSSProperties = {
+  background: '#1A1A1A',
+  borderRadius: 5,
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 16,
+  paddingBottom: 16,
+  overflow: 'hidden',
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const CARD_TEXT_STYLE: React.CSSProperties = {
+  width: 225,
+  color: 'white',
+  fontSize: 14,
+  fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+  fontWeight: 400,
+  lineHeight: '20.02px',
+  letterSpacing: 0.17,
+  wordWrap: 'break-word',
+};
+
+// User card: white concentrated on right side in LTR, left side in RTL
+const USER_CARD_GRADIENT_LTR = 'linear-gradient(to right, #101010 40%, #FFFFFF 100%)';
+const USER_CARD_GRADIENT_RTL = 'linear-gradient(to left,  #101010 40%, #FFFFFF 100%)';
+
+const USER_CARD_INNER_STYLE: React.CSSProperties = {
+  background: '#DF2127',
+  borderRadius: 5,
+  paddingLeft: 24,
+  paddingRight: 24,
+  paddingTop: 16,
+  paddingBottom: 16,
+  overflow: 'hidden',
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const USER_CARD_TEXT_STYLE: React.CSSProperties = {
+  width: 225,
+  color: 'black',
+  fontSize: 14,
+  fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+  fontWeight: 400,
+  lineHeight: '20.02px',
+  letterSpacing: 0.17,
+  wordWrap: 'break-word',
+};
 
 export function AddYourLine({ locale }: AddYourLineProps) {
   const t = useTranslations('AddYourLine');
   const isRtl = locale === 'ar';
-  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submittedMessage, setSubmittedMessage] = useState('');
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setMessage(sanitizeMessage(e.target.value));
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (email.trim()) setSubmitted(true);
+    const clean = message.trim();
+    if (clean) {
+      setSubmittedMessage(clean);
+      setSubmitted(true);
+    }
   }
 
   return (
@@ -66,22 +158,20 @@ export function AddYourLine({ locale }: AddYourLineProps) {
       className="relative bg-page-bg overflow-hidden flex flex-col items-center justify-center py-16 lg:py-0 lg:h-[595px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >      <div className="hidden lg:block absolute inset-0 pointer-events-none" aria-hidden>
-        {ANSWER_CARDS.map((card, i) => (
-          <div
-            key={i}
-            className={[
-              'absolute flex items-center justify-center px-6 py-4 rounded-[6px]',
-              card.isUser
-                ? 'bg-[#df2127] border border-white'
-                : 'bg-[#1a1a1a] border border-[#df2127]',
-              card.posClass,
-            ].join(' ')}
-          >
-            <p className={`w-[225px] font-helvetica text-[14px] leading-[1.43] tracking-[0.17px] ${card.isUser ? 'text-black' : 'text-white'}`}>
-              {card.text}
-            </p>
-          </div>
-        ))}
+        {ANSWER_CARDS.map((card, i) => {
+          const { posClass, gradient } = isRtl ? card.rtl : card.ltr;
+          return (
+            <div
+              key={i}
+              className={`absolute ${posClass}`}
+              style={{ padding: 1, borderRadius: 6, background: gradient, display: 'inline-flex' }}
+            >
+              <div style={CARD_INNER_STYLE}>
+                <p style={CARD_TEXT_STYLE}>{card.text}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -110,7 +200,7 @@ export function AddYourLine({ locale }: AddYourLineProps) {
             'lg:absolute lg:left-[64px] lg:top-[38px] lg:w-[582px] lg:h-[300px] lg:p-0',
           ].join(' ')}
         >
-          <div className="hidden lg:block absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden>
             {Q_MARKS.map((m, i) => (
               <div key={i} className="absolute" style={{ left: m.left, top: m.top }}>
                 <span
@@ -139,24 +229,41 @@ export function AddYourLine({ locale }: AddYourLineProps) {
             className={[
               'relative z-10 flex items-end gap-[9px]',
               'lg:absolute lg:top-[190px] lg:left-1/2 lg:-translate-x-1/2',
-              isRtl ? 'flex-row-reverse' : '',
             ].join(' ')}
           >
-            <div className={`flex flex-col gap-[6px] w-[240px] sm:w-[300px] lg:w-[360px] ${isRtl ? 'items-end' : 'items-start'}`}>
+            <div className={`flex flex-col gap-[6px] w-[240px] sm:w-[300px] lg:w-[360px] ${submitted ? 'items-center' : isRtl ? 'items-end' : 'items-start'}`}>
               {submitted ? (
-                <p className={`text-white text-[18px] lg:text-[20px] font-medium leading-[1.2] tracking-[0.15px] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}>
-                  {t('submitted')}
-                </p>
+                <>
+                  <p className={`text-white text-[18px] lg:text-[20px] font-medium leading-[1.2] tracking-[0.15px] text-center ${isRtl ? 'font-arabic' : 'font-helvetica'}`}>
+                    {t('submitted')}
+                  </p>
+                  {submittedMessage && (
+                    <motion.div
+                      className="hidden lg:inline-flex"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.35, ease: 'easeOut' }}
+                      style={{ padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR }}
+                    >
+                      <div style={{ ...USER_CARD_INNER_STYLE, minWidth: 180 }}>
+                        <p style={{ ...USER_CARD_TEXT_STYLE, width: 'auto', maxWidth: 280, textAlign: 'center' }}>{submittedMessage}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
               ) : (
                 <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder={t('emailPlaceholder')}
-                  required
+                  type="text"
+                  value={message}
+                  onChange={handleChange}
+                  placeholder={t('inputPlaceholder')}
+                  maxLength={MAX_CHARS}
+                  autoComplete="off"
                   className={[
-                    'bg-transparent border-0 border-b border-white text-white pb-1 outline-none focus:ring-0 focus:ring-offset-0',
-                    'text-[18px] lg:text-[20px] font-medium leading-[1.2] tracking-[0.15px]',
+                    'bg-transparent border-0 border-b border-white text-white pb-1',
+                    'outline-none focus:outline-none focus-visible:outline-none',
+                    'focus:ring-0 focus:ring-offset-0 focus:border-white',
+                    'text-[20px] font-medium leading-[1.2] tracking-[0.15px]',
                     'placeholder:text-white/60 w-full',
                     isRtl ? 'font-arabic text-right' : 'font-helvetica',
                   ].join(' ')}
@@ -174,6 +281,21 @@ export function AddYourLine({ locale }: AddYourLineProps) {
           </form>
         </div>
       </motion.div>
+
+      {submitted && submittedMessage && (
+        <motion.div
+          className="lg:hidden relative z-10 mt-6"
+          initial={{ scaleY: 0, opacity: 0 }}
+          animate={{ scaleY: 1, opacity: 1 }}
+          style={{ transformOrigin: 'top', padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR, display: 'inline-flex' }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div style={{ ...USER_CARD_INNER_STYLE, minWidth: 200, justifyContent: 'center' }}>
+            <p style={{ ...USER_CARD_TEXT_STYLE, width: 'auto', maxWidth: 225, textAlign: 'center' }}>{submittedMessage}</p>
+          </div>
+        </motion.div>
+      )}
+
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -186,14 +308,19 @@ export function AddYourLine({ locale }: AddYourLineProps) {
           className={[
             'flex items-center gap-2 text-primary text-base leading-6 tracking-[0.15px]',
             'hover:gap-3 transition-all duration-200 group',
-            isRtl ? 'flex-row-reverse font-arabic' : 'font-helvetica',
+            isRtl ? 'font-arabic' : 'font-helvetica',
           ].join(' ')}
         >
           {t('viewAll')}
           <ArrowRight
             size={20}
             strokeWidth={1.75}
-            className="shrink-0 group-hover:translate-x-0.5 transition-transform"
+            className={[
+              'shrink-0 transition-transform',
+              isRtl
+                ? '-scale-x-100 group-hover:-translate-x-0.5'
+                : 'group-hover:translate-x-0.5',
+            ].join(' ')}
             aria-hidden
           />
         </Link>

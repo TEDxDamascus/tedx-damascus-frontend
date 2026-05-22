@@ -60,12 +60,16 @@
     "tagline": "From the city of history to a future of ideas, stay connected to what's shaping tomorrow",
     "emailLabel": "Your email address",
     "submit": "Submit",
-    "submitted": "Thank you! We'll be in touch.",
+    "subscribe": "Subscribe",
+    "submitted": "Subscribed!",
     "license": "This independent TEDx event is operated under license from TED",
     "about": "About TEDxDamascus",
     "description": "TEDxDamascus is a local, independently organized TED event bringing together the brightest minds from Damascus and beyond.",
     "followUs": "Follow Us",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "dialogTitle": "Thank you for subscribing!",
+    "dialogMessage": "You're now part of the TEDxDamascus community. We'll keep you connected to ideas worth spreading.",
+    "dialogClose": "Close"
   },
   "CallForVoices": {
     "title": "Call for voices",
@@ -89,9 +93,9 @@
   },
   "AddYourLine": {
     "question": "What idea rising from Damascus should reach the world",
-    "emailPlaceholder": "Your email address",
+    "inputPlaceholder": "Share your idea...",
     "submit": "Submit",
-    "submitted": "Thank you! We'll be in touch.",
+    "submitted": "Your line has been added!",
     "viewAll": "View All Answers"
   },
   "UsSection": {
@@ -106,6 +110,10 @@
     "organizersSubtitle": "The minds behind the experience",
     "speakersSubtitle": "Voices that spark conversation",
     "partnersSubtitle": "Supporters who make it possible"
+  },
+  "LatestEvents": {
+    "title": "Latest Events",
+    "seeAll": "See All"
   },
   "Gallery": {
     "title": "Photo Gallery",
