@@ -14,15 +14,15 @@ const COLUMNS = [
     id: 'image',
     header: '',
     renderCell: (value, row) => {
-      const titleText =
-        typeof row.title === 'string' ? row.title : row.title?.en || row.title?.ar || '';
+      const nameText = typeof row.name === 'string' ? row.name : row.name?.en || row.name?.ar || '';
+      const isUrl = typeof value === 'string' && value.startsWith('http');
       return (
         <div className="flex items-center">
-          {value ? (
-            <img src={value} alt={titleText} className="h-10 w-10 rounded-full object-cover" />
+          {isUrl ? (
+            <img src={value} alt={nameText} className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
-              {titleText.charAt(0) || '?'}
+              {nameText.charAt(0).toUpperCase() || '?'}
             </div>
           )}
         </div>
@@ -31,7 +31,7 @@ const COLUMNS = [
     headerClassName: 'w-16',
   },
   {
-    id: 'title',
+    id: 'name',
     header: 'Partner Name',
     sortable: true,
     renderCell: (value) => (
@@ -40,13 +40,24 @@ const COLUMNS = [
       </span>
     ),
   },
-  { id: 'type', header: 'Type', sortable: true },
-  { id: 'email', header: 'Email' },
-  { id: 'phone', header: 'Phone' },
   {
-    id: 'active',
-    header: 'Status',
-    renderCell: (value) => <StatusBadge status={value ? 'active' : 'inactive'} />,
+    id: 'partnership_type',
+    header: 'Type',
+    sortable: true,
+    renderCell: (value) => (
+      <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+        {value || '—'}
+      </span>
+    ),
+  },
+  {
+    id: 'slug',
+    header: 'Slug',
+    renderCell: (value) => (
+      <span className="text-sm text-gray-500">
+        {typeof value === 'string' ? value : value?.en || value?.ar || '—'}
+      </span>
+    ),
   },
 ];
 
@@ -103,7 +114,7 @@ function PartnersListTable({ data, totalCount, isLoading }) {
         onConfirm={handleDeleteConfirm}
         loading={isDeleting}
         title="Delete Partner"
-        description={`Are you sure you want to delete "${confirmItem?.title?.en || confirmItem?.title?.ar || 'this partner'}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${confirmItem?.name?.en || confirmItem?.name?.ar || 'this partner'}"? This action cannot be undone.`}
       />
     </>
   );

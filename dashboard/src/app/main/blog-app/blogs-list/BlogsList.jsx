@@ -19,6 +19,7 @@ import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useDeleteBlogMutation, useGetBlogsQuery, useUpdateBlogMutation } from '../BlogsApi';
 import { useGetBlogCategoriesQuery } from '../blog-categories/BlogCategoriesApi';
 import { mediaFieldToDisplayUrl } from '../../../shared-components/image-picker';
+import ConfirmModal from '../../../shared-components/confirm-modal';
 
 function extractItems(raw) {
   const candidates = [
@@ -116,6 +117,7 @@ function BlogsList() {
   const { data: categoriesData, isLoading: categoriesLoading } = useGetBlogCategoriesQuery();
   const [deleteBlog, { isLoading: isDeleting }] = useDeleteBlogMutation();
   const [updateBlog, { isLoading: isUpdating }] = useUpdateBlogMutation();
+  const [deleteItem, setDeleteItem] = useState(null);
 
   const categoryOptions = useMemo(() => {
     const raw = categoriesData?.data?.items ?? [];
@@ -139,9 +141,10 @@ function BlogsList() {
     if (value) setLocale(value);
   };
 
-  const handleDelete = async (id) => {
-    if (!id || !window.confirm('Delete this blog article?')) return;
-    await deleteBlog(id);
+  const handleDeleteConfirm = async () => {
+    if (!deleteItem) return;
+    await deleteBlog(deleteItem.id || deleteItem._id);
+    setDeleteItem(null);
   };
 
   const handleTogglePublish = async (blog) => {
@@ -391,7 +394,7 @@ function BlogsList() {
                       color="error"
                       variant="outlined"
                       disabled={isDeleting}
-                      onClick={() => handleDelete(id)}
+                      onClick={() => setDeleteItem(blog)}
                       sx={{ minWidth: 80 }}
                     >
                       Delete
@@ -429,6 +432,15 @@ function BlogsList() {
           </Box>
         )}
       </div>
+
+      <ConfirmModal
+        open={!!deleteItem}
+        onClose={() => setDeleteItem(null)}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleting}
+        title="Delete Article"
+        description={`Are you sure you want to delete "${getLocalizedText(deleteItem?.title, locale) || 'this article'}"? This action cannot be undone.`}
+      />
     </div>
   );
 }

@@ -29,20 +29,19 @@ const eventSchema = z.object({
   brief: localeObjectSchema.optional(),
   location: localeObjectSchema.optional(),
 
-  time: z.string().optional(),
-  image: z.string().optional(),
+  event_type: z.string().optional(),
+  event_image: z.string().optional(),
   gallery: z.array(z.string()).optional(),
 
   speakers: z.array(z.any()).optional(),
 
   status: z.string().optional(),
-  active: z.boolean().optional(),
 });
 
 function Event() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { enqueueSnackbar: _enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -87,27 +86,30 @@ function Event() {
   }, [event, isNew, reset]);
 
   const onSubmit = async (data) => {
-    const payload = {
-      title: data.title,
-      description: data.description,
-      brief: data.brief,
-      location: data.location,
-      date: data.date,
-      time: data.time,
+    try {
+      const payload = {
+        title: data.title,
+        description: data.description,
+        breif: data.brief,
+        location: data.location,
+        date: data.date,
+        event_type: data.event_type,
+        event_image: data.event_image,
+        gallery: data.gallery ?? [],
+        speakers: (data.speakers ?? []).map((s) => s.id ?? s),
+        status: data.status,
+      };
 
-      event_image: data.image,
-
-      gallery: data.gallery ?? [],
-
-      speakers: data.speakers?.map((s) => s.id ?? s) ?? [],
-
-      status: data.active ? 'active' : 'draft',
-    };
-
-    if (isNew) {
-      await createEvent(payload).unwrap();
-    } else {
-      await updateEvent({ id: eventId, data: payload }).unwrap();
+      if (isNew) {
+        await createEvent(payload).unwrap();
+        enqueueSnackbar('Event created successfully', { variant: 'success' });
+        navigate('/events');
+      } else {
+        await updateEvent({ id: eventId, data: payload }).unwrap();
+        enqueueSnackbar('Event updated successfully', { variant: 'success' });
+      }
+    } catch {
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} event`, { variant: 'error' });
     }
   };
 

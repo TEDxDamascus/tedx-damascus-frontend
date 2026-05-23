@@ -1,6 +1,10 @@
 import { Controller } from 'react-hook-form';
-import { TextField, FormControlLabel, Switch, Grid, Box } from '@mui/material';
+import { Grid, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
+import { ImagePickerField } from '../../../../shared-components/image-picker';
+
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: 2060 - CURRENT_YEAR + 1 }, (_, i) => String(CURRENT_YEAR + i));
 
 function BasicInfoTab({ control, errors }) {
   return (
@@ -22,37 +26,43 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+
+        <Grid item xs={12}>
           <Controller
-            name="role"
+            name="image"
             control={control}
             render={({ field }) => (
-              <LocaleInput
-                {...field}
-                type={localeInputTypes.textField}
-                label="Role"
+              <ImagePickerField
+                value={field.value}
+                onChange={field.onChange}
+                label="Photo"
                 required
-                error={!!errors.role}
-                helperText={errors.role?.message}
+                error={!!errors.image}
+                helperText={errors.image?.message}
               />
             )}
           />
         </Grid>
+
         <Grid item xs={12} md={6}>
           <Controller
-            name="department"
+            name="year"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                label="Department"
-                fullWidth
-                error={!!errors.department}
-                helperText={errors.department?.message}
-              />
+              <FormControl fullWidth required error={!!errors.year}>
+                <InputLabel>Year</InputLabel>
+                <Select {...field} label="Year" value={field.value ?? ''}>
+                  {YEARS.map((y) => (
+                    <MenuItem key={y} value={y}>
+                      {y}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           />
         </Grid>
+
         <Grid item xs={12}>
           <Controller
             name="bio"
@@ -65,18 +75,6 @@ function BasicInfoTab({ control, errors }) {
                 minRows={3}
                 error={!!errors.bio}
                 helperText={errors.bio?.message}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="active"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={<Switch {...field} checked={!!field.value} />}
-                label="Active"
               />
             )}
           />

@@ -31,9 +31,12 @@ const organizerSchema = z.object({
   name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
   bio: localeObjectSchema.optional(),
   image: z.string().optional(),
-  social_links: z.array(z.string()).optional(),
-  gallery: z.array(z.string()).optional(),
   role: z.string().optional(),
+  linkedin_url: z.string().optional(),
+  twitter_url: z.string().optional(),
+  facebook_url: z.string().optional(),
+  website_url: z.string().optional(),
+  gallery: z.array(z.string()).optional(),
 });
 
 function Organizer() {
@@ -67,42 +70,56 @@ function Organizer() {
 
   useEffect(() => {
     if (organizer && !isNew) {
+      const links = Array.isArray(organizer.social_links) ? organizer.social_links : [];
       reset({
-        ...organizer,
         name: ensureLocaleValue(organizer.name),
         bio: ensureLocaleValue(organizer.bio),
         image: organizer.image || '',
-        social_links: Array.isArray(organizer.social_links) ? organizer.social_links : [],
-        gallery: Array.isArray(organizer.gallery) ? organizer.gallery : [],
         role: organizer.role || '',
+        linkedin_url: links.find((u) => u.includes('linkedin')) || '',
+        twitter_url: links.find((u) => u.includes('twitter') || u.includes('x.com')) || '',
+        facebook_url: links.find((u) => u.includes('facebook')) || '',
+        website_url:
+          links.find(
+            (u) =>
+              !u.includes('linkedin') &&
+              !u.includes('twitter') &&
+              !u.includes('x.com') &&
+              !u.includes('facebook'),
+          ) || '',
+        gallery: Array.isArray(organizer.gallery) ? organizer.gallery : [],
       });
     }
   }, [organizer, isNew, reset]);
 
   const onSubmit = async (data) => {
+    const social_links = [
+      data.linkedin_url,
+      data.twitter_url,
+      data.facebook_url,
+      data.website_url,
+    ].filter(Boolean);
+
+    const payload = {
+      name: data.name,
+      bio: data.bio,
+      role: data.role,
+      ...(data.image ? { image: data.image } : {}),
+      ...(social_links.length ? { social_links } : {}),
+      ...(data.gallery?.length ? { gallery: data.gallery } : {}),
+    };
+
     try {
       if (isNew) {
-        await createOrganizer(data).unwrap();
-
-        enqueueSnackbar('Organizer created successfully', {
-          variant: 'success',
-        });
+        await createOrganizer(payload).unwrap();
+        enqueueSnackbar('Organizer created successfully', { variant: 'success' });
       } else {
-        await updateOrganizer({
-          id: organizerId,
-          data,
-        }).unwrap();
-
-        enqueueSnackbar('Organizer updated successfully', {
-          variant: 'success',
-        });
+        await updateOrganizer({ id: organizerId, data: payload }).unwrap();
+        enqueueSnackbar('Organizer updated successfully', { variant: 'success' });
       }
-
       navigate('/organizers');
     } catch {
-      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} organizer`, {
-        variant: 'error',
-      });
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} organizer`, { variant: 'error' });
     }
   };
 

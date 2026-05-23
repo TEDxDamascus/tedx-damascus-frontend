@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { QuizOutlined } from '@mui/icons-material';
+import { QuizOutlined, LockOutlined } from '@mui/icons-material';
 import QuestionCard from './QuestionCard';
 import AddQuestionPanel from './AddQuestionPanel';
 
 export default function QuestionList({
   questions,
+  lastAddedIndex,
+  isPublished,
   isAddingQuestion,
   onAdd,
   onUpdate,
@@ -22,6 +24,16 @@ export default function QuestionList({
 
   return (
     <div>
+      {/* Published warning banner */}
+      {isPublished && (
+        <div className="mb-5 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <LockOutlined style={{ fontSize: 18 }} className="shrink-0 text-amber-500" />
+          <p className="text-sm text-amber-700">
+            This form is <strong>published</strong>. Unpublish it first to add or edit questions.
+          </p>
+        </div>
+      )}
+
       <div className="mb-4 flex items-center">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
           Questions
@@ -44,6 +56,8 @@ export default function QuestionList({
               question={q}
               index={i}
               total={questions.length}
+              defaultExpanded={i === lastAddedIndex}
+              readOnly={isPublished}
               onUpdate={onUpdate}
               onRemove={handleRemove}
               onMoveUp={() => onMoveUp(q.id, i)}
@@ -54,7 +68,7 @@ export default function QuestionList({
         </div>
       )}
 
-      <AddQuestionPanel onAdd={onAdd} isAdding={isAddingQuestion} />
+      <AddQuestionPanel onAdd={onAdd} isAdding={isAddingQuestion} disabled={isPublished} />
     </div>
   );
 }

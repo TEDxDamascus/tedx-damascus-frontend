@@ -1,6 +1,7 @@
 import { Controller } from 'react-hook-form';
-import { TextField, FormControlLabel, Switch, Grid, Box } from '@mui/material';
+import { TextField, Grid, Box } from '@mui/material';
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
+import { ImagePickerField } from '../../../../shared-components/image-picker';
 
 function BasicInfoTab({ control, errors }) {
   return (
@@ -18,6 +19,23 @@ function BasicInfoTab({ control, errors }) {
                 required
                 error={!!errors.name}
                 helperText={errors.name?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            name="speaker_image"
+            control={control}
+            render={({ field }) => (
+              <ImagePickerField
+                value={field.value}
+                onChange={field.onChange}
+                label="Speaker Photo"
+                required
+                error={!!errors.speaker_image}
+                helperText={errors.speaker_image?.message}
               />
             )}
           />
@@ -85,32 +103,6 @@ function BasicInfoTab({ control, errors }) {
                 minRows={4}
                 error={!!errors.description}
                 helperText={errors.description?.message}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="featured"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={<Switch {...field} checked={!!field.value} />}
-                label="Featured Speaker"
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="active"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={<Switch {...field} checked={!!field.value} />}
-                label="Active"
               />
             )}
           />

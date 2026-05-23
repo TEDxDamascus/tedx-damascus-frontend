@@ -19,10 +19,12 @@ export default function FormBuilder() {
     isNew,
     form,
     isFormLoading,
+    refetchForm,
     settingsForm,
     saveSettings,
     isSavingSettings,
     questions,
+    lastAddedIndex,
     isAddingQuestion,
     handleAddQuestion,
     handleUpdateQuestion,
@@ -134,7 +136,10 @@ export default function FormBuilder() {
       >
         <Tabs
           value={tab}
-          onChange={(_, v) => setTab(v)}
+          onChange={(_, v) => {
+            setTab(v);
+            if (v === 1) refetchForm();
+          }}
           sx={{
             borderBottom: 1,
             borderColor: 'divider',
@@ -161,6 +166,8 @@ export default function FormBuilder() {
           {tab === 1 && !isNew && (
             <QuestionList
               questions={questions}
+              lastAddedIndex={lastAddedIndex}
+              isPublished={isPublished}
               isAddingQuestion={isAddingQuestion}
               onAdd={handleAddQuestion}
               onUpdate={handleUpdateQuestion}

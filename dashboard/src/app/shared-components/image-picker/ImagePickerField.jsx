@@ -13,6 +13,7 @@ export default function ImagePickerField({
   onChange,
   valueMode = 'url',
   label = 'Image',
+  required,
   error,
   helperText,
   disabled,
@@ -40,6 +41,11 @@ export default function ImagePickerField({
 
   return (
     <>
+      {required && (
+        <p className="mb-1 text-sm font-medium text-gray-700">
+          {label} <span className="text-red-500">*</span>
+        </p>
+      )}
       <div className="flex items-stretch gap-3">
         {/* Thumbnail */}
         <div className="flex w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded border border-gray-200 bg-gray-50">
