@@ -93,14 +93,18 @@ export function useFormBuilder(formId) {
     }
   });
 
-  const handleAddQuestion = async (type) => {
-    const currentCount = form?.questions?.length ?? 0;
-    // Record which index the new question will land at so it auto-expands
-    setLastAddedIndex(currentCount);
+  const handleAddQuestion = async (type, parentId = null) => {
+    const allQuestions = form?.questions ?? [];
+    // orderIndex = count of existing siblings under the same parent
+    const orderIndex = allQuestions.filter(
+      (q) => String(q.parentId ?? null) === String(parentId),
+    ).length;
+    // lastAddedIndex uses the flat list position so the card auto-expands
+    setLastAddedIndex(allQuestions.length);
     try {
       await addQuestionMutation({
         formId,
-        data: preparePayload(createQuestion(type, currentCount)),
+        data: preparePayload(createQuestion(type, orderIndex, parentId)),
       }).unwrap();
     } catch {
       setLastAddedIndex(null);

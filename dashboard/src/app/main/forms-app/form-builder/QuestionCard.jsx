@@ -359,6 +359,8 @@ export default function QuestionCard({
   total,
   defaultExpanded,
   readOnly,
+  parentSection,
+  hideMoveButtons,
   onUpdate,
   onRemove,
   onMoveUp,
@@ -432,7 +434,7 @@ export default function QuestionCard({
   return (
     <>
       <div
-        className={`overflow-hidden rounded-xl border bg-white transition-colors ${dirty ? 'border-amber-300' : 'border-gray-200'}`}
+        className={`overflow-hidden rounded-xl border bg-white transition-colors ${sectionType ? 'border-l-4 border-l-tedx-red' : dirty ? 'border-amber-300' : 'border-gray-200'}`}
       >
         {/* ── Header ── */}
         <div
@@ -448,6 +450,13 @@ export default function QuestionCard({
 
           {!sectionType && (
             <span className="shrink-0 text-sm font-medium text-gray-500">Q{index + 1}</span>
+          )}
+
+          {/* Parent section badge */}
+          {!sectionType && parentSection && (
+            <span className="shrink-0 rounded border border-tedx-red px-2 py-0.5 text-xs font-medium text-tedx-red">
+              {parentSection.title?.en || parentSection.title?.ar || 'Section'}
+            </span>
           )}
 
           <span className="flex-1 truncate text-sm text-gray-800">
@@ -497,20 +506,24 @@ export default function QuestionCard({
               </>
             )}
 
-            <button
-              onClick={onMoveUp}
-              disabled={readOnly || index === 0}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
-            >
-              <KeyboardArrowUp style={{ fontSize: 18 }} />
-            </button>
-            <button
-              onClick={onMoveDown}
-              disabled={readOnly || index === total - 1}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
-            >
-              <KeyboardArrowDown style={{ fontSize: 18 }} />
-            </button>
+            {!hideMoveButtons && (
+              <>
+                <button
+                  onClick={onMoveUp}
+                  disabled={readOnly || index === 0}
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+                >
+                  <KeyboardArrowUp style={{ fontSize: 18 }} />
+                </button>
+                <button
+                  onClick={onMoveDown}
+                  disabled={readOnly || index === total - 1}
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+                >
+                  <KeyboardArrowDown style={{ fontSize: 18 }} />
+                </button>
+              </>
+            )}
             <button
               onClick={() => setConfirmDelete(true)}
               disabled={readOnly || isRemoving}

@@ -80,7 +80,7 @@ const navigationConfig = [
   },
   {
     id: 'settings',
-    title: 'Settings',
+    title: 'Home Settings',
     type: 'item',
     icon: Settings,
     url: '/settings',

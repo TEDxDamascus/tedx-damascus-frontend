@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BlurText } from './BlurText';
 
 interface CallForVoicesProps {
@@ -43,6 +43,7 @@ function VoiceCard({ ghostIcon, children }: { ghostIcon: string; children: React
 }
 
 export async function CallForVoices({ locale }: CallForVoicesProps) {
+  setRequestLocale(locale);
   const t = await getTranslations('CallForVoices');
 
   return (
