@@ -6,7 +6,7 @@ import FormsListTable from './FormsListTable';
 const PAGE_SIZE = 10;
 
 function FormsList() {
-  const { data, isLoading } = useGetFormsQuery();
+  const { data, isLoading } = useGetFormsQuery(undefined, { refetchOnMountOrArgChange: true });
   const [page, _setPage] = useState(1);
   const [search, _setSearch] = useState('');
 

@@ -21,15 +21,13 @@ const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
 const teamMemberSchema = z.object({
   name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
-  role: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Role is required'),
-  department: z.string().min(1, 'Department is required'),
   bio: localeObjectSchema.optional(),
-  photo: z.string().optional(),
-  linkedin: z.string().url('Invalid URL').optional().or(z.literal('')),
-  facebook: z.string().url('Invalid URL').optional().or(z.literal('')),
-  instagram: z.string().url('Invalid URL').optional().or(z.literal('')),
-  portfolio: z.string().url('Invalid URL').optional().or(z.literal('')),
-  active: z.boolean().optional(),
+  image: z.string().optional(),
+  year: z.string().min(1, 'Year is required'),
+  linkedin_url: z.string().optional(),
+  twitter_url: z.string().optional(),
+  facebook_url: z.string().optional(),
+  website_url: z.string().optional(),
 });
 
 function TeamMember() {
@@ -56,48 +54,116 @@ function TeamMember() {
 
   useEffect(() => {
     if (member && !isNew) {
+      const links = Array.isArray(member.social_link) ? member.social_link : [];
+      const linkedin_url = links.find((u) => u.includes('linkedin')) ?? '';
+      const twitter_url = links.find((u) => u.includes('twitter') || u.includes('x.com')) ?? '';
+      const facebook_url = links.find((u) => u.includes('facebook')) ?? '';
+      const website_url =
+        links.find(
+          (u) =>
+            !u.includes('linkedin') &&
+            !u.includes('twitter') &&
+            !u.includes('x.com') &&
+            !u.includes('facebook'),
+        ) ?? '';
+
       reset({
-        ...member,
         name: ensureLocaleValue(member.name),
-        role: ensureLocaleValue(member.role),
         bio: ensureLocaleValue(member.bio),
+        image: member.image || '',
+        year: member.year ? String(member.year) : new Date().getFullYear().toString(),
+        linkedin_url,
+        twitter_url,
+        facebook_url,
+        website_url,
       });
     }
   }, [member, isNew, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     try {
+      const socialLink = [
+        formData.linkedin_url,
+        formData.twitter_url,
+        formData.facebook_url,
+        formData.website_url,
+      ].filter((u) => u?.trim());
+
+      const payload = {
+        name: formData.name,
+        bio: formData.bio,
+        year: formData.year,
+      };
+      if (formData.image) payload.image = formData.image;
+      if (socialLink.length) payload.social_link = socialLink;
+
       if (isNew) {
-        await createMember(data).unwrap();
-        enqueueSnackbar('Member created successfully', { variant: 'success' });
+        await createMember(payload).unwrap();
+        enqueueSnackbar('Team member created successfully', { variant: 'success' });
       } else {
-        await updateMember({ id: memberId, data }).unwrap();
-        enqueueSnackbar('Member updated successfully', { variant: 'success' });
+        await updateMember({ id: memberId, data: payload }).unwrap();
+        enqueueSnackbar('Team member updated successfully', { variant: 'success' });
       }
       navigate('/team');
     } catch {
-      enqueueSnackbar('Operation failed', { variant: 'error' });
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} team member`, { variant: 'error' });
     }
   };
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <CircularProgress className="text-tedx-red" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 pt-8">
-      <Breadcrumb items={[{ label: 'Team', href: '/team' }, { label: isNew ? 'Add' : 'Edit' }]} />
+      <Breadcrumb
+        items={[{ label: 'Team', href: '/team' }, { label: isNew ? 'Add Member' : 'Edit Member' }]}
+      />
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{isNew ? 'Add Member' : 'Edit Member'}</h1>
-        <Button
-          variant="contained"
-          startIcon={<Save />}
-          onClick={handleSubmit(onSubmit)}
-          disabled={isSaving}
-        >
-          Save Member
-        </Button>
+        <h1 className="text-3xl font-bold text-tedx-dark">
+          {isNew ? 'Add Team Member' : 'Edit Team Member'}
+        </h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/team')}
+            sx={{ borderColor: '#e0e0e0', color: '#666' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={isSaving ? <CircularProgress size={14} color="inherit" /> : <Save />}
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSaving}
+            sx={{
+              bgcolor: 'var(--color-primary)',
+              '&:hover': { bgcolor: 'var(--color-primary-dark)' },
+            }}
+          >
+            {isSaving ? 'Saving...' : 'Save Member'}
+          </Button>
+        </div>
       </div>
-      <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
-        <Tabs value={currentTab} onChange={(_, v) => setCurrentTab(v)}>
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}
+      >
+        <Tabs
+          value={currentTab}
+          onChange={(_, v) => setCurrentTab(v)}
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 3,
+            '& .MuiTab-root.Mui-selected': { color: 'var(--color-primary)' },
+            '& .MuiTabs-indicator': { backgroundColor: 'var(--color-primary)' },
+          }}
+        >
           <Tab label="Basic Info" />
           <Tab label="Social Links" />
         </Tabs>

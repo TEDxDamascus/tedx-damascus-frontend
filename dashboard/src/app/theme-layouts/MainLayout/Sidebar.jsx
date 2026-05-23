@@ -30,7 +30,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 const drawerWidth = 260;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
+  // { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
   { text: 'Speakers', icon: <RecordVoiceOver />, path: '/speakers' },
   { text: 'Partners', icon: <Handshake />, path: '/partners' },
   { text: 'Users', icon: <People />, path: '/users' },

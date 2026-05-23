@@ -1,9 +1,7 @@
-// BasicInfoTab.jsx
-
 import { Controller } from 'react-hook-form';
 import { TextField, Grid, Box } from '@mui/material';
-
 import { LocaleInput, localeInputTypes } from '../../../../shared-components/locale-input';
+import { ImagePickerField } from '../../../../shared-components/image-picker';
 
 function BasicInfoTab({ control, errors }) {
   return (
@@ -28,16 +26,16 @@ function BasicInfoTab({ control, errors }) {
 
         <Grid item xs={12}>
           <Controller
-            name="bio"
+            name="image"
             control={control}
             render={({ field }) => (
-              <LocaleInput
-                {...field}
-                type={localeInputTypes.textFieldMultiple}
-                label="Bio"
-                minRows={4}
-                error={!!errors.bio}
-                helperText={errors.bio?.message}
+              <ImagePickerField
+                value={field.value}
+                onChange={field.onChange}
+                label="Organizer Photo"
+                required
+                error={!!errors.image}
+                helperText={errors.image?.message}
               />
             )}
           />
@@ -54,6 +52,23 @@ function BasicInfoTab({ control, errors }) {
                 fullWidth
                 error={!!errors.role}
                 helperText={errors.role?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
+            name="bio"
+            control={control}
+            render={({ field }) => (
+              <LocaleInput
+                {...field}
+                type={localeInputTypes.textFieldMultiple}
+                label="Bio"
+                minRows={4}
+                error={!!errors.bio}
+                helperText={errors.bio?.message}
               />
             )}
           />

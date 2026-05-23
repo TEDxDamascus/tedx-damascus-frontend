@@ -17,7 +17,8 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       query: (formId) => ({ url: `/forms/${formId}`, method: 'GET' }),
       transformResponse: (response) => {
         const f = response?.data ?? response;
-        return { data: { ...f, id: f._id || f.id, questions: f.questions ?? [] } };
+        const questions = (f.questions ?? []).map((q) => ({ ...q, id: q._id || q.id }));
+        return { data: { ...f, id: f._id || f.id, questions } };
       },
       providesTags: ['Form'],
     }),
@@ -45,34 +46,76 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       invalidatesTags: ['Forms'],
     }),
 
+    // POST response returns the full updated form — use it to patch the cache directly
+    // so questions appear immediately without a separate GET.
     addQuestion: builder.mutation({
       query: ({ formId, data }) => ({
         url: `/forms/${formId}/questions`,
         method: 'POST',
         data,
       }),
-      transformResponse: (response) => {
-        const d = response?.data ?? response;
-        return { data: d };
+      async onQueryStarted({ formId }, { dispatch, queryFulfilled }) {
+        try {
+          const { data: response } = await queryFulfilled;
+          const f = response?.data ?? response;
+          if (Array.isArray(f?.questions)) {
+            dispatch(
+              apiService.util.updateQueryData('getForm', formId, (draft) => {
+                draft.data.questions = f.questions.map((q) => ({
+                  ...q,
+                  id: q._id || q.id,
+                }));
+              }),
+            );
+          }
+        } catch {
+          // mutation error is already handled in useFormBuilder
+        }
       },
-      invalidatesTags: ['Form'],
     }),
 
+    // Optimistic update: patch the question in cache immediately, undo on failure.
     updateQuestion: builder.mutation({
       query: ({ formId, questionId, data }) => ({
         url: `/forms/${formId}/questions/${questionId}`,
         method: 'PATCH',
         data,
       }),
-      invalidatesTags: ['Form'],
+      async onQueryStarted({ formId, questionId, data }, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          apiService.util.updateQueryData('getForm', formId, (draft) => {
+            const q = (draft.data.questions ?? []).find((q) => q.id === questionId);
+            if (q) Object.assign(q, data);
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
     }),
 
+    // Optimistic update: remove from cache immediately, undo on failure.
     removeQuestion: builder.mutation({
       query: ({ formId, questionId }) => ({
         url: `/forms/${formId}/questions/${questionId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Form'],
+      async onQueryStarted({ formId, questionId }, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          apiService.util.updateQueryData('getForm', formId, (draft) => {
+            if (draft.data.questions) {
+              draft.data.questions = draft.data.questions.filter((q) => q.id !== questionId);
+            }
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
     }),
 
     publishForm: builder.mutation({

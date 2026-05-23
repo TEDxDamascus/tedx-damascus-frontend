@@ -1,8 +1,7 @@
 import { Controller } from 'react-hook-form';
-import { FormControlLabel, Switch, Grid, Box } from '@mui/material';
+import { Grid, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 import { parse, format, isValid } from 'date-fns';
 
@@ -31,6 +30,18 @@ const pickerSx = {
   },
 };
 
+const EVENT_TYPES = [
+  { value: 'salon', label: 'Salon' },
+  { value: 'main_event', label: 'Main Event' },
+  { value: 'meetup', label: 'Meetup' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'cancelled', label: 'Cancelled' },
+];
+
 function BasicInfoTab({ control, errors }) {
   return (
     <Box sx={{ p: 3 }}>
@@ -52,6 +63,8 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
+
+        {/* DATE */}
         <Grid item xs={12} md={6}>
           <Controller
             name="date"
@@ -84,38 +97,48 @@ function BasicInfoTab({ control, errors }) {
             }}
           />
         </Grid>
+
+        {/* EVENT TYPE */}
         <Grid item xs={12} md={6}>
           <Controller
-            name="time"
+            name="event_type"
             control={control}
-            render={({ field }) => {
-              const timeValue = field.value
-                ? (() => {
-                    const d = parse(field.value, 'HH:mm', new Date());
-                    return isValid(d) ? d : null;
-                  })()
-                : null;
-
-              return (
-                <TimePicker
-                  label="Event Time"
-                  value={timeValue}
-                  onChange={(newTime) =>
-                    field.onChange(newTime && isValid(newTime) ? format(newTime, 'HH:mm') : '')
-                  }
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      error: !!errors.time,
-                      helperText: errors.time?.message,
-                    },
-                  }}
-                  sx={pickerSx}
-                />
-              );
-            }}
+            render={({ field }) => (
+              <FormControl fullWidth>
+                <InputLabel>Event Type</InputLabel>
+                <Select {...field} label="Event Type" value={field.value ?? ''}>
+                  {EVENT_TYPES.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           />
         </Grid>
+
+        {/* STATUS */}
+        <Grid item xs={12} md={6}>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select {...field} label="Status" value={field.value ?? 'draft'}>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        {/* LOCATION */}
         <Grid item xs={12}>
           <Controller
             name="location"
@@ -131,21 +154,26 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
+
+        {/* COVER IMAGE */}
         <Grid item xs={12}>
           <Controller
-            name="image"
+            name="event_image"
             control={control}
             render={({ field }) => (
               <ImagePickerField
                 value={field.value}
                 onChange={field.onChange}
                 label="Event Cover Image"
-                error={!!errors.image}
-                helperText={errors.image?.message}
+                required
+                error={!!errors.event_image}
+                helperText={errors.event_image?.message}
               />
             )}
           />
         </Grid>
+
+        {/* SPEAKERS */}
         <Grid item xs={12}>
           <Controller
             name="speakers"
@@ -160,11 +188,13 @@ function BasicInfoTab({ control, errors }) {
                 placeholder="Search speakers..."
                 error={!!errors.speakers}
                 helperText={errors.speakers?.message}
-                onChange={(value) => field.onChange(value.map((s) => s.id))}
+                onChange={(value) => field.onChange(value)}
               />
             )}
           />
         </Grid>
+
+        {/* BRIEF */}
         <Grid item xs={12}>
           <Controller
             name="brief"
@@ -181,6 +211,7 @@ function BasicInfoTab({ control, errors }) {
             )}
           />
         </Grid>
+
         {/* DESCRIPTION */}
         <Grid item xs={12}>
           <Controller
@@ -194,40 +225,6 @@ function BasicInfoTab({ control, errors }) {
                 minRows={4}
                 error={!!errors.description}
                 helperText={errors.description?.message}
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="status"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={field.value === 'active'}
-                    onChange={(e) => field.onChange(e.target.checked ? 'active' : 'upcoming')}
-                  />
-                }
-                label="Event is Live (Active)"
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="active"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={!!field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                  />
-                }
-                label="Published"
               />
             )}
           />

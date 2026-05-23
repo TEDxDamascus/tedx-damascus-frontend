@@ -1,18 +1,15 @@
-import _ from 'lodash';
 import { defaultLocaleValue } from '../../../../shared-components/locale-input';
 
-const PartnerModel = (data) =>
-  _.defaults(data || {}, {
-    id: _.uniqueId('partner-'),
-    title: defaultLocaleValue(),
-    description: defaultLocaleValue(),
-    image: '',
-    email: '',
-    phone: '',
-    type: '',
-    active: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
+const PartnerModel = () => ({
+  name: defaultLocaleValue(),
+  slug: defaultLocaleValue(),
+  description: defaultLocaleValue(),
+  image: '',
+  partnership_type: '',
+  website_url: '',
+  instagram_url: '',
+  linkedin_url: '',
+  facebook_url: '',
+});
 
 export default PartnerModel;

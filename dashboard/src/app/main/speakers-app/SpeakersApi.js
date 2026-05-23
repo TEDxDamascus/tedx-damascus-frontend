@@ -10,7 +10,7 @@ export async function searchSpeakerOptions(query) {
   const items = data?.data ?? [];
   return items.slice(0, 20).map((s) => ({
     id: s._id || s.id,
-    label: s.name?.en || s.name?.ar || s._id || s.id,
+    label: (typeof s.name === 'string' ? s.name : s.name?.en || s.name?.ar) || s._id || s.id,
   }));
 }
 

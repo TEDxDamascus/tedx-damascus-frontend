@@ -75,41 +75,10 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
     }
   };
 
-  const getCurrentHeadingLevel = () => {
-    for (let level = 1; level <= 6; level++) {
-      if (editor.isActive('heading', { level })) {
-        return level.toString();
-      }
-    }
-    return '';
-  };
-
   return (
     <div className="w-full rounded-[1rem] border bg-white p-4 shadow-sm">
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap gap-2 border-b pb-3">
-        {/* Headings */}
-        <select
-          value={getCurrentHeadingLevel()}
-          onChange={(e) => {
-            const level = parseInt(e.target.value);
-            if (level) {
-              editor.chain().focus().toggleHeading({ level }).run();
-            } else {
-              editor.chain().focus().setParagraph().run();
-            }
-          }}
-          className="border px-2 py-1"
-        >
-          <option value="">Paragraph</option>
-          <option value="1">Heading 1</option>
-          <option value="2">Heading 2</option>
-          <option value="3">Heading 3</option>
-          <option value="4">Heading 4</option>
-          <option value="5">Heading 5</option>
-          <option value="6">Heading 6</option>
-        </select>
-
         {/* Text styles */}
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -256,16 +225,6 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
         editor={editor}
         className="rich-text-editor-content min-h-[360px] w-full outline-none"
       />
-
-      {/* Debug */}
-      <div className="mt-3">
-        <button
-          onClick={() => console.warn(editor.getHTML())}
-          className="rounded bg-tedx-red px-3 py-1 text-white"
-        >
-          Save
-        </button>
-      </div>
     </div>
   );
 }

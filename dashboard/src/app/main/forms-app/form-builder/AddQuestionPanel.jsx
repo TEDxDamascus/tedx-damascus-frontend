@@ -9,8 +9,6 @@ import {
   Link,
   RadioButtonChecked,
   CheckBox,
-  ArrowDropDownCircle,
-  DoneAll,
   Star,
   CalendarMonth,
   DateRange,
@@ -26,12 +24,10 @@ const TYPE_ICONS = {
   long_text: <Notes style={{ fontSize: 22 }} />,
   number: <Numbers style={{ fontSize: 22 }} />,
   email: <AlternateEmail style={{ fontSize: 22 }} />,
-  phone: <Phone style={{ fontSize: 22 }} />,
+  phone_number: <Phone style={{ fontSize: 22 }} />,
   url: <Link style={{ fontSize: 22 }} />,
-  radio: <RadioButtonChecked style={{ fontSize: 22 }} />,
-  checkbox: <CheckBox style={{ fontSize: 22 }} />,
-  select: <ArrowDropDownCircle style={{ fontSize: 22 }} />,
-  multi_select: <DoneAll style={{ fontSize: 22 }} />,
+  single_choice: <RadioButtonChecked style={{ fontSize: 22 }} />,
+  checkbox_group: <CheckBox style={{ fontSize: 22 }} />,
   rating: <Star style={{ fontSize: 22 }} />,
   date: <CalendarMonth style={{ fontSize: 22 }} />,
   date_range: <DateRange style={{ fontSize: 22 }} />,
@@ -43,11 +39,11 @@ const TYPE_ICONS = {
 const TYPE_GROUPS = [
   {
     label: 'Text & Input',
-    types: ['short_text', 'long_text', 'number', 'email', 'phone', 'url'],
+    types: ['short_text', 'long_text', 'number', 'email', 'phone_number', 'url'],
   },
   {
     label: 'Choice',
-    types: ['radio', 'checkbox', 'select', 'multi_select', 'yes_no'],
+    types: ['single_choice', 'checkbox_group', 'yes_no'],
   },
   {
     label: 'Date & File',
@@ -59,7 +55,9 @@ const TYPE_GROUPS = [
   },
 ];
 
-export default function AddQuestionPanel({ onAdd, isAdding }) {
+const DISABLED_TYPES = new Set(['number', 'email']);
+
+export default function AddQuestionPanel({ onAdd, isAdding, disabled }) {
   const [open, setOpen] = useState(false);
 
   const handleAdd = (type) => {
@@ -85,18 +83,25 @@ export default function AddQuestionPanel({ onAdd, isAdding }) {
                   {group.types.map((type) => {
                     const def = typeMap[type];
                     if (!def) return null;
+                    const typeDisabled = isAdding || DISABLED_TYPES.has(type);
                     return (
                       <button
                         key={type}
-                        onClick={() => handleAdd(type)}
-                        disabled={isAdding}
+                        onClick={() => !DISABLED_TYPES.has(type) && handleAdd(type)}
+                        disabled={typeDisabled}
                         className={[
                           'flex flex-col items-start gap-1.5 rounded-lg border p-3 text-left transition-colors',
-                          'border-gray-200 bg-white hover:border-tedx-red hover:bg-red-50',
-                          isAdding ? 'opacity-50' : '',
+                          DISABLED_TYPES.has(type)
+                            ? 'cursor-not-allowed border-gray-100 bg-gray-50 opacity-40'
+                            : 'border-gray-200 bg-white hover:border-tedx-red hover:bg-red-50',
+                          isAdding && !DISABLED_TYPES.has(type) ? 'opacity-50' : '',
                         ].join(' ')}
                       >
-                        <span className="text-tedx-red">{TYPE_ICONS[type]}</span>
+                        <span
+                          className={DISABLED_TYPES.has(type) ? 'text-gray-400' : 'text-tedx-red'}
+                        >
+                          {TYPE_ICONS[type]}
+                        </span>
                         <span className="text-xs font-semibold text-gray-700">{def.label}</span>
                         <span className="text-xs text-gray-400">{def.description}</span>
                       </button>
@@ -117,8 +122,8 @@ export default function AddQuestionPanel({ onAdd, isAdding }) {
       ) : (
         <button
           onClick={() => setOpen(true)}
-          disabled={isAdding}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-tedx-red hover:text-tedx-red disabled:opacity-50"
+          disabled={isAdding || disabled}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-tedx-red hover:text-tedx-red disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isAdding ? (
             <CircularProgress size={14} color="inherit" />

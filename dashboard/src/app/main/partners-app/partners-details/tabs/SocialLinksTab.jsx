@@ -7,7 +7,7 @@ function SocialLinksTab({ control, errors }) {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Controller
-            name="socialLinks.website"
+            name="website_url"
             control={control}
             render={({ field }) => (
               <TextField
@@ -15,8 +15,8 @@ function SocialLinksTab({ control, errors }) {
                 label="Company Website"
                 fullWidth
                 placeholder="https://example.com"
-                error={!!errors.socialLinks?.website}
-                helperText={errors.socialLinks?.website?.message}
+                error={!!errors.website_url}
+                helperText={errors.website_url?.message}
               />
             )}
           />
@@ -24,7 +24,7 @@ function SocialLinksTab({ control, errors }) {
 
         <Grid item xs={12} md={6}>
           <Controller
-            name="socialLinks.instagram"
+            name="instagram_url"
             control={control}
             render={({ field }) => (
               <TextField
@@ -32,8 +32,8 @@ function SocialLinksTab({ control, errors }) {
                 label="Instagram Profile"
                 fullWidth
                 placeholder="https://instagram.com/username"
-                error={!!errors.socialLinks?.instagram}
-                helperText={errors.socialLinks?.instagram?.message}
+                error={!!errors.instagram_url}
+                helperText={errors.instagram_url?.message}
               />
             )}
           />
@@ -41,16 +41,16 @@ function SocialLinksTab({ control, errors }) {
 
         <Grid item xs={12} md={6}>
           <Controller
-            name="socialLinks.linkedin"
+            name="linkedin_url"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
                 label="LinkedIn Company Page"
                 fullWidth
-                placeholder="https://linkedin.com/company/username"
-                error={!!errors.socialLinks?.linkedin}
-                helperText={errors.socialLinks?.linkedin?.message}
+                placeholder="https://linkedin.com/company/name"
+                error={!!errors.linkedin_url}
+                helperText={errors.linkedin_url?.message}
               />
             )}
           />
@@ -58,7 +58,7 @@ function SocialLinksTab({ control, errors }) {
 
         <Grid item xs={12} md={6}>
           <Controller
-            name="socialLinks.facebook"
+            name="facebook_url"
             control={control}
             render={({ field }) => (
               <TextField
@@ -66,8 +66,8 @@ function SocialLinksTab({ control, errors }) {
                 label="Facebook Page"
                 fullWidth
                 placeholder="https://facebook.com/username"
-                error={!!errors.socialLinks?.facebook}
-                helperText={errors.socialLinks?.facebook?.message}
+                error={!!errors.facebook_url}
+                helperText={errors.facebook_url?.message}
               />
             )}
           />
