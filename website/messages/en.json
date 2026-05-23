@@ -1,0 +1,169 @@
+{
+  "HomePage": {
+    "title": "TEDxDamascus",
+    "description": "Ideas Worth Spreading",
+    "hero": {
+      "subtitle": "Join us for inspiring talks and innovative ideas",
+      "cta": "Discover More"
+    }
+  },
+  "Navigation": {
+    "home": "Home",
+    "events": "Events",
+    "speakers": "Speakers",
+    "team": "Team",
+    "partners": "Partners",
+    "blog": "Blog",
+    "about": "About us",
+    "volunteer": "Volunteer",
+    "contact": "Contact"
+  },
+  "Speakers": {
+    "title": "Our Speakers",
+    "featured": "Featured Speakers",
+    "all": "All Speakers",
+    "viewProfile": "View Profile",
+    "watchTalk": "Watch Talk"
+  },
+  "Events": {
+    "title": "Events",
+    "upcoming": "Upcoming Events",
+    "past": "Past Events",
+    "details": "Event Details",
+    "date": "Date",
+    "location": "Location"
+  },
+  "Blog": {
+    "title": "Blog",
+    "readMore": "Read More",
+    "author": "Author",
+    "publishedOn": "Published on",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "Volunteer": {
+    "title": "Become a Volunteer",
+    "description": "Join our team and help make TEDxDamascus a success",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Why do you want to volunteer?",
+      "submit": "Submit Application"
+    }
+  },
+  "Contact": {
+    "title": "Contact Us",
+    "description": "Get in touch with the TEDxDamascus team"
+  },
+  "Footer": {
+    "tagline": "From the city of history to a future of ideas, stay connected to what's shaping tomorrow",
+    "emailLabel": "Your email address",
+    "submit": "Submit",
+    "subscribe": "Subscribe",
+    "submitted": "Subscribed!",
+    "license": "This independent TEDx event is operated under license from TED",
+    "about": "About TEDxDamascus",
+    "description": "TEDxDamascus is a local, independently organized TED event bringing together the brightest minds from Damascus and beyond.",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved",
+    "dialogTitle": "Thank you for subscribing!",
+    "dialogMessage": "You're now part of the TEDxDamascus community. We'll keep you connected to ideas worth spreading.",
+    "dialogClose": "Close"
+  },
+  "CallForVoices": {
+    "title": "Call for voices",
+    "nominateLine1": "Know someone for",
+    "nominateLine2": "our stage?",
+    "nominateCta": "NOMINATE A SPEAKER",
+    "applyLine1": "Interested in being",
+    "applyLine2": "a speaker?",
+    "applyCta": "APPLY AS A SPEAKER"
+  },
+  "AboutTEDx": {
+    "title": "About",
+    "description": "In the spirit of discovering and spreading ideas, TED has created a program called TEDx. TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. Our event is called TEDxDamascus where x = independently organized TED event. At our TEDxDamascus event, TED Talks video and live speakers will combine to spark deep discussion and connection in a small group. The TED Conference provides general guidance for the TEDx program, but individual TEDx events, including ours, are self-organized."
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "learnMore": "Learn More",
+    "viewAll": "View All"
+  },
+  "AddYourLine": {
+    "question": "What idea rising from Damascus should reach the world",
+    "inputPlaceholder": "Share your idea...",
+    "submit": "Submit",
+    "submitted": "Your line has been added!",
+    "viewAll": "View All Answers"
+  },
+  "AnswersPage": {
+    "weeklyLabel": "Our weekly question",
+    "headlineStart": "What idea rising from",
+    "headlineCity": "Damascus",
+    "headlineEnd": "should reach the world",
+    "headlineQuestionMark": "?",
+    "weeklyDescription": "Every week, we explore the intersection of ancient wisdom and modern innovation. Share your perspective and join the conversation.",
+    "totalResponses": "{count} responses",
+    "mockAnswer1": "The modular nature of Damascene wood inlay (Mosaic) is essentially early low-poly design — geometry repeated at human scale. Each piece locks into the next the way ideas lock into a community when they are shared carefully.",
+    "mockAnswer2": "Culture is not something we inherit — it is something we actively shape every day.",
+    "mockAnswer3": "Hope travels fastest when it is carried by many voices at once.",
+    "mockAnswer4": "Education that meets people where they are can unlock futures no wall could predict.",
+    "mockAnswer5": "Art in public space reminds a city that it still belongs to everyone who walks through it.",
+    "mockAnswer6": "Listening without rushing to fix is a radical act of respect.",
+    "mockAnswer7": "Small consistent actions compound into movements larger than any single headline.",
+    "mockAnswer8": "Technology is only as human as the empathy we bake into its first line of code.",
+    "mockAnswer9": "The best ideas survive not because they are loud, but because they are useful.",
+    "mockAnswer10": "Community safety starts with trust built in ordinary Tuesday conversations.",
+    "historyTitleFirst": "Question",
+    "historyTitleSecond": " history",
+    "filterLabel": "Filter by time",
+    "filterAll": "All time",
+    "filter30": "Last 30 days",
+    "filter90": "Last 90 days",
+    "filterHint": "Showing archived weekly prompts. Data is illustrative until the CMS is connected.",
+    "weekNumber": "Week {n}",
+    "pastQ1": "How can traditional craftsmanship inspire future tech?",
+    "pastQ2": "What does resilience look like in everyday Damascus life?",
+    "pastQ3": "Which local story deserves a global audience this year?",
+    "pastQ4": "How do we protect creative spaces when resources are tight?",
+    "pastQ5": "What role should youth play in shaping the next decade?",
+    "pastQ6": "How can we design events that feel welcoming to every neighbor?",
+    "pastQ7": "What is one myth about our city you would like to dismantle?",
+    "pastQ8": "Where do you see the next breakthrough idea emerging from?",
+    "responses": "{count} responses",
+    "noResults": "No questions match this time filter.",
+    "viewAllPast": "View all past questions",
+    "showLessPast": "Show fewer questions",
+    "prevPage": "Previous answers page",
+    "nextPage": "Next answers page",
+    "paginationLabel": "Answers pages",
+    "goToPage": "Go to page {page}",
+    "pastQuestionBrowse": "Community answers for this prompt. Use the arrows below to move between pages.",
+    "backToCurrentQuestion": "Back to this week's question"
+  },
+  "UsSection": {
+    "ideasWord": "Ideas",
+    "growWord": "grow",
+    "subtitle": "through the people who believe in them",
+    "team": "Team",
+    "organizers": "Organizers",
+    "speakers": "Speakers",
+    "partners": "Partners",
+    "teamSubtitle": "The force that makes it happen",
+    "organizersSubtitle": "The minds behind the experience",
+    "speakersSubtitle": "Voices that spark conversation",
+    "partnersSubtitle": "Supporters who make it possible"
+  },
+  "LatestEvents": {
+    "title": "Latest Events",
+    "seeAll": "See All"
+  },
+  "Gallery": {
+    "title": "Photo Gallery",
+    "subtitle": "Unforgettable moments from the TEDxDamascus journey",
+    "viewImage": "View Image",
+    "closeImage": "Close"
+  }
+}
