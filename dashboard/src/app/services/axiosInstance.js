@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { tokenService } from './tokenService';
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://187.127.114.46:3000';
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://187.127.114.46:3000',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 axiosInstance.interceptors.request.use(
