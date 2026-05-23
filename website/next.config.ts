@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   outputFileTracingRoot: path.join(__dirname, '../'),
+  async rewrites() {
+    if (process.env.NODE_ENV === 'production') return [];
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://187.127.114.46:3000/:path*',
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

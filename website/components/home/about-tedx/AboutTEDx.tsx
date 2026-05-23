@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MotionReveal } from './MotionReveal';
 
 interface AboutTEDxProps {
@@ -6,6 +6,7 @@ interface AboutTEDxProps {
 }
 
 export async function AboutTEDx({ locale }: AboutTEDxProps) {
+  setRequestLocale(locale);
   const t     = await getTranslations('AboutTEDx');
   const isRtl = locale === 'ar';
 

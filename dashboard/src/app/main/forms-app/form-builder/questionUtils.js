@@ -1,5 +1,4 @@
-// Backend-aligned type list. yes_no and email are frontend helpers only —
-// they get converted to single_choice / short_text before hitting the API.
+// yes_no is a frontend helper only — it maps to single_choice with pre-filled options.
 export const QUESTION_TYPES = [
   { type: 'short_text', label: 'Short Text', description: 'Single-line text' },
   { type: 'long_text', label: 'Long Text', description: 'Multi-line text area' },
@@ -45,12 +44,13 @@ function getDefaultConfig(type) {
   return {};
 }
 
-export function createQuestion(type, orderIndex = 0) {
+export function createQuestion(type, orderIndex = 0, parentId = null) {
   // yes_no → single_choice with pre-filled Yes / No options
   if (type === 'yes_no') {
     return {
       orderIndex,
       type: 'single_choice',
+      parentId,
       title: { en: '', ar: '' },
       helpText: { en: '', ar: '' },
       isRequired: false,
@@ -62,22 +62,10 @@ export function createQuestion(type, orderIndex = 0) {
     };
   }
 
-  // email → short_text on the backend
-  if (type === 'email') {
-    return {
-      orderIndex,
-      type: 'short_text',
-      title: { en: '', ar: '' },
-      helpText: { en: '', ar: '' },
-      isRequired: false,
-      config: {},
-      options: [],
-    };
-  }
-
   return {
     orderIndex,
     type,
+    parentId,
     title: { en: '', ar: '' },
     helpText: { en: '', ar: '' },
     isRequired: false,

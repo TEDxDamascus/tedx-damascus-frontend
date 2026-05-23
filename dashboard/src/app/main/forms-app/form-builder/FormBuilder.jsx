@@ -43,20 +43,6 @@ export default function FormBuilder() {
     );
   }
 
-  const handleMoveUp = (questionId, index) => {
-    if (index === 0) return;
-    const prev = questions[index - 1];
-    handleUpdateQuestion(questionId, { orderIndex: prev.orderIndex });
-    handleUpdateQuestion(prev.id, { orderIndex: questions[index].orderIndex });
-  };
-
-  const handleMoveDown = (questionId, index) => {
-    if (index === questions.length - 1) return;
-    const next = questions[index + 1];
-    handleUpdateQuestion(questionId, { orderIndex: next.orderIndex });
-    handleUpdateQuestion(next.id, { orderIndex: questions[index].orderIndex });
-  };
-
   const isPublished = form?.status === 'Published' || form?.status === 'published';
   const displayName = form?.name?.en || form?.name?.ar || 'Untitled Form';
 
@@ -172,8 +158,6 @@ export default function FormBuilder() {
               onAdd={handleAddQuestion}
               onUpdate={handleUpdateQuestion}
               onRemove={handleRemoveQuestion}
-              onMoveUp={handleMoveUp}
-              onMoveDown={handleMoveDown}
             />
           )}
         </div>

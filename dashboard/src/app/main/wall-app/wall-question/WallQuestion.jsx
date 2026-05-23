@@ -14,7 +14,6 @@ import {
   Paper,
   Select,
   TextField,
-  Typography,
 } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import Breadcrumb from '../../../shared-components/breadcrumb';
@@ -180,9 +179,9 @@ function WallQuestion() {
         ]}
       />
 
-      <Typography variant="h4" className="mb-6 font-bold text-tedx-dark">
-        {isNew ? 'New wall question' : 'Edit wall question'}
-      </Typography>
+      <h1 className="mb-6 text-3xl font-bold text-tedx-dark">
+        {isNew ? 'New Wall Question' : 'Edit Wall Question'}
+      </h1>
 
       <Paper
         className="mb-6 p-4"
@@ -242,17 +241,15 @@ function WallQuestion() {
 
       {!isNew && (
         <>
-          <Typography variant="h6" className="mb-3">
-            Answers (moderation)
-          </Typography>
+          <h2 className="mb-3 text-lg font-semibold text-tedx-dark">Answers (moderation)</h2>
           <Paper
             className="mb-4 p-4"
             elevation={0}
             sx={{ border: '1px solid', borderColor: 'divider' }}
           >
-            <Typography variant="body2" className="mb-2 text-gray-600">
+            <p className="mb-2 text-sm text-gray-600">
               Simulate a visitor submission (mock — goes to <strong>pending</strong>).
-            </Typography>
+            </p>
             <div className="flex flex-wrap gap-2">
               <TextField
                 size="small"
@@ -303,9 +300,7 @@ function WallQuestion() {
                       <Chip size="small" color="primary" label="Featured" variant="outlined" />
                     )}
                   </div>
-                  <Typography variant="body2" className="mb-3 whitespace-pre-wrap">
-                    {a.body}
-                  </Typography>
+                  <p className="mb-3 whitespace-pre-wrap text-sm text-gray-700">{a.body}</p>
                   <div className="flex flex-wrap gap-2">
                     {a.status === 'pending' && (
                       <>
