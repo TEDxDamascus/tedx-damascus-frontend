@@ -4,6 +4,7 @@
 website/node_modules
 dashboard/node_modules
 public/assets
+build
 /.pnp
 .pnp.*
 

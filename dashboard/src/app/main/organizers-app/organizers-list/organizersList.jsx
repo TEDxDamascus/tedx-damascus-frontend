@@ -6,8 +6,8 @@ import { useGetOrganizersQuery } from '../organizersApi';
 
 import { useTableState } from '../../../shared-components/custom-table';
 
-import OrganizersListHeader from './OrganizersListHeader';
-import OrganizersListTable from './OrganizersListTable';
+import OrganizersListHeader from './organizersListHeader';
+import OrganizersListTable from './organizersListTable';
 
 const TABLE_ID = 'organizers';
 
