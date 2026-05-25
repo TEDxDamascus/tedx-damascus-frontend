@@ -135,13 +135,20 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
         params: { page, limit: pageSize },
       }),
       transformResponse: (response) => {
-        const items = (response?.data ?? []).map((s) => ({ ...s, id: s._id || s.id }));
+        // Handle both { data: [...] } and { data: { items: [...], total, page, limit } }
+        const raw = response?.data;
+        const itemsArr = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.items)
+          ? raw.items
+          : [];
+        const items = itemsArr.map((s) => ({ ...s, id: s._id || s.id }));
         return {
           data: {
             items,
-            total: response?.total ?? items.length,
-            page: response?.page,
-            pageSize: response?.limit,
+            total: raw?.total ?? response?.total ?? items.length,
+            page: raw?.page ?? response?.page ?? 1,
+            pageSize: raw?.limit ?? response?.limit ?? 10,
           },
         };
       },

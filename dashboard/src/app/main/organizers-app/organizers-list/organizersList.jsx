@@ -1,4 +1,4 @@
-// OrganizersList.jsx
+cd // OrganizersList.jsx
 
 import { useState, useEffect } from 'react';
 

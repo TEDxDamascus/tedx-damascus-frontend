@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/proxy';
 import { DynamicFormRenderer } from '@/components/forms/DynamicFormRenderer';
 
-const FORM_SLUGS = ['speaker', 'attendee', 'volunteer'];
+const FORM_SLUGS = ['speaker', 'attendee', 'volunteer', '6a12eba6eb565d20493de36d'];
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) =>

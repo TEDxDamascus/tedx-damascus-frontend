@@ -46,7 +46,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             <label
               htmlFor={id}
               className={[
-                'absolute left-[10px] pointer-events-none select-none font-helvetica transition-all duration-150',
+                'absolute start-[10px] pointer-events-none select-none font-helvetica transition-all duration-150',
                 isFloating
                   ? 'top-[3px] text-[10px] leading-none ' + (disabled ? 'text-[#666]' : 'text-[#aaa]')
                   : 'top-[18px] text-base text-[#888]',
@@ -56,7 +56,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             </label>
           )}
 
-          <div className={`flex items-center gap-2 w-full px-[10px] ${label ? 'pt-[18px] pb-[6px]' : 'py-[8px]'}`}>
+          <div className={`flex items-center gap-2 w-full ps-[10px] pe-[10px] ${label ? 'pt-[18px] pb-[6px]' : 'py-[8px]'}`}>
             <input
               ref={ref}
               id={id}
