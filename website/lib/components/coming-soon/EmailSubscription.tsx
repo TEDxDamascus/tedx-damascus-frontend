@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Send } from 'lucide-react';
+import { newsletterApi } from '@/lib/api/client';
 
 export function EmailSubscription() {
   const [email, setEmail] = useState('');
@@ -18,20 +19,7 @@ export function EmailSubscription() {
     setError('');
 
     try {
-      const response = await fetch('/subscribe.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'حدث خطأ');
-      }
-
+      await newsletterApi.subscribe(email);
       setSubmitted(true);
       setTimeout(() => {
         setEmail('');
