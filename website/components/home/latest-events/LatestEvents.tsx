@@ -8,6 +8,7 @@ interface LatestEventsProps {
 }
 
 const EVENT = {
+  slug: 'speakers-2026',
   tagEn: 'Damascus where the story began',
   tagAr: 'دمشق حيث بدأت القصة',
   titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
@@ -24,94 +25,81 @@ export function LatestEvents({ locale }: LatestEventsProps) {
 
   return (
     <section
-      className="w-full bg-[var(--page-bg)] flex flex-col items-center px-6 sm:px-12 lg:px-[160px] py-10 gap-[22px]"
+      className="w-full bg-[var(--page-bg)] flex flex-col justify-center items-center px-6 sm:px-12 lg:px-[160px] py-10 gap-[22px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* Title */}
       <h2
-        className={`text-white text-center text-[48px] font-normal leading-[1.5] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+        className={`text-white text-[48px] font-normal leading-[72px] text-center break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
       >
         {t('title')}
       </h2>
 
-      {/* Single event card */}
+      {/* Card row */}
       <div className="w-full flex items-center justify-center">
-        <div
-          className="flex-1 min-w-0 flex flex-col items-center pb-4 relative rounded-[18px]"
-          style={{ background: '#1a1a1a', boxShadow: '0px 0px 11.5px rgba(0,0,0,0.2)' }}
-        >
+        <div className="flex-1 min-w-0 pb-4 relative bg-card-bg rounded-[18px] shadow-[0px_0px_23px_rgba(0,0,0,0.20)] flex flex-col items-center">
+
           {/* Image */}
-          <div className="h-[240px] w-full relative rounded-[13px] shrink-0 overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/events/event-bg.jpg"
-              alt=""
-              className="absolute w-full max-w-none left-0"
-              style={{ top: '-119.74%', height: '311.15%', objectFit: 'cover' }}
-              draggable={false}
-              loading="lazy"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 rounded-[13px]"
-              style={{
-                background: 'linear-gradient(179.89deg, rgba(0,0,0,0.5) 54.131%, rgb(26,26,26) 89.656%)',
-              }}
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/events/event-bg.jpg"
+            alt=""
+            className="w-full h-[240px] object-cover rounded-[13px] shrink-0"
+            draggable={false}
+            loading="lazy"
+          />
 
           {/* Body */}
-          <div className="flex flex-col gap-[10px] items-start px-[22px] w-full shrink-0">
+          <div className="w-full px-[22px] flex flex-col gap-[10px]">
             {/* Category */}
-            <div className="py-[6px] w-full">
+            <div className="w-full py-[6px] rounded-[20px] flex items-start">
               <p
-                className={`text-primary text-[24px] font-bold leading-[1.334] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                className={`text-primary text-[24px] font-bold leading-[32.02px] break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
                 {isRtl ? EVENT.tagAr : EVENT.tagEn}
               </p>
             </div>
 
-            {/* Description + See more button row */}
-            <div className="flex items-center w-full gap-4">
+            {/* Description + See more */}
+            <div className="w-full flex items-center">
               <p
-                className={`flex-1 min-w-0 text-[#f1f1f1] text-[16px] font-bold leading-[24px] tracking-[0.15px] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                className={`flex-1 min-w-0 text-[#F1F1F1] text-[16px] font-bold leading-[24px] tracking-[0.15px] break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
                 {isRtl ? EVENT.titleAr : EVENT.titleEn}
               </p>
               <Link
-                href={`/${locale}/events`}
-                className={`shrink-0 border border-primary text-primary text-[16px] tracking-[0.15px] flex items-center justify-center w-[102px] h-[42px] transition-colors hover:bg-primary/10 ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                href={`/${locale}/forms/${EVENT.slug}`}
+                className={`shrink-0 w-[102px] h-[42px] border border-primary text-primary text-[16px] font-normal leading-[24px] tracking-[0.15px] flex items-center justify-center transition-colors hover:bg-primary/10 ${isRtl ? 'font-arabic ms-4' : 'font-helvetica ml-4'}`}
               >
                 {t('seeMore')}
               </Link>
             </div>
           </div>
 
-          {/* Date + time overlay — top-left of image */}
+          {/* Date + time overlay — absolute top-left of image */}
           <div
-            className="absolute flex flex-col items-start"
-            style={{ left: 22, top: 19 }}
+            className={`absolute flex flex-col items-start ${isRtl ? 'right-[22px]' : 'left-[22px]'}`}
+            style={{ top: 19 }}
           >
             <span
-              className={`text-[#f1f1f1] text-[34px] font-medium leading-[1.235] tracking-[0.25px] whitespace-nowrap overflow-hidden text-ellipsis ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+              className={`text-[#F1F1F1] text-[34px] font-medium leading-[41.99px] tracking-[0.25px] break-words overflow-hidden text-ellipsis whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
             >
               {isRtl ? EVENT.dateAr : EVENT.date}
             </span>
             <div className="flex items-center gap-[3px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/events/calendar.png"
-                alt=""
-                className="w-6 h-6 shrink-0 object-contain"
-                draggable={false}
-              />
+              {/* Calendar icon */}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="#A8A8A8" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15.695 13.7H15.704M15.695 16.7H15.704M11.995 13.7H12.004M11.995 16.7H12.004M8.294 13.7H8.303M8.294 16.7H8.303" stroke="#A8A8A8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               <span
-                className={`text-[#a8a8a8] text-[14px] font-normal leading-[1.43] tracking-[0.17px] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                className={`text-[#A8A8A8] text-[14px] font-normal leading-[20.02px] tracking-[0.17px] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
                 {isRtl ? EVENT.timeAr : EVENT.time}
               </span>
             </div>
           </div>
+
         </div>
       </div>
     </section>

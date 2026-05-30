@@ -11,6 +11,7 @@ import {
   DateRangeValue,
   submitAnswers,
 } from './_form-engine';
+import { ROLE_MAP } from './form-role-map';
 
 export function GenericApiForm({
   formId,
@@ -40,6 +41,12 @@ export function GenericApiForm({
       setLoading(false);
     });
   }, [formId]);
+
+  // If the API returns a known targetRole, delegate to the role-specific form
+  const RoleForm = schema?.targetRole ? ROLE_MAP[schema.targetRole] : undefined;
+  if (!loading && !fetchError && RoleForm) {
+    return <RoleForm locale={locale} />;
+  }
 
   const updateAnswer = (questionId: string, val: unknown) => {
     setAnswers((prev) => ({ ...prev, [questionId]: val }));
