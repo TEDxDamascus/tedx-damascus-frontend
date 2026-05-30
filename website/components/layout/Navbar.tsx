@@ -29,6 +29,10 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const pathname = rawPathname.endsWith('/') ? rawPathname.slice(0, -1) : rawPathname;
   const isRtl = locale === 'ar';
 
+  // Build the alternate-locale URL by swapping the locale prefix
+  const altLocale = isRtl ? 'en' : 'ar';
+  const altHref = `/${altLocale}${pathname.replace(/^\/(en|ar)/, '')}` || `/${altLocale}`;
+
   return (
     <header
       className={[
@@ -61,6 +65,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
           = independently organized TED event
         </span>
       </Link>
+
       <div className={`flex items-center gap-6 ${isRtl ? 'flex-row-reverse' : ''}`}>
         <nav
           ref={navRef as React.RefObject<HTMLElement>}
@@ -99,6 +104,27 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             );
           })}
         </nav>
+
+        {/* Language switcher — flag image on EN, "EN" text on AR */}
+        <Link
+          href={altHref}
+          aria-label={isRtl ? 'Switch to English' : 'التحويل إلى العربية'}
+          className="shrink-0 flex items-center hover:opacity-80 transition-opacity"
+        >
+          {isRtl ? (
+            <span className="font-helvetica text-sm font-semibold text-white tracking-wide">
+              EN
+            </span>
+          ) : (
+            <Image
+              src="/images/icons/flag-ar.png"
+              alt="العربية"
+              width={28}
+              height={20}
+              className="object-cover rounded-sm"
+            />
+          )}
+        </Link>
       </div>
     </header>
   );

@@ -1,19 +1,23 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { CircularText } from './CircularText';
 import { SplitText } from './SplitText';
 import { Navbar } from '../../layout/Navbar';
 
-
-const SLIDES = [
-  { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', posClass: 'left-0 top-[21px]'      },
-  { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', posClass: '-left-[9px] top-0'      },
-  { src: '/images/hero/slides/img3.png', alt: 'TEDxDamascus — moment 3', posClass: '-left-[2px] top-0'      },
-  { src: '/images/hero/slides/img4.png', alt: 'TEDxDamascus — moment 4', posClass: '-left-[9px] top-[75px]' },
-  { src: '/images/hero/slides/img5.png', alt: 'TEDxDamascus — moment 5', posClass: 'left-0 top-0'           },
+// 4 columns: alternating scroll direction for visual depth
+// Each column has 2 identical stacked images for a seamless infinite loop
+const COLUMNS = [
+  { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', dir: 'down' as const, duration: 18 },
+  { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', dir: 'up'   as const, duration: 22 },
+  { src: '/images/hero/slides/img3.png', alt: 'TEDxDamascus — moment 3', dir: 'down' as const, duration: 20 },
+  { src: '/images/hero/slides/img4.png', alt: 'TEDxDamascus — moment 4', dir: 'up'   as const, duration: 16 },
 ] as const;
+
+// Horizontal offset per column: col-w (243px) minus the 50px overlap
+const COL_OFFSET = 193;
 
 const CIRCULAR_TEXT = 'Damascus where the story is told again ...  ·  ';
 
@@ -45,6 +49,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
     >
       <Navbar locale={locale} navRef={navRef} />
 
+      {/* Background dot pattern */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -58,6 +63,8 @@ export function HeroSection({ locale }: HeroSectionProps) {
           ].join(' ')}
         />
       </div>
+
+      {/* Gradient overlay — 55 %/72 % stops match Figma spec */}
       <div
         className={[
           'absolute top-0 h-[716px] pointer-events-none mix-blend-overlay z-[1] w-[1475px]',
@@ -68,40 +75,60 @@ export function HeroSection({ locale }: HeroSectionProps) {
         aria-hidden
       />
 
-
+      {/* ── Animated image columns ────────────────────────────────────────────────
+       * Outer wrapper clips the off-screen copy of each column (overflow-hidden).
+       * Each motion.div holds 2 identical images stacked; animating y by one
+       * image-height creates a seamless infinite scroll.
+       */}
       <div
-        className="hidden lg:block absolute z-[2] w-[var(--hero-slides-outer-w)] h-[var(--hero-slide-col-h)] top-[var(--hero-slides-top)]"
+        className="hidden lg:block absolute z-[2] overflow-hidden w-[var(--hero-slides-outer-w)] h-[var(--hero-slide-col-h)] top-[var(--hero-slides-top)]"
         style={{ [isRtl ? 'right' : 'left']: slidesEdge }}
         aria-hidden
       >
-        <div className="w-full h-full relative">
-          <div
-            className={[
-              'absolute top-0 inline-flex justify-start items-center w-[var(--hero-slides-inner-w)]',
-              isRtl ? 'right-0 left-auto flex-row-reverse' : 'left-0 right-auto flex-row',
-            ].join(' ')}
-          >
-            {SLIDES.map((slide, i) => (
-              <div
+        <div className="relative w-[var(--hero-slides-inner-w)] h-full">
+          {COLUMNS.map((col, i) => {
+            const isDown = col.dir === 'down';
+            const yStart = isDown ? '-625.5px' : '0px';
+            const yEnd   = isDown ? '0px'      : '-625.5px';
+
+            return (
+              <motion.div
                 key={i}
-                className={[
-                  'relative w-[var(--hero-slide-col-w)] h-[var(--hero-slide-col-h)]',
-                  i < SLIDES.length - 1 ? '-mr-[50px]' : 'mr-0',
-                ].join(' ')}
+                className="absolute top-0 w-[var(--hero-slide-col-w)]"
+                style={{ [isRtl ? 'right' : 'left']: i * COL_OFFSET }}
+                initial={{ y: yStart }}
+                animate={{ y: [yStart, yEnd] }}
+                transition={{
+                  duration: col.duration,
+                  ease: 'linear',
+                  repeat: Infinity,
+                  repeatType: 'loop',
+                }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={slide.src}
-                  alt={slide.alt}
+                  src={col.src}
+                  alt={col.alt}
                   fetchPriority={i === 0 ? 'high' : 'auto'}
                   loading="eager"
-                  className={`absolute w-[var(--hero-slide-col-w)] h-[var(--hero-slide-img-h)] object-cover [filter:var(--hero-slide-filter)] ${slide.posClass}`}
+                  className="w-full h-[var(--hero-slide-img-h)] object-cover [filter:var(--hero-slide-filter)]"
                 />
-              </div>
-            ))}
-          </div>
+                {/* Second copy — identical, provides seamless loop */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={col.src}
+                  alt=""
+                  aria-hidden
+                  loading="eager"
+                  className="w-full h-[var(--hero-slide-img-h)] object-cover [filter:var(--hero-slide-filter)]"
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
+
+      {/* ── Hero text ─────────────────────────────────────────────────────────── */}
       <div
         className={[
           'absolute z-[10] top-[378px] w-[477px] h-[155px]',
@@ -179,9 +206,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
         </span>
       </div>
 
-      {/* ── z-20: Circular scroll badge
-       * top-[592px] is static; left/right depends on slidesEdge (DOM measurement).
-       */}
+      {/* ── Circular scroll badge ─────────────────────────────────────────────── */}
       <div
         className="absolute z-20 w-[200px] h-[200px] top-[592px]"
         style={{ [isRtl ? 'right' : 'left']: slidesEdge - 77 }}
@@ -195,9 +220,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
 
         {/* Mouse-scroll icon — centred in 200×200 ring: (200−48)/2=76, (200−56)/2=72 */}
         <div className="absolute w-12 h-14 left-[76px] top-[72px]">
-          {/* Mouse body */}
           <div className="absolute w-[16.59px] h-[25.71px] left-4 top-[10px] outline outline-[2.68px] outline-white [outline-offset:-1.34px] rounded-[8px]" />
-          {/* Scroll wheel */}
           <div className="animate-scroll-wheel absolute w-[2.14px] h-[5.36px] left-[23.23px] top-[14.29px] bg-white rounded-[1px]" />
         </div>
       </div>
