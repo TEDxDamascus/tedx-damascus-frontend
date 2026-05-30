@@ -7,41 +7,16 @@ interface LatestEventsProps {
   locale: string;
 }
 
-const EVENTS = [
-  {
-    id: 1,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-  {
-    id: 2,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-  {
-    id: 3,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-];
+const EVENT = {
+  tagEn: 'Damascus where the story began',
+  tagAr: 'دمشق حيث بدأت القصة',
+  titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
+  titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
+  date: '16 Jan',
+  dateAr: '١٦ يناير',
+  time: '10 am - 4:00 pm',
+  timeAr: '١٠ ص - ٤:٠٠ م',
+};
 
 export function LatestEvents({ locale }: LatestEventsProps) {
   const t = useTranslations('LatestEvents');
@@ -49,243 +24,96 @@ export function LatestEvents({ locale }: LatestEventsProps) {
 
   return (
     <section
-      className={[
-        'w-full bg-page-bg',
-        'flex flex-col justify-center items-center',
-        'px-6 sm:px-12 lg:px-[160px]',
-        'py-10',
-        'gap-[22px]',
-      ].join(' ')}
+      className="w-full bg-[var(--page-bg)] flex flex-col items-center px-6 sm:px-12 lg:px-[160px] py-10 gap-[22px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* Title */}
-      <div
-        className={isRtl ? 'font-arabic' : 'font-helvetica'}
-        style={{
-          textAlign: 'center',
-          color: 'white',
-          fontSize: 48,
-          fontWeight: 400,
-          lineHeight: '72px',
-          wordWrap: 'break-word',
-        }}
+      <h2
+        className={`text-white text-center text-[48px] font-normal leading-[1.5] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
       >
         {t('title')}
-      </div>
+      </h2>
 
-      {/* Cards row */}
-      <div
-        className="w-full flex flex-col lg:flex-row justify-center items-stretch gap-6"
-      >
-        {EVENTS.map((event) => (
-          <div
-            key={event.id}
-            style={{
-              flex: '1 1 0',
-              paddingBottom: 16,
-              position: 'relative',
-              background: '#1A1A1A',
-              boxShadow: '0px 0px 23px rgba(0,0,0,0.08)',
-              borderRadius: 18,
-              flexDirection: 'column',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: 12,
-              display: 'inline-flex',
-            }}
-          >
-            {/* Image with gradient overlay — matches Figma img structure */}
+      {/* Single event card */}
+      <div className="w-full flex items-center justify-center">
+        <div
+          className="flex-1 min-w-0 flex flex-col items-center pb-4 relative rounded-[18px]"
+          style={{ background: '#1a1a1a', boxShadow: '0px 0px 11.5px rgba(0,0,0,0.2)' }}
+        >
+          {/* Image */}
+          <div className="h-[240px] w-full relative rounded-[13px] shrink-0 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/events/event-bg.jpg"
+              alt=""
+              className="absolute w-full max-w-none left-0"
+              style={{ top: '-119.74%', height: '311.15%', objectFit: 'cover' }}
+              draggable={false}
+              loading="lazy"
+            />
             <div
+              aria-hidden
+              className="absolute inset-0 rounded-[13px]"
               style={{
-                alignSelf: 'stretch',
-                height: 240,
-                borderRadius: 13,
-                overflow: 'hidden',
-                position: 'relative',
+                background: 'linear-gradient(179.89deg, rgba(0,0,0,0.5) 54.131%, rgb(26,26,26) 89.656%)',
               }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/events/event-bg.jpg"
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                draggable={false}
-                loading="lazy"
-              />
-              {/* Gradient overlay matching Figma */}
-              <div
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(180deg, rgba(26,26,26,0) 0%, #1A1A1A 100%)',
-                }}
-              />
+            />
+          </div>
+
+          {/* Body */}
+          <div className="flex flex-col gap-[10px] items-start px-[22px] w-full shrink-0">
+            {/* Category */}
+            <div className="py-[6px] w-full">
+              <p
+                className={`text-primary text-[24px] font-bold leading-[1.334] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+              >
+                {isRtl ? EVENT.tagAr : EVENT.tagEn}
+              </p>
             </div>
 
-            {/* Body: tag + title */}
-            <div
-              style={{
-                alignSelf: 'stretch',
-                paddingLeft: 12,
-                paddingRight: 12,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                gap: 10,
-                display: 'flex',
-              }}
-            >
-              {/* Tag pill */}
-              <div
-                style={{
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                  background: 'rgba(255,255,255,0.10)',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: 8,
-                  display: 'inline-flex',
-                }}
+            {/* Description + See more button row */}
+            <div className="flex items-center w-full gap-4">
+              <p
+                className={`flex-1 min-w-0 text-[#f1f1f1] text-[16px] font-bold leading-[24px] tracking-[0.15px] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    color: '#EB0028',
-                    fontSize: 12,
-                    fontWeight: 400,
-                    lineHeight: '18px',
-                    letterSpacing: 0.40,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.tagAr : event.tagEn}
-                </span>
-              </div>
-
-              {/* Event title */}
-              <div
-                style={{
-                  alignSelf: 'stretch',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  display: 'inline-flex',
-                }}
+                {isRtl ? EVENT.titleAr : EVENT.titleEn}
+              </p>
+              <Link
+                href={`/${locale}/events`}
+                className={`shrink-0 border border-primary text-primary text-[16px] tracking-[0.15px] flex items-center justify-center w-[102px] h-[42px] transition-colors hover:bg-primary/10 ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    flex: '1 1 0',
-                    color: '#F1F1F1',
-                    fontSize: 16,
-                    fontWeight: 700,
-                    lineHeight: '24px',
-                    letterSpacing: 0.15,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.titleAr : event.titleEn}
-                </span>
-              </div>
-            </div>
-
-            {/* Absolute date + time overlay (left: 12.17, top: 164 per Figma) */}
-            <div
-              style={{
-                left: 12.17,
-                top: 164,
-                position: 'absolute',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-                display: 'flex',
-              }}
-            >
-              <span
-                style={{
-                  color: 'transparent',
-                  WebkitTextStroke: '1px white',
-                  paintOrder: 'stroke fill',
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-                  fontSize: 34,
-                  fontWeight: 500,
-                  lineHeight: '41.99px',
-                  letterSpacing: 0.25,
-                  wordWrap: 'break-word',
-                }}
-              >
-                {isRtl ? event.dateAr : event.date}
-              </span>
-
-              {/* Calendar icon + time */}
-              <div
-                style={{
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  gap: 3,
-                  display: 'inline-flex',
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/events/calendar.png"
-                  alt=""
-                  style={{ width: 24, height: 24, objectFit: 'contain', flexShrink: 0 }}
-                  draggable={false}
-                />
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    color: '#A8A8A8',
-                    fontSize: 14,
-                    fontWeight: 400,
-                    lineHeight: '20.02px',
-                    letterSpacing: 0.17,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.timeAr : event.time}
-                </span>
-              </div>
+                {t('seeMore')}
+              </Link>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* See All button */}
-      <Link
-        href={`/${locale}/events`}
-        style={{
-          paddingLeft: 24,
-          paddingRight: 24,
-          paddingTop: 16,
-          paddingBottom: 16,
-          background: '#EB0028',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          textDecoration: 'none',
-        }}
-      >
-        <span
-          className={isRtl ? 'font-arabic' : 'font-helvetica'}
-          style={{
-            textAlign: 'center',
-            color: '#1A1A1A',
-            fontSize: 16,
-            fontWeight: 400,
-            lineHeight: '24px',
-            letterSpacing: 0.15,
-            wordWrap: 'break-word',
-          }}
-        >
-          {t('seeAll')}
-        </span>
-      </Link>
+          {/* Date + time overlay — top-left of image */}
+          <div
+            className="absolute flex flex-col items-start"
+            style={{ left: 22, top: 19 }}
+          >
+            <span
+              className={`text-[#f1f1f1] text-[34px] font-medium leading-[1.235] tracking-[0.25px] whitespace-nowrap overflow-hidden text-ellipsis ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+            >
+              {isRtl ? EVENT.dateAr : EVENT.date}
+            </span>
+            <div className="flex items-center gap-[3px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/events/calendar.png"
+                alt=""
+                className="w-6 h-6 shrink-0 object-contain"
+                draggable={false}
+              />
+              <span
+                className={`text-[#a8a8a8] text-[14px] font-normal leading-[1.43] tracking-[0.17px] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+              >
+                {isRtl ? EVENT.timeAr : EVENT.time}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
