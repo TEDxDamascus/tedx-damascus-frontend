@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Footer } from '@/components/layout/Footer';
 import { FormHero } from './FormHero';
@@ -31,6 +31,7 @@ export function SpeakerForm({ locale }: { locale: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const questionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getFormSchema(FORM_ID).then((result) => {
@@ -126,9 +127,10 @@ export function SpeakerForm({ locale }: { locale: string }) {
   // ── Hero title (static — same on all states) ─────────────────────────────────
 
   const heroTitle = (
-    <div className="flex flex-wrap items-center justify-center gap-3">
+    <div dir="rtl" className="flex flex-wrap items-center justify-center gap-3">
+      {/* RTL: DOM order → Arabic text (right), TEDx (middle), Damascus (left) */}
       <span className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-none whitespace-nowrap">
-        Speaker Application
+        طلب تقديم متحدث
       </span>
       <Image
         src="/images/icons/tedx-logo.png"
@@ -259,7 +261,14 @@ export function SpeakerForm({ locale }: { locale: string }) {
               <div className="flex justify-end mt-10">
                 <button
                   type="button"
-                  onClick={() => setShowQuestions(true)}
+                  onClick={() => {
+                    setShowQuestions(true);
+                    setTimeout(() => {
+                      questionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      const first = questionsRef.current?.querySelector<HTMLElement>('input,textarea,select');
+                      first?.focus();
+                    }, 50);
+                  }}
                   className="border border-[#eb0028] text-[#eb0028] font-arabic text-sm px-10 py-3 hover:bg-[#eb0028]/10 transition-colors"
                 >
                   التالي ←
@@ -268,18 +277,46 @@ export function SpeakerForm({ locale }: { locale: string }) {
             </div>
           ) : (
             /* ── Step 2: Questions card ───────────────────────────────────── */
-            <div className="bg-black px-8 py-10 sm:px-12 sm:py-12" dir="rtl">
+            <div ref={questionsRef} className="bg-black px-8 py-10 sm:px-12 sm:py-12" dir="rtl">
               <div className="flex flex-col gap-10">
-                {sortedQuestions.map((q) => (
-                  <QuestionField
-                    key={q.id}
-                    question={q}
-                    value={answers[q.id]}
-                    onChange={(v) => updateAnswer(q.id, v)}
-                    error={fieldErrors[q.id]}
-                    locale="ar"
-                  />
-                ))}
+                {(() => {
+                  // Group consecutive short_text pairs side-by-side; number non-section questions
+                  const rows: React.ReactNode[] = [];
+                  let qNum = 0;
+                  let i = 0;
+                  while (i < sortedQuestions.length) {
+                    const q = sortedQuestions[i];
+                    const next = sortedQuestions[i + 1];
+                    if (
+                      (q.type === 'short_text' || q.type === 'text') &&
+                      next && (next.type === 'short_text' || next.type === 'text')
+                    ) {
+                      const n1 = ++qNum;
+                      const n2 = ++qNum;
+                      rows.push(
+                        <div key={q.id + next.id} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <QuestionField question={q} value={answers[q.id]}
+                            onChange={(v) => updateAnswer(q.id, v)}
+                            error={fieldErrors[q.id]} locale="ar" questionNumber={n1} />
+                          <QuestionField question={next} value={answers[next.id]}
+                            onChange={(v) => updateAnswer(next.id, v)}
+                            error={fieldErrors[next.id]} locale="ar" questionNumber={n2} />
+                        </div>
+                      );
+                      i += 2;
+                    } else {
+                      if (q.type !== 'section') qNum++;
+                      rows.push(
+                        <QuestionField key={q.id} question={q} value={answers[q.id]}
+                          onChange={(v) => updateAnswer(q.id, v)}
+                          error={fieldErrors[q.id]} locale="ar"
+                          questionNumber={q.type !== 'section' ? qNum : undefined} />
+                      );
+                      i++;
+                    }
+                  }
+                  return rows;
+                })()}
               </div>
 
               {submitError && (
