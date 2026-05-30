@@ -2,6 +2,7 @@
   "HomePage": {
     "title": "TEDxDamascus",
     "description": "Ideas Worth Spreading",
+    "heroWeAre": "WE ARE",
     "hero": {
       "subtitle": "Join us for inspiring talks and innovative ideas",
       "cta": "Discover More"

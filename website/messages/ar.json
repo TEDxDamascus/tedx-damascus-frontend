@@ -2,6 +2,7 @@
   "HomePage": {
     "title": "TEDxDamascus",
     "description": "أفكار تستحق الانتشار",
+    "heroWeAre": "نحن",
     "hero": {
       "subtitle": "انضم إلينا للاستماع إلى محادثات ملهمة وأفكار مبتكرة",
       "cta": "اكتشف المزيد"

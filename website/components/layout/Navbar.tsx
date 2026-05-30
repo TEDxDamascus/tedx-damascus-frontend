@@ -29,23 +29,100 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const pathname = rawPathname.endsWith('/') ? rawPathname.slice(0, -1) : rawPathname;
   const isRtl = locale === 'ar';
 
-  // Build the alternate-locale URL by swapping the locale prefix
+  // Build the alternate-locale href by swapping the locale segment
   const altLocale = isRtl ? 'en' : 'ar';
   const altHref = `/${altLocale}${pathname.replace(/^\/(en|ar)/, '')}` || `/${altLocale}`;
 
-  return (
-    <header
-      className={[
-        'absolute top-0 left-0 right-0 z-50',
-        'flex items-center justify-between',
-        'px-8 sm:px-12 lg:px-16 xl:px-20 py-4',
-        isRtl ? 'flex-row-reverse' : '',
-      ].join(' ')}
+  // Nav links + language switcher, shared between the left (RTL) and right (LTR) columns
+  const navAndSwitcher = (
+    <div
+      className={`hidden md:flex items-center gap-6 lg:gap-8 ${isRtl ? 'flex-row-reverse justify-start' : 'justify-end'}`}
     >
+      <nav
+        ref={navRef as React.RefObject<HTMLElement>}
+        className={`flex items-center gap-6 lg:gap-8 pt-1 ${isRtl ? 'flex-row-reverse' : ''}`}
+        aria-label="Main navigation"
+      >
+        {NAV_ITEMS.map(({ key, href }) => {
+          const fullHref = `/${locale}${href}`;
+          const isActive = pathname === fullHref;
 
+          return (
+            <Link
+              key={key}
+              href={fullHref}
+              className={[
+                'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px]',
+                'transition-colors duration-200',
+                isActive
+                  ? 'text-primary'
+                  : 'text-secondary hover:opacity-80 transition-opacity',
+                isRtl ? 'flex-row-reverse' : '',
+              ].join(' ')}
+            >
+              {isActive && (
+                <Image
+                  src="/images/hero/indicator.png"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className={isRtl ? 'rotate-180' : ''}
+                  aria-hidden
+                />
+              )}
+              {t(key as NavKey)}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Language switcher:
+          English mode → "عربي" text + Syrian flag (shows target language)
+          Arabic  mode → "EN" text */}
+      <Link
+        href={altHref}
+        aria-label={isRtl ? 'Switch to English' : 'التحويل إلى العربية'}
+        className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity"
+      >
+        {isRtl ? (
+          <span className="font-helvetica text-sm font-semibold text-white tracking-wide leading-6">
+            EN
+          </span>
+        ) : (
+          <>
+            <span className="font-helvetica text-base font-normal text-secondary leading-6 tracking-[0.15px]">
+              عربي
+            </span>
+            <div className="w-6 h-6 relative overflow-hidden rounded-sm shrink-0">
+              <Image
+                src="/images/icons/flag-ar.png"
+                alt="العربية"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </>
+        )}
+      </Link>
+    </div>
+  );
+
+  return (
+    /* CSS grid: 1fr | auto | 1fr
+     * The auto center column is always visually centered regardless of
+     * how wide the left/right columns are (both are 1fr = equal share). */
+    <header
+      className="absolute top-0 left-0 right-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center px-8 sm:px-12 lg:px-16 xl:px-20 py-4"
+    >
+      {/* Left column — nav+switcher on RTL, empty spacer on LTR */}
+      <div className={isRtl ? '' : ''}>
+        {isRtl && navAndSwitcher}
+      </div>
+
+      {/* Center column — brand logo, always centered */}
       <Link
         href={`/${locale}/home`}
-        className="shrink-0 group inline-grid grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
+        className="shrink-0 inline-grid grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
       >
         <Image
           src="/images/icons/tedx-logo.png"
@@ -66,65 +143,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
         </span>
       </Link>
 
-      <div className={`flex items-center gap-6 ${isRtl ? 'flex-row-reverse' : ''}`}>
-        <nav
-          ref={navRef as React.RefObject<HTMLElement>}
-          className={`hidden md:flex items-center gap-6 lg:gap-8 pt-1 ${isRtl ? 'flex-row-reverse' : ''}`}
-          aria-label="Main navigation"
-        >
-          {NAV_ITEMS.map(({ key, href }) => {
-            const fullHref = `/${locale}${href}`;
-            const isActive = pathname === fullHref;
-
-            return (
-              <Link
-                key={key}
-                href={fullHref}
-                className={[
-                  'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px]',
-                  'transition-colors duration-200',
-                  isActive
-                    ? 'text-primary'
-                    : 'text-secondary hover:opacity-80 transition-opacity',
-                  isRtl ? 'flex-row-reverse' : '',
-                ].join(' ')}
-              >
-                {isActive && (
-                  <Image
-                    src="/images/hero/indicator.png"
-                    alt=""
-                    width={28}
-                    height={28}
-                    className={isRtl ? 'rotate-180' : ''}
-                    aria-hidden
-                  />
-                )}
-                {t(key as NavKey)}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Language switcher — flag image on EN, "EN" text on AR */}
-        <Link
-          href={altHref}
-          aria-label={isRtl ? 'Switch to English' : 'التحويل إلى العربية'}
-          className="shrink-0 flex items-center hover:opacity-80 transition-opacity"
-        >
-          {isRtl ? (
-            <span className="font-helvetica text-sm font-semibold text-white tracking-wide">
-              EN
-            </span>
-          ) : (
-            <Image
-              src="/images/icons/flag-ar.png"
-              alt="العربية"
-              width={28}
-              height={20}
-              className="object-cover rounded-sm"
-            />
-          )}
-        </Link>
+      {/* Right column — nav+switcher on LTR, empty spacer on RTL */}
+      <div className="flex justify-end">
+        {!isRtl && navAndSwitcher}
       </div>
     </header>
   );

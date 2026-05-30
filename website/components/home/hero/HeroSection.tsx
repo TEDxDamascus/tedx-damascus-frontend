@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { CircularText } from './CircularText';
 import { SplitText } from './SplitText';
 import { Navbar } from '../../layout/Navbar';
 
-// 4 columns: alternating scroll direction for visual depth
-// Each column has 2 identical stacked images for a seamless infinite loop
+// 4 columns: alternating scroll direction.
+// Animation plays ONCE then stays at the final frame (no repeat).
 const COLUMNS = [
   { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', dir: 'down' as const, duration: 18 },
   { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', dir: 'up'   as const, duration: 22 },
@@ -64,7 +65,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
         />
       </div>
 
-      {/* Gradient overlay — 55 %/72 % stops match Figma spec */}
+      {/* Gradient overlay — 55 %/72 % stops from Figma spec */}
       <div
         className={[
           'absolute top-0 h-[716px] pointer-events-none mix-blend-overlay z-[1] w-[1475px]',
@@ -76,9 +77,8 @@ export function HeroSection({ locale }: HeroSectionProps) {
       />
 
       {/* ── Animated image columns ────────────────────────────────────────────────
-       * Outer wrapper clips the off-screen copy of each column (overflow-hidden).
-       * Each motion.div holds 2 identical images stacked; animating y by one
-       * image-height creates a seamless infinite scroll.
+       * Each column holds 2 stacked identical images; animating y by one image
+       * height gives a seamless scroll that ends at the final position (no loop).
        */}
       <div
         className="hidden lg:block absolute z-[2] overflow-hidden w-[var(--hero-slides-outer-w)] h-[var(--hero-slide-col-h)] top-[var(--hero-slides-top)]"
@@ -97,12 +97,11 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 className="absolute top-0 w-[var(--hero-slide-col-w)]"
                 style={{ [isRtl ? 'right' : 'left']: i * COL_OFFSET }}
                 initial={{ y: yStart }}
-                animate={{ y: [yStart, yEnd] }}
+                animate={{ y: yEnd }}
                 transition={{
                   duration: col.duration,
                   ease: 'linear',
-                  repeat: Infinity,
-                  repeatType: 'loop',
+                  // no repeat — plays once then stays static
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -113,7 +112,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
                   loading="eager"
                   className="w-full h-[var(--hero-slide-img-h)] object-cover [filter:var(--hero-slide-filter)]"
                 />
-                {/* Second copy — identical, provides seamless loop */}
+                {/* Second copy gives the scroll something to reveal */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={col.src}
@@ -128,25 +127,28 @@ export function HeroSection({ locale }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* ── Hero text ─────────────────────────────────────────────────────────── */}
+      {/* ── Hero text — centered within the left text area (0 → slidesEdge) ─────
+       * The block's width matches the text area so items-center truly centers it.
+       */}
       <div
-        className={[
-          'absolute z-[10] top-[378px] w-[477px] h-[155px]',
-          isRtl ? 'right-[72px]' : 'left-[72px]',
-        ].join(' ')}
+        className="absolute z-[10] top-[378px] flex flex-col items-center"
+        style={{
+          [isRtl ? 'right' : 'left']: 0,
+          width: slidesEdge,
+        }}
       >
-        {/* "WE ARE" */}
+        {/* "WE ARE" / "نحن" */}
         <h1
           className={[
-            'absolute font-helvetica font-light leading-[72px] select-none',
-            'top-0 w-[477px] text-[60px] tracking-[0] text-secondary',
-            isRtl ? 'right-0 left-auto text-right' : 'left-0 right-auto text-left',
+            'font-helvetica font-light leading-[72px] select-none',
+            'text-[60px] tracking-[0] text-secondary',
+            isRtl ? 'font-arabic text-right' : 'text-center',
           ].join(' ')}
         >
           <SplitText
-            text="WE ARE"
+            text={t('heroWeAre')}
             tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
+            textAlign="center"
             delay={45}
             duration={1.0}
             ease="power3.out"
@@ -158,52 +160,37 @@ export function HeroSection({ locale }: HeroSectionProps) {
           />
         </h1>
 
-        {/* TEDx — "TED" animated in, "x" as superscript */}
-        <span
-          className={[
-            'absolute font-helvetica select-none',
-            'top-[77.89px] text-[60px] font-black text-primary leading-none tracking-[0]',
-            isRtl ? 'right-0 left-auto' : 'left-0 right-auto',
-          ].join(' ')}
-        >
-          <SplitText
-            text="TED"
-            tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
-            delay={45}
-            duration={1.0}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 32 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.1}
-            rootMargin="-80px"
+        {/* TEDx logo image + Damascus — tight flex row, centered */}
+        <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <Image
+            src="/images/icons/tedx-logo.png"
+            alt="TEDx"
+            width={86}
+            height={50}
+            className="object-contain shrink-0"
+            priority
           />
-          <sup className="text-[0.45em] font-black align-super tracking-[0]">x</sup>
-        </span>
-
-        {/* Damascus */}
-        <span
-          className={[
-            'absolute font-helvetica font-light leading-[72px] select-none',
-            'top-[77.89px] text-[60px] tracking-[0] text-secondary',
-            isRtl ? 'right-[183.31px] left-auto' : 'left-[183.31px] right-auto',
-          ].join(' ')}
-        >
-          <SplitText
-            text="Damascus"
-            tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
-            delay={45}
-            duration={1.0}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 32 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.1}
-            rootMargin="-80px"
-          />
-        </span>
+          <span
+            className={[
+              'font-helvetica font-light leading-none select-none',
+              'text-[60px] tracking-[0] text-secondary',
+            ].join(' ')}
+          >
+            <SplitText
+              text="Damascus"
+              tag="span"
+              textAlign={isRtl ? 'right' : 'left'}
+              delay={45}
+              duration={1.0}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 32 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0.1}
+              rootMargin="-80px"
+            />
+          </span>
+        </div>
       </div>
 
       {/* ── Circular scroll badge ─────────────────────────────────────────────── */}
