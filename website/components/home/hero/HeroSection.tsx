@@ -163,7 +163,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
         {/* TEDx logo image + Damascus — tight flex row, centered */}
         <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
           <Image
-            src="/images/icons/tedx-logo.png"
+            src="/images/hero/tedx-hero.png"
             alt="TEDx"
             width={86}
             height={50}
@@ -193,10 +193,10 @@ export function HeroSection({ locale }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* ── Circular scroll badge ─────────────────────────────────────────────── */}
+      {/* ── Circular scroll badge — centered within the text area (0 → slidesEdge) */}
       <div
         className="absolute z-20 w-[200px] h-[200px] top-[592px]"
-        style={{ [isRtl ? 'right' : 'left']: slidesEdge - 77 }}
+        style={{ [isRtl ? 'right' : 'left']: slidesEdge / 2 - 100 }}
       >
         <CircularText
           text={CIRCULAR_TEXT}
