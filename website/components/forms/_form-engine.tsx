@@ -7,7 +7,7 @@ import type { ApiQuestion } from '@/types/form-schema';
 
 export const FORMS_API_BASE =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_FORMS_API_URL) ||
-  'http://187.127.114.46:3000';
+  '/api';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
