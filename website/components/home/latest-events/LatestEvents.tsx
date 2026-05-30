@@ -7,41 +7,17 @@ interface LatestEventsProps {
   locale: string;
 }
 
-const EVENTS = [
-  {
-    id: 1,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-  {
-    id: 2,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-  {
-    id: 3,
-    tagEn: 'Damascus where the story began',
-    tagAr: 'دمشق حيث بدأت القصة',
-    titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
-    titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
-    date: '16 Jan',
-    dateAr: '١٦ يناير',
-    time: '10 am - 4:00 pm',
-    timeAr: '١٠ ص - ٤:٠٠ م',
-  },
-];
+const EVENT = {
+  slug: 'speakers-2026',
+  tagEn: 'Damascus where the story began',
+  tagAr: 'دمشق حيث بدأت القصة',
+  titleEn: 'From War to Big Dreams: Syrian Adults drew their road despite every single obstacle',
+  titleAr: 'من الحرب إلى الأحلام الكبيرة: رسم البالغون السوريون طريقهم رغم كل العقبات',
+  date: '16 Jan',
+  dateAr: '١٦ يناير',
+  time: '10 am - 4:00 pm',
+  timeAr: '١٠ ص - ٤:٠٠ م',
+};
 
 export function LatestEvents({ locale }: LatestEventsProps) {
   const t = useTranslations('LatestEvents');
@@ -49,243 +25,83 @@ export function LatestEvents({ locale }: LatestEventsProps) {
 
   return (
     <section
-      className={[
-        'w-full bg-page-bg',
-        'flex flex-col justify-center items-center',
-        'px-6 sm:px-12 lg:px-[160px]',
-        'py-10',
-        'gap-[22px]',
-      ].join(' ')}
+      className="w-full bg-[var(--page-bg)] flex flex-col justify-center items-center px-6 sm:px-12 lg:px-[160px] py-10 gap-[22px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* Title */}
-      <div
-        className={isRtl ? 'font-arabic' : 'font-helvetica'}
-        style={{
-          textAlign: 'center',
-          color: 'white',
-          fontSize: 48,
-          fontWeight: 400,
-          lineHeight: '72px',
-          wordWrap: 'break-word',
-        }}
+      <h2
+        className={`text-white text-[48px] font-normal leading-[72px] text-center break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
       >
         {t('title')}
-      </div>
+      </h2>
 
-      {/* Cards row */}
-      <div
-        className="w-full flex flex-col lg:flex-row justify-center items-stretch gap-6"
-      >
-        {EVENTS.map((event) => (
-          <div
-            key={event.id}
-            style={{
-              flex: '1 1 0',
-              paddingBottom: 16,
-              position: 'relative',
-              background: '#1A1A1A',
-              boxShadow: '0px 0px 23px rgba(0,0,0,0.08)',
-              borderRadius: 18,
-              flexDirection: 'column',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: 12,
-              display: 'inline-flex',
-            }}
-          >
-            {/* Image with gradient overlay — matches Figma img structure */}
-            <div
-              style={{
-                alignSelf: 'stretch',
-                height: 240,
-                borderRadius: 13,
-                overflow: 'hidden',
-                position: 'relative',
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/events/event-bg.jpg"
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                draggable={false}
-                loading="lazy"
-              />
-              {/* Gradient overlay matching Figma */}
-              <div
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'linear-gradient(180deg, rgba(26,26,26,0) 0%, #1A1A1A 100%)',
-                }}
-              />
+      {/* Card row */}
+      <div className="w-full flex items-center justify-center">
+        <div className="flex-1 min-w-0 pb-4 relative bg-card-bg rounded-[18px] shadow-[0px_0px_23px_rgba(0,0,0,0.20)] flex flex-col items-center">
+
+          {/* Image */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/events/event-bg.jpg"
+            alt=""
+            className="w-full h-[240px] object-cover rounded-[13px] shrink-0"
+            draggable={false}
+            loading="lazy"
+          />
+
+          {/* Body */}
+          <div className="w-full px-[22px] flex flex-col gap-[10px]">
+            {/* Category */}
+            <div className="w-full py-[6px] rounded-[20px] flex items-start">
+              <p
+                className={`text-primary text-[24px] font-bold leading-[32.02px] break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+              >
+                {isRtl ? EVENT.tagAr : EVENT.tagEn}
+              </p>
             </div>
 
-            {/* Body: tag + title */}
-            <div
-              style={{
-                alignSelf: 'stretch',
-                paddingLeft: 12,
-                paddingRight: 12,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                gap: 10,
-                display: 'flex',
-              }}
-            >
-              {/* Tag pill */}
-              <div
-                style={{
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                  background: 'rgba(255,255,255,0.10)',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: 8,
-                  display: 'inline-flex',
-                }}
+            {/* Description + See more */}
+            <div className="w-full flex items-center">
+              <p
+                className={`flex-1 min-w-0 text-[#F1F1F1] text-[16px] font-bold leading-[24px] tracking-[0.15px] break-words ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
               >
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    color: '#EB0028',
-                    fontSize: 12,
-                    fontWeight: 400,
-                    lineHeight: '18px',
-                    letterSpacing: 0.40,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.tagAr : event.tagEn}
-                </span>
-              </div>
-
-              {/* Event title */}
-              <div
-                style={{
-                  alignSelf: 'stretch',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  display: 'inline-flex',
-                }}
+                {isRtl ? EVENT.titleAr : EVENT.titleEn}
+              </p>
+              <Link
+                href={`/${locale}/forms/${EVENT.slug}`}
+                className={`shrink-0 w-[102px] h-[42px] border border-primary text-primary text-[16px] font-normal leading-[24px] tracking-[0.15px] flex items-center justify-center transition-colors hover:bg-primary/10 ${isRtl ? 'font-arabic ms-4' : 'font-helvetica ml-4'}`}
               >
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    flex: '1 1 0',
-                    color: '#F1F1F1',
-                    fontSize: 16,
-                    fontWeight: 700,
-                    lineHeight: '24px',
-                    letterSpacing: 0.15,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.titleAr : event.titleEn}
-                </span>
-              </div>
-            </div>
-
-            {/* Absolute date + time overlay (left: 12.17, top: 164 per Figma) */}
-            <div
-              style={{
-                left: 12.17,
-                top: 164,
-                position: 'absolute',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-                display: 'flex',
-              }}
-            >
-              <span
-                style={{
-                  color: 'transparent',
-                  WebkitTextStroke: '1px white',
-                  paintOrder: 'stroke fill',
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-                  fontSize: 34,
-                  fontWeight: 500,
-                  lineHeight: '41.99px',
-                  letterSpacing: 0.25,
-                  wordWrap: 'break-word',
-                }}
-              >
-                {isRtl ? event.dateAr : event.date}
-              </span>
-
-              {/* Calendar icon + time */}
-              <div
-                style={{
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  gap: 3,
-                  display: 'inline-flex',
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/events/calendar.png"
-                  alt=""
-                  style={{ width: 24, height: 24, objectFit: 'contain', flexShrink: 0 }}
-                  draggable={false}
-                />
-                <span
-                  className={isRtl ? 'font-arabic' : 'font-helvetica'}
-                  style={{
-                    color: '#A8A8A8',
-                    fontSize: 14,
-                    fontWeight: 400,
-                    lineHeight: '20.02px',
-                    letterSpacing: 0.17,
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {isRtl ? event.timeAr : event.time}
-                </span>
-              </div>
+                {t('seeMore')}
+              </Link>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* See All button */}
-      <Link
-        href={`/${locale}/events`}
-        style={{
-          paddingLeft: 24,
-          paddingRight: 24,
-          paddingTop: 16,
-          paddingBottom: 16,
-          background: '#EB0028',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          textDecoration: 'none',
-        }}
-      >
-        <span
-          className={isRtl ? 'font-arabic' : 'font-helvetica'}
-          style={{
-            textAlign: 'center',
-            color: '#1A1A1A',
-            fontSize: 16,
-            fontWeight: 400,
-            lineHeight: '24px',
-            letterSpacing: 0.15,
-            wordWrap: 'break-word',
-          }}
-        >
-          {t('seeAll')}
-        </span>
-      </Link>
+          {/* Date + time overlay — absolute top-left of image */}
+          <div
+            className={`absolute flex flex-col items-start ${isRtl ? 'right-[22px]' : 'left-[22px]'}`}
+            style={{ top: 19 }}
+          >
+            <span
+              className={`text-[#F1F1F1] text-[34px] font-medium leading-[41.99px] tracking-[0.25px] break-words overflow-hidden text-ellipsis whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+            >
+              {isRtl ? EVENT.dateAr : EVENT.date}
+            </span>
+            <div className="flex items-center gap-[3px]">
+              {/* Calendar icon */}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="#A8A8A8" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15.695 13.7H15.704M15.695 16.7H15.704M11.995 13.7H12.004M11.995 16.7H12.004M8.294 13.7H8.303M8.294 16.7H8.303" stroke="#A8A8A8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span
+                className={`text-[#A8A8A8] text-[14px] font-normal leading-[20.02px] tracking-[0.17px] whitespace-nowrap ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+              >
+                {isRtl ? EVENT.timeAr : EVENT.time}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </section>
   );
 }

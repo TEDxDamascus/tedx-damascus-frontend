@@ -1,7 +1,69 @@
 'use client';
 
+import { useState } from 'react';
 import { DatePicker, MultipleChoice, StarRating, TextInput } from '@/components/shared';
 import type { ApiQuestion } from '@/types/form-schema';
+
+// ─── Phone input with country code ────────────────────────────────────────────
+
+const COUNTRY_CODES = [
+  { label: '+963 SY', value: '+963' },
+  { label: '+1 US',   value: '+1'   },
+  { label: '+44 GB',  value: '+44'  },
+  { label: '+966 SA', value: '+966' },
+  { label: '+971 AE', value: '+971' },
+  { label: '+961 LB', value: '+961' },
+  { label: '+962 JO', value: '+962' },
+  { label: '+20 EG',  value: '+20'  },
+  { label: '+90 TR',  value: '+90'  },
+  { label: '+49 DE',  value: '+49'  },
+  { label: '+33 FR',  value: '+33'  },
+  { label: '+7 RU',   value: '+7'   },
+];
+
+function PhoneInput({ label, value, onChange, error }: {
+  label: string; value: string;
+  onChange: (v: string) => void; error?: string;
+}) {
+  const parseValue = (v: string) => {
+    if (!v.trim()) return { code: '+963', number: '' };
+    const parts = v.trim().split(' ');
+    return parts.length > 1 && parts[0].startsWith('+')
+      ? { code: parts[0], number: parts.slice(1).join(' ') }
+      : { code: '+963', number: v };
+  };
+  const { code: ic, number: iNum } = parseValue(value);
+  const [code,   setCode]   = useState(ic);
+  const [number, setNumber] = useState(iNum);
+
+  const update = (c: string, n: string) => onChange(n.trim() ? `${c} ${n}` : c);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="font-helvetica text-sm text-[#a0a0a0] mb-1">{label}</label>
+      <div className={`flex items-center gap-3 border-b pb-1 transition-colors ${error ? 'border-[#eb0028]' : 'border-[#525252] focus-within:border-[#eb0028]'}`}>
+        <select
+          value={code}
+          onChange={(e) => { setCode(e.target.value); update(e.target.value, number); }}
+          className="bg-transparent text-[#bebebe] font-helvetica text-sm outline-none cursor-pointer shrink-0 py-1"
+        >
+          {COUNTRY_CODES.map((c) => (
+            <option key={c.value} value={c.value} className="bg-[#1a1a1a] text-white">{c.label}</option>
+          ))}
+        </select>
+        <span className="text-[#525252] select-none">|</span>
+        <input
+          type="tel"
+          value={number}
+          onChange={(e) => { setNumber(e.target.value); update(code, e.target.value); }}
+          placeholder="xxxxxxxxx"
+          className="flex-1 bg-transparent text-[#bebebe] font-helvetica text-base outline-none placeholder:text-[rgba(255,255,255,0.3)] py-1 caret-[#eb0028]"
+        />
+      </div>
+      {error && <p className="text-xs text-[#eb0028] mt-1">{error}</p>}
+    </div>
+  );
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -78,7 +140,7 @@ export function DateRangePicker({
         />
       </div>
       {error && (
-        <p className="text-xs text-[#680010] font-helvetica">{error}</p>
+        <p className="text-xs text-[#eb0028] font-helvetica">{error}</p>
       )}
     </div>
   );
@@ -92,17 +154,19 @@ export function QuestionField({
   onChange,
   error,
   locale,
+  questionNumber,
 }: {
   question: ApiQuestion;
   value: unknown;
   onChange: (v: unknown) => void;
   error?: string;
   locale: string;
+  questionNumber?: number;
 }) {
   const lang = locale as 'en' | 'ar';
-  const titleText =
-    (question.title[lang] || question.title.en || question.title.ar || '') +
-    (question.isRequired ? ' *' : '');
+  const rawTitle = question.title[lang] || question.title.en || question.title.ar || '';
+  const prefix = questionNumber != null ? `${questionNumber}. ` : '';
+  const titleText = prefix + rawTitle + (question.isRequired ? ' *' : '');
   const helpText =
     question.helpText?.[lang] ||
     question.helpText?.en ||
@@ -153,7 +217,7 @@ export function QuestionField({
             className="bg-transparent border-b border-[#525252] focus:border-primary outline-none resize-none font-helvetica text-base text-[#bebebe] placeholder:text-[rgba(255,255,255,0.4)] caret-primary py-2 transition-colors"
           />
           {error && (
-            <p className="text-xs text-[#680010] font-helvetica">{error}</p>
+            <p className="text-xs text-[#eb0028] font-helvetica">{error}</p>
           )}
           {helpText && (
             <p className="text-xs text-[#888] font-helvetica">{helpText}</p>
@@ -174,11 +238,10 @@ export function QuestionField({
 
     case 'phone_number':
       return (
-        <TextInput
+        <PhoneInput
           label={titleText}
-          type="tel"
           value={(value as string) ?? ''}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(v) => onChange(v)}
           error={error}
         />
       );
@@ -221,7 +284,7 @@ export function QuestionField({
             onChange={(v) => onChange(v)}
           />
           {error && (
-            <p className="text-xs text-[#680010] font-helvetica">{error}</p>
+            <p className="text-xs text-[#eb0028] font-helvetica">{error}</p>
           )}
           {helpText && (
             <p className="text-xs text-[#888] font-helvetica">{helpText}</p>
@@ -243,7 +306,7 @@ export function QuestionField({
             onChange={(v) => onChange(v)}
           />
           {error && (
-            <p className="text-xs text-[#680010] font-helvetica">{error}</p>
+            <p className="text-xs text-[#eb0028] font-helvetica">{error}</p>
           )}
           {helpText && (
             <p className="text-xs text-[#888] font-helvetica">{helpText}</p>
@@ -283,7 +346,7 @@ export function QuestionField({
             onChange={(v) => onChange(v)}
           />
           {error && (
-            <p className="text-xs text-[#680010] font-helvetica">{error}</p>
+            <p className="text-xs text-[#eb0028] font-helvetica">{error}</p>
           )}
           {helpText && (
             <p className="text-xs text-[#888] font-helvetica">{helpText}</p>

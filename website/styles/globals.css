@@ -11,8 +11,8 @@
     --footer-bg: #EB0028;
 
     /* Hero gradient overlays — used in HeroSection via bg-[image:var(...)] */
-    --hero-gradient:     linear-gradient(271deg, #101010 62%, rgba(128, 128, 128, 0.61) 78%, rgba(255, 255, 255, 0) 100%);
-    --hero-gradient-rtl: linear-gradient(89deg,  #101010 62%, rgba(128, 128, 128, 0.61) 78%, rgba(255, 255, 255, 0) 100%);
+    --hero-gradient:     linear-gradient(271deg, #101010 55%, rgba(127, 127, 127, 0.61) 72%, rgba(255, 255, 255, 0) 100%);
+    --hero-gradient-rtl: linear-gradient(89deg,  #101010 55%, rgba(127, 127, 127, 0.61) 72%, rgba(255, 255, 255, 0) 100%);
 
     /* Hero slide layout — used in HeroSection via w-[var(...)] / h-[var(...)] etc. */
     --hero-slide-col-w:    243px;
@@ -20,7 +20,7 @@
     --hero-slide-img-h:    625.5px;
     --hero-slides-inner-w: 883px;
     --hero-slides-outer-w: 1008px;
-    --hero-slides-top:     116px;
+    --hero-slides-top:     91px;
     --hero-slide-filter:   grayscale(1);
   }
 

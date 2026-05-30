@@ -48,7 +48,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               className={[
                 'absolute start-[10px] pointer-events-none select-none font-helvetica transition-all duration-150',
                 isFloating
-                  ? 'top-[3px] text-[10px] leading-none ' + (disabled ? 'text-[#666]' : 'text-[#aaa]')
+                  ? 'top-[3px] text-[10px] leading-none ' + (disabled ? 'text-[#666]' : 'text-[#E0E0E0]')
                   : 'top-[18px] text-base text-[#888]',
               ].join(' ')}
             >
@@ -74,7 +74,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               className={[
                 'font-helvetica text-base leading-normal flex-1 min-w-0',
                 'bg-transparent border-none outline-none',
-                'text-white placeholder:text-transparent',
+                'text-[#BEBEBE] placeholder:text-transparent',
                 'disabled:text-[rgba(255,255,255,0.24)] disabled:cursor-not-allowed',
                 'caret-[#eb0028]',
               ].join(' ')}
