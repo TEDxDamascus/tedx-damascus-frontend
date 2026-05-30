@@ -46,33 +46,34 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
   setRequestLocale(locale);
   const t = await getTranslations('CallForVoices');
 
+  const speakerFormHref = `/${locale}/forms/speakers-2026`;
+
   return (
     <section className="w-full px-[140px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
-      <div className="relative w-[1142.93px] h-[404.39px] -mb-24">
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 py-12 flex items-center gap-[37px]">
 
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/call-for-voices/group-right.png"
-            alt="" aria-hidden draggable={false} loading="lazy"
-            className="w-[320px] h-auto shrink-0 object-contain"
-          />
-
-          <BlurText
-            text={t('title')}
-            delay={120}
-            direction="top"
-            className="justify-center shrink-0 text-white text-[48px] font-helvetica font-normal leading-[72px] break-words"
-          />
-
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/call-for-voices/group-left.png"
-            alt="" aria-hidden draggable={false} loading="lazy"
-            className="w-[320px] h-auto shrink-0 object-contain"
-          />
-        </div>
+      {/* Title — centered, decorative images positioned on the sides */}
+      <div className="relative w-full flex justify-center items-center py-12">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/call-for-voices/group-right.png"
+          alt="" aria-hidden draggable={false} loading="lazy"
+          className="absolute left-0 w-[320px] h-auto object-contain pointer-events-none"
+        />
+        <BlurText
+          text={t('title')}
+          delay={120}
+          direction="top"
+          className="text-center text-white text-[48px] font-helvetica font-normal leading-[72px] break-words"
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/call-for-voices/group-left.png"
+          alt="" aria-hidden draggable={false} loading="lazy"
+          className="absolute right-0 w-[320px] h-auto object-contain pointer-events-none"
+        />
       </div>
+
+      {/* Cards */}
       <div className="px-[21px] flex justify-center items-center gap-8">
 
         <VoiceCard ghostIcon="/images/call-for-voices/user.svg">
@@ -82,7 +83,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
             </p>
             <div className="flex items-center gap-1">
               <Link
-                href={`/${locale}/speakers`}
+                href={speakerFormHref}
                 className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
               >
                 {t('nominateCta')}
@@ -100,7 +101,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
             </p>
             <div className="flex items-center gap-1">
               <Link
-                href={`/${locale}/volunteer`}
+                href={speakerFormHref}
                 className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
               >
                 {t('applyCta')}
