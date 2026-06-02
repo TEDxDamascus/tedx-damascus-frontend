@@ -2,10 +2,6 @@ import { useState, useMemo } from 'react';
 import {
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -14,26 +10,16 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Typography,
   Box,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../shared-components/breadcrumb';
 import { useSnackbar } from 'notistack';
-import {
-  useGetBlogCategoriesQuery,
-  useCreateBlogCategoryMutation,
-  useUpdateBlogCategoryMutation,
-  useDeleteBlogCategoryMutation,
-} from './BlogCategoriesApi';
-import {
-  LocaleInput,
-  defaultLocaleValue,
-  ensureLocaleValue,
-  localeInputTypes,
-} from '../../../shared-components/locale-input';
+import ConfirmModal from '../../../shared-components/confirm-modal';
+import { useGetBlogCategoriesQuery, useDeleteBlogCategoryMutation } from './BlogCategoriesApi';
 
 function getLocalizedText(value, locale = 'en') {
   if (!value) return '';
@@ -42,15 +28,10 @@ function getLocalizedText(value, locale = 'en') {
   return '';
 }
 
-function emptyForm() {
-  return { name: defaultLocaleValue(), description: defaultLocaleValue() };
-}
-
 function BlogCategoriesList() {
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { data, isLoading } = useGetBlogCategoriesQuery();
-  const [createCategory, { isLoading: isCreating }] = useCreateBlogCategoryMutation();
-  const [updateCategory, { isLoading: isUpdating }] = useUpdateBlogCategoryMutation();
   const [deleteCategory, { isLoading: isDeleting }] = useDeleteBlogCategoryMutation();
 
   const items = useMemo(() => {
@@ -59,57 +40,17 @@ function BlogCategoriesList() {
   }, [data]);
 
   const [listLocale, setListLocale] = useState('en');
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(emptyForm);
+  const [confirmItem, setConfirmItem] = useState(null);
 
   const handleListLocaleChange = (_, value) => {
     if (value) setListLocale(value);
   };
 
-  const openCreate = () => {
-    setEditingId(null);
-    setForm(emptyForm());
-    setDialogOpen(true);
-  };
-
-  const openEdit = (row) => {
-    setEditingId(row.id);
-    setForm({
-      name: ensureLocaleValue(row.nameLocales ?? { en: row.name, ar: row.name }),
-      description: ensureLocaleValue(
-        row.descriptionLocales ?? { en: row.description, ar: row.description },
-      ),
-    });
-    setDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setDialogOpen(false);
-    setEditingId(null);
-    setForm(emptyForm());
-  };
-
-  const handleSave = async () => {
+  const handleDeleteConfirm = async () => {
     try {
-      if (editingId) {
-        await updateCategory({ id: editingId, ...form }).unwrap();
-        enqueueSnackbar('Category updated', { variant: 'success' });
-      } else {
-        await createCategory(form).unwrap();
-        enqueueSnackbar('Category created', { variant: 'success' });
-      }
-      closeDialog();
-    } catch {
-      enqueueSnackbar('Could not save category', { variant: 'error' });
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!id || !window.confirm('Delete this category?')) return;
-    try {
-      await deleteCategory(id).unwrap();
+      await deleteCategory(confirmItem.id).unwrap();
       enqueueSnackbar('Category deleted', { variant: 'success' });
+      setConfirmItem(null);
     } catch {
       enqueueSnackbar('Could not delete category', { variant: 'error' });
     }
@@ -141,16 +82,12 @@ function BlogCategoriesList() {
               color: '#fff',
               '&:hover': { bgcolor: 'var(--color-primary-dark)', color: '#fff' },
             }}
-            onClick={openCreate}
+            onClick={() => navigate('/blogs/categories/add')}
           >
             Add category
           </Button>
         </div>
       </div>
-
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Name and description are optional. They appear when assigning a category to an article.
-      </Typography>
 
       <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e0e0e0' }}>
         {isLoading ? (
@@ -196,14 +133,18 @@ function BlogCategoriesList() {
                       )}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" aria-label="Edit" onClick={() => openEdit(row)}>
+                      <IconButton
+                        size="small"
+                        aria-label="Edit"
+                        onClick={() => navigate(`/blogs/categories/${row.id}`)}
+                      >
                         <Edit fontSize="small" />
                       </IconButton>
                       <IconButton
                         size="small"
                         aria-label="Delete"
                         disabled={isDeleting}
-                        onClick={() => handleDelete(row.id)}
+                        onClick={() => setConfirmItem(row)}
                       >
                         <Delete fontSize="small" />
                       </IconButton>
@@ -216,51 +157,15 @@ function BlogCategoriesList() {
         )}
       </TableContainer>
 
-      <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
-        <DialogTitle>{editingId ? 'Edit category' : 'Add category'}</DialogTitle>
-        <DialogContent>
-          <StackFields form={form} setForm={setForm} />
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={closeDialog}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            disabled={isCreating || isUpdating}
-            sx={{
-              bgcolor: 'var(--color-primary)',
-              color: '#fff',
-              '&:hover': { bgcolor: 'var(--color-primary-dark)', color: '#fff' },
-              '&.Mui-disabled': { color: 'rgba(255,255,255,0.65)' },
-            }}
-          >
-            {isCreating || isUpdating ? 'Saving…' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmModal
+        open={!!confirmItem}
+        onClose={() => setConfirmItem(null)}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleting}
+        title="Delete Category"
+        description={`Are you sure you want to delete "${getLocalizedText(confirmItem?.nameLocales ?? { en: confirmItem?.name }, 'en') || 'this category'}"?`}
+      />
     </div>
-  );
-}
-
-function StackFields({ form, setForm }) {
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-      <LocaleInput
-        label="Name"
-        type={localeInputTypes.textField}
-        value={form.name}
-        onChange={(v) => setForm((f) => ({ ...f, name: v }))}
-        placeholder="Optional"
-      />
-      <LocaleInput
-        label="Description"
-        type={localeInputTypes.textFieldMultiple}
-        value={form.description}
-        onChange={(v) => setForm((f) => ({ ...f, description: v }))}
-        placeholder="Optional"
-        minRows={2}
-      />
-    </Box>
   );
 }
 

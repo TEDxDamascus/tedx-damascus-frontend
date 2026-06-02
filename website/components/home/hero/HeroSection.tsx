@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { CircularText } from './CircularText';
 import { SplitText } from './SplitText';
 import { Navbar } from '../../layout/Navbar';
 
-
-const SLIDES = [
-  { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', posClass: 'left-0 top-[21px]'      },
-  { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', posClass: '-left-[9px] top-0'      },
-  { src: '/images/hero/slides/img3.png', alt: 'TEDxDamascus — moment 3', posClass: '-left-[2px] top-0'      },
-  { src: '/images/hero/slides/img4.png', alt: 'TEDxDamascus — moment 4', posClass: '-left-[9px] top-[75px]' },
-  { src: '/images/hero/slides/img5.png', alt: 'TEDxDamascus — moment 5', posClass: 'left-0 top-0'           },
+// 5 columns — stagger top offsets match Figma (21 / 75 / 0 / 75 / 0)
+const COLUMNS = [
+  { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', topOffset: 21 },
+  { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', topOffset: 75 },
+  { src: '/images/hero/slides/img3.png', alt: 'TEDxDamascus — moment 3', topOffset: 0  },
+  { src: '/images/hero/slides/img4.png', alt: 'TEDxDamascus — moment 4', topOffset: 75 },
+  { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 5', topOffset: 0  },
 ] as const;
+
+// 243px col − 50px overlap = 193px step
+const COL_OFFSET = 193;
 
 const CIRCULAR_TEXT = 'Damascus where the story is told again ...  ·  ';
 
@@ -24,27 +27,15 @@ interface HeroSectionProps {
 export function HeroSection({ locale }: HeroSectionProps) {
   const t     = useTranslations('HomePage');
   const isRtl = locale === 'ar';
-  const navRef = useRef<HTMLElement>(null);
-  const [slidesEdge, setSlidesEdge] = useState(720);
-
-  useEffect(() => {
-    const measure = () => {
-      if (!navRef.current) return;
-      const rect = navRef.current.getBoundingClientRect();
-      setSlidesEdge(isRtl ? window.innerWidth - rect.right : rect.left);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, [isRtl]);
 
   return (
     <section
-      className="relative w-full overflow-hidden h-[100svh] min-h-[716px] bg-page-bg"
+      className="relative w-full overflow-hidden h-[100svh] min-h-[716px] bg-[#101010]"
       aria-label={t('title')}
     >
-      <Navbar locale={locale} navRef={navRef} />
+      <Navbar locale={locale} />
 
+      {/* Background dot pattern */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -58,6 +49,8 @@ export function HeroSection({ locale }: HeroSectionProps) {
           ].join(' ')}
         />
       </div>
+
+      {/* Gradient overlay */}
       <div
         className={[
           'absolute top-0 h-[716px] pointer-events-none mix-blend-overlay z-[1] w-[1475px]',
@@ -68,62 +61,73 @@ export function HeroSection({ locale }: HeroSectionProps) {
         aria-hidden
       />
 
-
+      {/* ── Image columns ────────────────────────────────────────────────────────
+       * LTR: left ~43% ≈ 617px on 1440px canvas
+       * RTL: right ~43% → container left edge ≈ −176px (matches Figma)
+       * Percentage keeps it proportional across viewport widths.
+       */}
       <div
-        className="hidden lg:block absolute z-[2] w-[var(--hero-slides-outer-w)] h-[var(--hero-slide-col-h)] top-[var(--hero-slides-top)]"
-        style={{ [isRtl ? 'right' : 'left']: slidesEdge }}
+        className="hidden lg:block absolute z-[2] overflow-hidden top-[91px]"
+        style={{
+          [isRtl ? 'right' : 'left']: '43%',
+          width: 1008,
+          height: 700,
+        }}
         aria-hidden
       >
-        <div className="w-full h-full relative">
-          <div
-            className={[
-              'absolute top-0 inline-flex justify-start items-center w-[var(--hero-slides-inner-w)]',
-              isRtl ? 'right-0 left-auto flex-row-reverse' : 'left-0 right-auto flex-row',
-            ].join(' ')}
-          >
-            {SLIDES.map((slide, i) => (
-              <div
-                key={i}
-                className={[
-                  'relative w-[var(--hero-slide-col-w)] h-[var(--hero-slide-col-h)]',
-                  i < SLIDES.length - 1 ? '-mr-[50px]' : 'mr-0',
-                ].join(' ')}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={slide.src}
-                  alt={slide.alt}
-                  fetchPriority={i === 0 ? 'high' : 'auto'}
-                  loading="eager"
-                  className={`absolute w-[var(--hero-slide-col-w)] h-[var(--hero-slide-img-h)] object-cover [filter:var(--hero-slide-filter)] ${slide.posClass}`}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="relative w-full h-full">
+          {COLUMNS.map((col, i) => (
+            <div
+              key={i}
+              className="absolute top-0 h-full"
+              style={{
+                width: 243,
+                [isRtl ? 'right' : 'left']: i * COL_OFFSET,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={col.src}
+                alt={col.alt}
+                fetchPriority={i === 0 ? 'high' : 'auto'}
+                loading="eager"
+                style={{ position: 'absolute', top: col.topOffset, left: 0, width: 243, height: 625.5 }}
+                className="object-cover [filter:var(--hero-slide-filter)]"
+              />
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* ── Hero text block ──────────────────────────────────────────────────────
+       * LTR: left 5% ≈ 72px, top 378  (Figma LTR: left 72, top 378)
+       * RTL: right 5% ≈ 72px, top 365 (Figma RTL: left 892 → right ≈ 71px, top 364.5)
+       */}
       <div
-        className={[
-          'absolute z-[10] top-[378px] w-[477px] h-[155px]',
-          isRtl ? 'right-[72px]' : 'left-[72px]',
-        ].join(' ')}
+        className="absolute z-[10]"
+        style={{
+          [isRtl ? 'right' : 'left']: '5%',
+          top: isRtl ? 365 : 378,
+          width: 477,
+          height: 153,
+        }}
       >
-        {/* "WE ARE" */}
+        {/* "WE ARE" / "نحن" — full container width */}
         <h1
           className={[
-            'absolute font-helvetica font-light leading-[72px] select-none',
-            'top-0 w-[477px] text-[60px] tracking-[0] text-secondary',
-            isRtl ? 'right-0 left-auto text-right' : 'left-0 right-auto text-left',
+            'absolute top-0 left-0 w-full font-helvetica font-light leading-[72px] select-none',
+            'text-[60px] tracking-[0] text-secondary',
+            isRtl ? 'text-center' : 'text-left',
           ].join(' ')}
         >
           <SplitText
-            text="WE ARE"
+            text={t('heroWeAre')}
             tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
+            textAlign={isRtl ? 'center' : 'left'}
             delay={45}
             duration={1.0}
             ease="power3.out"
-            splitType="chars"
+            splitType={isRtl ? 'words' : 'chars'}
             from={{ opacity: 0, y: 32 }}
             to={{ opacity: 1, y: 0 }}
             threshold={0.1}
@@ -131,42 +135,28 @@ export function HeroSection({ locale }: HeroSectionProps) {
           />
         </h1>
 
-        {/* TEDx — "TED" animated in, "x" as superscript */}
-        <span
-          className={[
-            'absolute font-helvetica select-none',
-            'top-[77.89px] text-[60px] font-black text-primary leading-none tracking-[0]',
-            isRtl ? 'right-0 left-auto' : 'left-0 right-auto',
-          ].join(' ')}
-        >
-          <SplitText
-            text="TED"
-            tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
-            delay={45}
-            duration={1.0}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 32 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.1}
-            rootMargin="-80px"
+        {/* TEDx logo — Figma shows left:0 in BOTH LTR and RTL */}
+        <div className="absolute" style={{ left: 0, top: 77.48 }}>
+          <Image
+            src="/images/hero/tedx-hero.png"
+            alt="TEDx"
+            width={168}
+            height={47}
+            className="object-contain shrink-0"
+            priority
           />
-          <sup className="text-[0.45em] font-black align-super tracking-[0]">x</sup>
-        </span>
+        </div>
 
-        {/* Damascus */}
+        {/* "Damascus" — always LTR so SplitText chars stay left-to-right in RTL pages */}
         <span
-          className={[
-            'absolute font-helvetica font-light leading-[72px] select-none',
-            'top-[77.89px] text-[60px] tracking-[0] text-secondary',
-            isRtl ? 'right-[183.31px] left-auto' : 'left-[183.31px] right-auto',
-          ].join(' ')}
+          dir="ltr"
+          className="absolute font-helvetica font-light leading-none select-none text-[60px] tracking-[0] text-secondary"
+          style={{ left: 183.31, top: 77.89 }}
         >
           <SplitText
             text="Damascus"
             tag="span"
-            textAlign={isRtl ? 'right' : 'left'}
+            textAlign="left"
             delay={45}
             duration={1.0}
             ease="power3.out"
@@ -179,12 +169,13 @@ export function HeroSection({ locale }: HeroSectionProps) {
         </span>
       </div>
 
-      {/* ── z-20: Circular scroll badge
-       * top-[592px] is static; left/right depends on slidesEdge (DOM measurement).
+      {/* ── Circular scroll badge ────────────────────────────────────────────────
+       * Figma shows left:540 in BOTH LTR and RTL — not mirrored.
+       * 540/1440 = 37.5% keeps it proportional on different viewport widths.
        */}
       <div
-        className="absolute z-20 w-[200px] h-[200px] top-[592px]"
-        style={{ [isRtl ? 'right' : 'left']: slidesEdge - 77 }}
+        className="absolute z-20"
+        style={{ left: '37.5%', top: 592, width: 174, height: 174 }}
       >
         <CircularText
           text={CIRCULAR_TEXT}
@@ -193,11 +184,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
           className="w-full h-full"
         />
 
-        {/* Mouse-scroll icon — centred in 200×200 ring: (200−48)/2=76, (200−56)/2=72 */}
-        <div className="absolute w-12 h-14 left-[76px] top-[72px]">
-          {/* Mouse body */}
+        {/* Scroll icon — Figma: left:63.13, top:59.13 within the ring */}
+        <div className="absolute w-12 h-14" style={{ left: 63, top: 59 }}>
           <div className="absolute w-[16.59px] h-[25.71px] left-4 top-[10px] outline outline-[2.68px] outline-white [outline-offset:-1.34px] rounded-[8px]" />
-          {/* Scroll wheel */}
           <div className="animate-scroll-wheel absolute w-[2.14px] h-[5.36px] left-[23.23px] top-[14.29px] bg-white rounded-[1px]" />
         </div>
       </div>

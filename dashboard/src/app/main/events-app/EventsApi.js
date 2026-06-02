@@ -16,11 +16,11 @@ const eventsApi = apiService.injectEndpoints({
         const mapped = items.map((event) => ({
           id: event._id,
           title: event.title,
-          image: event.event_image,
+          event_image: event.event_image,
+          event_type: event.event_type,
           date: event.date,
           location: event.location,
           status: event.status,
-          active: event.status === 'active',
           speakers: event.speakers ?? [],
           gallery: event.gallery ?? [],
         }));
@@ -47,15 +47,18 @@ const eventsApi = apiService.injectEndpoints({
         return {
           id: e._id,
           title: e.title,
-          image: e.event_image,
+          event_image: e.event_image,
+          event_type: e.event_type,
           date: e.date?.split('T')[0],
-          time: '',
           location: e.location,
           description: e.description,
-          brief: e.brief,
+          brief: e.breif,
           status: e.status,
-          active: e.status === 'active',
-          speakers: e.speakers ?? [],
+          speakers: (e.speakers ?? []).map((s) =>
+            typeof s === 'object' && s !== null
+              ? { id: s._id || s.id, label: s.name?.en || s.name?.ar || '' }
+              : { id: s, label: s },
+          ),
           gallery: e.gallery ?? [],
         };
       },

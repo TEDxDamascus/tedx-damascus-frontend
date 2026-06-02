@@ -7,7 +7,7 @@ function SocialLinksTab({ control, errors }) {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Controller
-            name="linkedin"
+            name="linkedin_url"
             control={control}
             render={({ field }) => (
               <TextField
@@ -15,8 +15,8 @@ function SocialLinksTab({ control, errors }) {
                 label="LinkedIn Profile"
                 fullWidth
                 placeholder="https://linkedin.com/in/username"
-                error={!!errors.linkedin}
-                helperText={errors.linkedin?.message}
+                error={!!errors.linkedin_url}
+                helperText={errors.linkedin_url?.message}
               />
             )}
           />
@@ -24,7 +24,24 @@ function SocialLinksTab({ control, errors }) {
 
         <Grid item xs={12} md={6}>
           <Controller
-            name="facebook"
+            name="twitter_url"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Twitter / X Profile"
+                fullWidth
+                placeholder="https://twitter.com/username"
+                error={!!errors.twitter_url}
+                helperText={errors.twitter_url?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Controller
+            name="facebook_url"
             control={control}
             render={({ field }) => (
               <TextField
@@ -32,8 +49,8 @@ function SocialLinksTab({ control, errors }) {
                 label="Facebook Profile"
                 fullWidth
                 placeholder="https://facebook.com/username"
-                error={!!errors.facebook}
-                helperText={errors.facebook?.message}
+                error={!!errors.facebook_url}
+                helperText={errors.facebook_url?.message}
               />
             )}
           />
@@ -41,33 +58,16 @@ function SocialLinksTab({ control, errors }) {
 
         <Grid item xs={12} md={6}>
           <Controller
-            name="instagram"
+            name="website_url"
             control={control}
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Instagram Profile"
+                label="Personal Website"
                 fullWidth
-                placeholder="https://instagram.com/username"
-                error={!!errors.instagram}
-                helperText={errors.instagram?.message}
-              />
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Controller
-            name="portfolio"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Portfolio / Personal Website"
-                fullWidth
-                placeholder="https://yourname.com"
-                error={!!errors.portfolio}
-                helperText={errors.portfolio?.message}
+                placeholder="https://example.com"
+                error={!!errors.website_url}
+                helperText={errors.website_url?.message}
               />
             )}
           />

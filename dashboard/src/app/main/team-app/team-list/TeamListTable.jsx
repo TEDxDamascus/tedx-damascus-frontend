@@ -5,23 +5,23 @@ import { Edit, Visibility, DeleteOutline } from '@mui/icons-material';
 import { useDeleteTeamMemberMutation } from '../teamApi';
 import CustomTable from '../../../shared-components/custom-table';
 import ConfirmModal from '../../../shared-components/confirm-modal';
-import StatusBadge from '../../../shared-components/status-badge';
 
 const TABLE_ID = 'team_members';
 
 const COLUMNS = [
   {
-    id: 'photo',
+    id: 'image',
     header: '',
     renderCell: (value, row) => {
       const nameText = typeof row.name === 'string' ? row.name : row.name?.en || row.name?.ar || '';
+      const isUrl = typeof value === 'string' && value.startsWith('http');
       return (
         <div className="flex items-center">
-          {value ? (
+          {isUrl ? (
             <img src={value} alt={nameText} className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
-              {nameText.charAt(0) || '?'}
+              {nameText.charAt(0).toUpperCase() || '?'}
             </div>
           )}
         </div>
@@ -39,35 +39,27 @@ const COLUMNS = [
       </span>
     ),
   },
-  { id: 'department', header: 'Department', sortable: true },
   {
-    id: 'role',
-    header: 'Role',
+    id: 'year',
+    header: 'Year',
+    sortable: true,
     renderCell: (value) => (
-      <span>{typeof value === 'string' ? value : value?.en || value?.ar || '—'}</span>
+      <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+        {value || '—'}
+      </span>
     ),
   },
   {
-    id: 'linkedin',
-    header: 'Social',
-    renderCell: (value) =>
-      value ? (
-        <a
-          href={value}
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm font-medium text-blue-600 hover:underline"
-        >
-          LinkedIn
-        </a>
-      ) : (
-        <span className="text-gray-400">—</span>
-      ),
-  },
-  {
-    id: 'active',
-    header: 'Status',
-    renderCell: (value) => <StatusBadge status={value ? 'active' : 'inactive'} />,
+    id: 'bio',
+    header: 'Bio',
+    renderCell: (value) => {
+      const text = typeof value === 'string' ? value : value?.en || value?.ar || '';
+      return (
+        <span className="text-sm text-gray-500">
+          {text.length > 60 ? `${text.slice(0, 60)}…` : text || '—'}
+        </span>
+      );
+    },
   },
 ];
 

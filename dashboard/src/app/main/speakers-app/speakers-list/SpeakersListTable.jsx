@@ -5,7 +5,6 @@ import { Edit, Visibility, DeleteOutline } from '@mui/icons-material';
 import { useDeleteSpeakerMutation } from '../SpeakersApi';
 import CustomTable from '../../../shared-components/custom-table';
 import ConfirmModal from '../../../shared-components/confirm-modal';
-import StatusBadge from '../../../shared-components/status-badge';
 
 const TABLE_ID = 'speakers';
 
@@ -14,14 +13,14 @@ const COLUMNS = [
     id: 'speaker_image',
     header: '',
     renderCell: (value, row) => {
-      const nameText = typeof row.name === 'string' ? row.name : row.name?.en || row.name?.ar || '';
+      const nameText = row.name?.en || row.name?.ar || '';
       return (
         <div className="flex items-center">
           {value ? (
             <img src={value} alt={nameText} className="h-10 w-10 rounded-full object-cover" />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tedx-red text-sm font-semibold text-white">
-              {nameText.charAt(0) || '?'}
+              {nameText.charAt(0).toUpperCase() || '?'}
             </div>
           )}
         </div>
@@ -39,17 +38,17 @@ const COLUMNS = [
       </span>
     ),
   },
-  { id: 'company', header: 'Company', sortable: true },
-  { id: 'email', header: 'Email' },
   {
-    id: 'active',
-    header: 'Status',
-    renderCell: (value) => <StatusBadge status={value ? 'active' : 'inactive'} />,
-  },
-  {
-    id: 'featured',
-    header: 'Featured',
-    renderCell: (value) => (value ? <StatusBadge status="featured" /> : null),
+    id: 'bio',
+    header: 'Bio',
+    renderCell: (value) => {
+      const text = typeof value === 'string' ? value : value?.en || value?.ar || '';
+      return (
+        <span className="text-sm text-gray-500">
+          {text.length > 60 ? `${text.slice(0, 60)}…` : text || '—'}
+        </span>
+      );
+    },
   },
 ];
 

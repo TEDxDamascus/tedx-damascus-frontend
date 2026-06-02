@@ -7,17 +7,18 @@ import {
   Close,
   ExpandMore,
   ExpandLess,
+  CheckOutlined,
+  UndoOutlined,
 } from '@mui/icons-material';
-import { CircularProgress, Switch, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { CircularProgress, Switch, Tooltip } from '@mui/material';
 import { getTypeLabel, hasOptions, isSection } from './questionUtils';
 import ConfirmModal from '../../../shared-components/confirm-modal';
 
-// ─── Locale field (plain text) ───────────────────────────────────────────────
+// ─── Locale field ─────────────────────────────────────────────────────────────
 function LocaleField({ label, value = { en: '', ar: '' }, onChange, multiline = false }) {
   const Tag = multiline ? 'textarea' : 'input';
   const base =
     'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red';
-
   return (
     <div className="grid grid-cols-2 gap-3">
       <div>
@@ -46,26 +47,47 @@ function LocaleField({ label, value = { en: '', ar: '' }, onChange, multiline = 
   );
 }
 
-// ─── Shared input style ───────────────────────────────────────────────────────
 const inputCls =
   'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tedx-red';
 
-// ─── Config fields per type ───────────────────────────────────────────────────
+// Convert YYYY-MM-DD ↔ ISO timestamps for date config fields
+const toMinISO = (d) => (d ? `${d}T00:00:00.000Z` : '');
+const toMaxISO = (d) => (d ? `${d}T23:59:59.999Z` : '');
+const toDateInput = (iso) => (iso ? iso.slice(0, 10) : '');
+
+// ─── Per-type config fields ───────────────────────────────────────────────────
 function ConfigFields({ type, config = {}, onChange }) {
   const update = (key, val) => onChange({ ...config, [key]: val });
 
   if (type === 'short_text') {
     return (
-      <div>
-        <label className="mb-1 block text-xs font-medium text-gray-500">Max Length</label>
-        <input
-          type="number"
-          min={1}
-          value={config.maxLength ?? ''}
-          onChange={(e) => update('maxLength', e.target.value ? Number(e.target.value) : undefined)}
-          placeholder="No limit"
-          className={inputCls}
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Length</label>
+          <input
+            type="number"
+            min={0}
+            value={config.min_length ?? ''}
+            placeholder="No minimum"
+            onChange={(e) =>
+              update('min_length', e.target.value !== '' ? Number(e.target.value) : '')
+            }
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Length</label>
+          <input
+            type="number"
+            min={1}
+            value={config.max_length ?? ''}
+            placeholder="No limit"
+            onChange={(e) =>
+              update('max_length', e.target.value !== '' ? Number(e.target.value) : '')
+            }
+            className={inputCls}
+          />
+        </div>
       </div>
     );
   }
@@ -74,27 +96,28 @@ function ConfigFields({ type, config = {}, onChange }) {
     return (
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">Max Length</label>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Length</label>
           <input
             type="number"
-            min={1}
-            value={config.maxLength ?? ''}
+            min={0}
+            value={config.min_length ?? ''}
+            placeholder="No minimum"
             onChange={(e) =>
-              update('maxLength', e.target.value ? Number(e.target.value) : undefined)
+              update('min_length', e.target.value !== '' ? Number(e.target.value) : '')
             }
-            placeholder="No limit"
             className={inputCls}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">Visible Rows</label>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Length</label>
           <input
             type="number"
-            min={2}
-            max={20}
-            value={config.rows ?? ''}
-            onChange={(e) => update('rows', e.target.value ? Number(e.target.value) : undefined)}
-            placeholder="Default (3)"
+            min={1}
+            value={config.max_length ?? ''}
+            placeholder="No limit"
+            onChange={(e) =>
+              update('max_length', e.target.value !== '' ? Number(e.target.value) : '')
+            }
             className={inputCls}
           />
         </div>
@@ -104,14 +127,14 @@ function ConfigFields({ type, config = {}, onChange }) {
 
   if (type === 'number') {
     return (
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-500">Min</label>
           <input
             type="number"
             value={config.min ?? ''}
-            onChange={(e) => update('min', e.target.value !== '' ? Number(e.target.value) : '')}
             placeholder="No limit"
+            onChange={(e) => update('min', e.target.value !== '' ? Number(e.target.value) : '')}
             className={inputCls}
           />
         </div>
@@ -120,95 +143,37 @@ function ConfigFields({ type, config = {}, onChange }) {
           <input
             type="number"
             value={config.max ?? ''}
-            onChange={(e) => update('max', e.target.value !== '' ? Number(e.target.value) : '')}
             placeholder="No limit"
+            onChange={(e) => update('max', e.target.value !== '' ? Number(e.target.value) : '')}
             className={inputCls}
           />
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">Step</label>
-          <input
-            type="number"
-            min={0.01}
-            value={config.step ?? ''}
-            onChange={(e) => update('step', e.target.value !== '' ? Number(e.target.value) : '')}
-            placeholder="1"
-            className={inputCls}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  if (type === 'phone') {
-    return (
-      <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-        <Switch
-          size="small"
-          checked={!!config.country_code_required}
-          onChange={(e) => update('country_code_required', e.target.checked)}
-          sx={{
-            '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: 'var(--color-primary)',
-            },
-          }}
-        />
-        <span className="text-sm text-gray-600">Require country code</span>
       </div>
     );
   }
 
   if (type === 'rating') {
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500">Min</label>
-            <input
-              type="number"
-              min={0}
-              value={config.min ?? 1}
-              onChange={(e) => update('min', Number(e.target.value))}
-              className={inputCls}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500">Max</label>
-            <input
-              type="number"
-              min={2}
-              max={10}
-              value={config.max ?? 5}
-              onChange={(e) => update('max', Number(e.target.value))}
-              className={inputCls}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500">Step</label>
-            <input
-              type="number"
-              min={1}
-              value={config.step ?? 1}
-              onChange={(e) => update('step', Number(e.target.value))}
-              className={inputCls}
-            />
-          </div>
-        </div>
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">Min Label</label>
-          <LocaleField
-            label="Min label"
-            value={config.min_label ?? { en: '', ar: '' }}
-            onChange={(v) => update('min_label', v)}
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min</label>
+          <input
+            type="number"
+            min={0}
+            value={config.min ?? 1}
+            onChange={(e) => update('min', Number(e.target.value))}
+            className={inputCls}
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">Max Label</label>
-          <LocaleField
-            label="Max label"
-            value={config.max_label ?? { en: '', ar: '' }}
-            onChange={(v) => update('max_label', v)}
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max</label>
+          <input
+            type="number"
+            min={2}
+            max={10}
+            value={config.max ?? 5}
+            onChange={(e) => update('max', Number(e.target.value))}
+            className={inputCls}
           />
         </div>
       </div>
@@ -217,19 +182,25 @@ function ConfigFields({ type, config = {}, onChange }) {
 
   if (type === 'date') {
     return (
-      <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2">
-        <Switch
-          size="small"
-          checked={!!config.includeTime}
-          onChange={(e) => update('includeTime', e.target.checked)}
-          sx={{
-            '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
-            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-              backgroundColor: 'var(--color-primary)',
-            },
-          }}
-        />
-        <span className="text-sm text-gray-600">Include time picker</span>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Date</label>
+          <input
+            type="date"
+            value={toDateInput(config.min_date)}
+            onChange={(e) => update('min_date', toMinISO(e.target.value))}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Date</label>
+          <input
+            type="date"
+            value={toDateInput(config.max_date)}
+            onChange={(e) => update('max_date', toMaxISO(e.target.value))}
+            className={inputCls}
+          />
+        </div>
       </div>
     );
   }
@@ -241,8 +212,8 @@ function ConfigFields({ type, config = {}, onChange }) {
           <label className="mb-1 block text-xs font-medium text-gray-500">Min Date</label>
           <input
             type="date"
-            value={config.min_date ?? ''}
-            onChange={(e) => update('min_date', e.target.value)}
+            value={toDateInput(config.min_date)}
+            onChange={(e) => update('min_date', toMinISO(e.target.value))}
             className={inputCls}
           />
         </div>
@@ -250,8 +221,41 @@ function ConfigFields({ type, config = {}, onChange }) {
           <label className="mb-1 block text-xs font-medium text-gray-500">Max Date</label>
           <input
             type="date"
-            value={config.max_date ?? ''}
-            onChange={(e) => update('max_date', e.target.value)}
+            value={toDateInput(config.max_date)}
+            onChange={(e) => update('max_date', toMaxISO(e.target.value))}
+            className={inputCls}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'checkbox_group') {
+    return (
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Min Selected</label>
+          <input
+            type="number"
+            min={0}
+            value={config.min_selected ?? ''}
+            placeholder="No minimum"
+            onChange={(e) =>
+              update('min_selected', e.target.value !== '' ? Number(e.target.value) : '')
+            }
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Max Selected</label>
+          <input
+            type="number"
+            min={1}
+            value={config.max_selected ?? ''}
+            placeholder="No limit"
+            onChange={(e) =>
+              update('max_selected', e.target.value !== '' ? Number(e.target.value) : '')
+            }
             className={inputCls}
           />
         </div>
@@ -295,10 +299,10 @@ function ConfigFields({ type, config = {}, onChange }) {
               type="number"
               min={1}
               value={config.max_size_mb ?? ''}
+              placeholder="10"
               onChange={(e) =>
                 update('max_size_mb', e.target.value ? Number(e.target.value) : undefined)
               }
-              placeholder="10"
               className={inputCls}
             />
           </div>
@@ -308,54 +312,14 @@ function ConfigFields({ type, config = {}, onChange }) {
               type="number"
               min={1}
               value={config.max_files ?? ''}
+              placeholder="1"
               onChange={(e) =>
                 update('max_files', e.target.value ? Number(e.target.value) : undefined)
               }
-              placeholder="1"
               className={inputCls}
             />
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (type === 'yes_no') {
-    const current =
-      config.default_value === null || config.default_value === undefined
-        ? ''
-        : String(config.default_value);
-    return (
-      <div>
-        <label className="mb-1 block text-xs font-medium text-gray-500">Default Value</label>
-        <ToggleButtonGroup
-          exclusive
-          value={current}
-          onChange={(_, val) => {
-            if (val === null) return;
-            update('default_value', val === '' ? null : val === 'true');
-          }}
-          size="small"
-          sx={{
-            '& .MuiToggleButton-root': {
-              textTransform: 'none',
-              fontSize: 13,
-              px: 2,
-              borderColor: '#e0e0e0',
-              color: '#555',
-            },
-            '& .MuiToggleButton-root.Mui-selected': {
-              backgroundColor: 'var(--color-primary)',
-              color: '#fff',
-              borderColor: 'var(--color-primary)',
-              '&:hover': { backgroundColor: 'var(--color-primary-dark)' },
-            },
-          }}
-        >
-          <ToggleButton value="">No default</ToggleButton>
-          <ToggleButton value="true">Yes</ToggleButton>
-          <ToggleButton value="false">No</ToggleButton>
-        </ToggleButtonGroup>
       </div>
     );
   }
@@ -365,8 +329,8 @@ function ConfigFields({ type, config = {}, onChange }) {
       <div className="rounded-lg border border-dashed border-gray-300 p-4">
         <div className="border-t-2 border-gray-300" />
         <p className="mt-2 text-xs text-gray-400">
-          This element acts as a visual section break. Use the title and description fields above to
-          set its heading and subtitle.
+          Visual section break. Use the title and description fields above to set its heading and
+          subtitle.
         </p>
       </div>
     );
@@ -380,54 +344,77 @@ const hasConfig = (type) =>
     'short_text',
     'long_text',
     'number',
-    'phone',
     'rating',
     'date',
     'date_range',
+    'checkbox_group',
     'file_upload',
-    'yes_no',
     'section',
   ].includes(type);
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Main card ────────────────────────────────────────────────────────────────
 export default function QuestionCard({
   question,
   index,
   total,
+  defaultExpanded,
+  readOnly,
+  parentSection,
+  hideMoveButtons,
   onUpdate,
   onRemove,
   onMoveUp,
   onMoveDown,
   isRemoving,
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded ?? false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [local, setLocal] = useState(question);
-  const debounceRef = useRef(null);
+  const [dirty, setDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  // Tracks the last successfully saved state so Cancel can revert to it
+  const savedRef = useRef(question);
 
-  const save = (updated) => {
+  // Update local state and mark as dirty — NO auto-save
+  const update = (updated) => {
     setLocal(updated);
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => onUpdate(question.id, updated), 600);
+    setDirty(true);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onUpdate(question.id, local);
+      savedRef.current = local;
+      setDirty(false);
+    } catch {
+      // error snackbar already shown by parent
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDiscard = () => {
+    setLocal(savedRef.current);
+    setDirty(false);
   };
 
   const handleOptionChange = (i, locale, val) => {
     const options = local.options.map((opt, idx) =>
       idx === i ? { ...opt, label: { ...opt.label, [locale]: val } } : opt,
     );
-    save({ ...local, options });
+    update({ ...local, options });
   };
 
   const addOption = () => {
-    save({
+    const newIndex = local.options.length;
+    update({
       ...local,
       options: [
-        ...local.options,
+        ...local.options.map((opt, i) => ({ ...opt, orderIndex: i })),
         {
-          label: {
-            en: `Option ${local.options.length + 1}`,
-            ar: `الخيار ${local.options.length + 1}`,
-          },
+          orderIndex: newIndex,
+          label: { en: `Option ${newIndex + 1}`, ar: `الخيار ${newIndex + 1}` },
         },
       ],
     });
@@ -435,7 +422,10 @@ export default function QuestionCard({
 
   const removeOption = (i) => {
     if (local.options.length <= 2) return;
-    save({ ...local, options: local.options.filter((_, idx) => idx !== i) });
+    const options = local.options
+      .filter((_, idx) => idx !== i)
+      .map((opt, idx) => ({ ...opt, orderIndex: idx }));
+    update({ ...local, options });
   };
 
   const titlePreview = local.title?.en || local.title?.ar || '';
@@ -443,54 +433,100 @@ export default function QuestionCard({
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        {/* ── Accordion header ── */}
+      <div
+        className={`overflow-hidden rounded-xl border bg-white transition-colors ${sectionType ? 'border-l-4 border-l-tedx-red' : dirty ? 'border-amber-300' : 'border-gray-200'}`}
+      >
+        {/* ── Header ── */}
         <div
           className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50"
           onClick={() => setExpanded((v) => !v)}
         >
           {/* Type badge */}
           <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-              sectionType ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
-            }`}
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${sectionType ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'}`}
           >
             {getTypeLabel(local.type)}
           </span>
 
-          {!sectionType && <span className="text-sm font-medium text-gray-500">Q{index + 1}</span>}
-
-          {titlePreview ? (
-            <span className="flex-1 truncate text-sm text-gray-800">{titlePreview}</span>
-          ) : (
-            <span className="flex-1" />
+          {!sectionType && (
+            <span className="shrink-0 text-sm font-medium text-gray-500">Q{index + 1}</span>
           )}
 
-          {local.isRequired && !sectionType && (
-            <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-tedx-red ring-1 ring-red-200">
+          {/* Parent section badge */}
+          {!sectionType && parentSection && (
+            <span className="shrink-0 rounded border border-tedx-red px-2 py-0.5 text-xs font-medium text-tedx-red">
+              {parentSection.title?.en || parentSection.title?.ar || 'Section'}
+            </span>
+          )}
+
+          <span className="flex-1 truncate text-sm text-gray-800">
+            {titlePreview || <span className="italic text-gray-400">Untitled</span>}
+          </span>
+
+          {/* Unsaved dot */}
+          {dirty && (
+            <span className="shrink-0 rounded-full bg-amber-400 px-2 py-0.5 text-xs font-semibold text-white">
+              Unsaved
+            </span>
+          )}
+
+          {local.isRequired && !sectionType && !dirty && (
+            <span className="shrink-0 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-tedx-red ring-1 ring-red-200">
               Required
             </span>
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={onMoveUp}
-              disabled={index === 0}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
-            >
-              <KeyboardArrowUp style={{ fontSize: 18 }} />
-            </button>
-            <button
-              onClick={onMoveDown}
-              disabled={index === total - 1}
-              className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
-            >
-              <KeyboardArrowDown style={{ fontSize: 18 }} />
-            </button>
+          <div className="flex shrink-0 items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+            {/* Discard / Save — only when dirty and not readOnly */}
+            {dirty && !readOnly && (
+              <>
+                <Tooltip title="Discard changes" placement="top">
+                  <button
+                    onClick={handleDiscard}
+                    disabled={isSaving}
+                    className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-40"
+                  >
+                    <UndoOutlined style={{ fontSize: 18 }} />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Save this question" placement="top">
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="rounded p-1 text-green-600 hover:bg-green-50 disabled:opacity-40"
+                  >
+                    {isSaving ? (
+                      <CircularProgress size={14} color="inherit" />
+                    ) : (
+                      <CheckOutlined style={{ fontSize: 18 }} />
+                    )}
+                  </button>
+                </Tooltip>
+              </>
+            )}
+
+            {!hideMoveButtons && (
+              <>
+                <button
+                  onClick={onMoveUp}
+                  disabled={readOnly || index === 0}
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+                >
+                  <KeyboardArrowUp style={{ fontSize: 18 }} />
+                </button>
+                <button
+                  onClick={onMoveDown}
+                  disabled={readOnly || index === total - 1}
+                  className="rounded p-1 text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+                >
+                  <KeyboardArrowDown style={{ fontSize: 18 }} />
+                </button>
+              </>
+            )}
             <button
               onClick={() => setConfirmDelete(true)}
-              disabled={isRemoving}
+              disabled={readOnly || isRemoving}
               className="rounded p-1 text-red-400 hover:bg-red-50 disabled:opacity-50"
             >
               {isRemoving ? (
@@ -501,7 +537,7 @@ export default function QuestionCard({
             </button>
           </div>
 
-          <span className="ml-1 text-gray-400">
+          <span className="ml-1 shrink-0 text-gray-400">
             {expanded ? (
               <ExpandLess style={{ fontSize: 18 }} />
             ) : (
@@ -510,10 +546,12 @@ export default function QuestionCard({
           </span>
         </div>
 
-        {/* ── Expanded content ── */}
+        {/* ── Expanded body ── */}
         {expanded && (
-          <div className="space-y-5 border-t border-gray-100 px-4 pb-5 pt-4">
-            {/* Question label / Section title */}
+          <div
+            className={`space-y-5 border-t border-gray-100 px-4 pb-5 pt-4 ${readOnly ? 'pointer-events-none opacity-60' : ''}`}
+          >
+            {/* Title / Section heading */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-400">
                 {sectionType ? 'Section Title' : 'Question Label'}
@@ -521,7 +559,7 @@ export default function QuestionCard({
               <LocaleField
                 label={sectionType ? 'Section title' : 'Question'}
                 value={local.title}
-                onChange={(val) => save({ ...local, title: val })}
+                onChange={(val) => update({ ...local, title: val })}
               />
             </div>
 
@@ -534,11 +572,12 @@ export default function QuestionCard({
               <LocaleField
                 label={sectionType ? 'Description' : 'Help text'}
                 value={local.helpText}
-                onChange={(val) => save({ ...local, helpText: val })}
+                onChange={(val) => update({ ...local, helpText: val })}
+                multiline
               />
             </div>
 
-            {/* Options for choice types */}
+            {/* Options (choice types) */}
             {hasOptions(local.type) && (
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -577,23 +616,6 @@ export default function QuestionCard({
                 >
                   <Add style={{ fontSize: 14 }} /> Add option
                 </button>
-
-                <div className="mt-3 flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
-                  <Switch
-                    size="small"
-                    checked={!!local.config?.allowOther}
-                    onChange={(e) =>
-                      save({ ...local, config: { ...local.config, allowOther: e.target.checked } })
-                    }
-                    sx={{
-                      '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
-                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: 'var(--color-primary)',
-                      },
-                    }}
-                  />
-                  <span className="text-sm text-gray-600">Allow &ldquo;Other&rdquo; answer</span>
-                </div>
               </div>
             )}
 
@@ -606,12 +628,12 @@ export default function QuestionCard({
                 <ConfigFields
                   type={local.type}
                   config={local.config}
-                  onChange={(config) => save({ ...local, config })}
+                  onChange={(config) => update({ ...local, config })}
                 />
               </div>
             )}
 
-            {/* Required toggle — hidden for section */}
+            {/* Required toggle */}
             {!sectionType && (
               <div className="mt-2 flex items-center justify-between rounded-lg border border-dashed border-tedx-red bg-red-50 px-4 py-3">
                 <div>
@@ -622,7 +644,7 @@ export default function QuestionCard({
                 </div>
                 <Switch
                   checked={local.isRequired}
-                  onChange={(e) => save({ ...local, isRequired: e.target.checked })}
+                  onChange={(e) => update({ ...local, isRequired: e.target.checked })}
                   sx={{
                     '& .MuiSwitch-switchBase.Mui-checked': { color: 'var(--color-primary)' },
                     '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
@@ -636,7 +658,6 @@ export default function QuestionCard({
         )}
       </div>
 
-      {/* Delete confirm */}
       <ConfirmModal
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}

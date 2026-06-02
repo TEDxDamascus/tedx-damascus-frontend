@@ -19,10 +19,12 @@ export default function FormBuilder() {
     isNew,
     form,
     isFormLoading,
+    refetchForm,
     settingsForm,
     saveSettings,
     isSavingSettings,
     questions,
+    lastAddedIndex,
     isAddingQuestion,
     handleAddQuestion,
     handleUpdateQuestion,
@@ -40,20 +42,6 @@ export default function FormBuilder() {
       </div>
     );
   }
-
-  const handleMoveUp = (questionId, index) => {
-    if (index === 0) return;
-    const prev = questions[index - 1];
-    handleUpdateQuestion(questionId, { orderIndex: prev.orderIndex });
-    handleUpdateQuestion(prev.id, { orderIndex: questions[index].orderIndex });
-  };
-
-  const handleMoveDown = (questionId, index) => {
-    if (index === questions.length - 1) return;
-    const next = questions[index + 1];
-    handleUpdateQuestion(questionId, { orderIndex: next.orderIndex });
-    handleUpdateQuestion(next.id, { orderIndex: questions[index].orderIndex });
-  };
 
   const isPublished = form?.status === 'Published' || form?.status === 'published';
   const displayName = form?.name?.en || form?.name?.ar || 'Untitled Form';
@@ -134,7 +122,10 @@ export default function FormBuilder() {
       >
         <Tabs
           value={tab}
-          onChange={(_, v) => setTab(v)}
+          onChange={(_, v) => {
+            setTab(v);
+            if (v === 1) refetchForm();
+          }}
           sx={{
             borderBottom: 1,
             borderColor: 'divider',
@@ -161,12 +152,12 @@ export default function FormBuilder() {
           {tab === 1 && !isNew && (
             <QuestionList
               questions={questions}
+              lastAddedIndex={lastAddedIndex}
+              isPublished={isPublished}
               isAddingQuestion={isAddingQuestion}
               onAdd={handleAddQuestion}
               onUpdate={handleUpdateQuestion}
               onRemove={handleRemoveQuestion}
-              onMoveUp={handleMoveUp}
-              onMoveDown={handleMoveDown}
             />
           )}
         </div>

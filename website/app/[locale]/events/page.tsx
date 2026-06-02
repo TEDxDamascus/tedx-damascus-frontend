@@ -8,6 +8,7 @@ type Props = {
 export default async function EventsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('Events');
 
   return (
     <main className="min-h-screen bg-black">

@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MotionReveal } from './MotionReveal';
 
 interface AboutTEDxProps {
@@ -6,6 +6,7 @@ interface AboutTEDxProps {
 }
 
 export async function AboutTEDx({ locale }: AboutTEDxProps) {
+  setRequestLocale(locale);
   const t     = await getTranslations('AboutTEDx');
   const isRtl = locale === 'ar';
 
@@ -30,18 +31,13 @@ export async function AboutTEDx({ locale }: AboutTEDxProps) {
         aria-hidden
       />
       <div
-        className="absolute inset-x-0 bottom-0 h-2/5 pointer-events-none bg-[linear-gradient(to_top,#101010_0%,rgba(16,16,16,0.6)_55%,transparent_100%)]"
-        aria-hidden
-      />
-
-      <div
         className={[
           'relative z-10 max-w-[1440px] mx-auto',
           'px-6 sm:px-12 lg:px-[82px]',
           'py-16 lg:py-[130px]',
           'flex flex-col lg:flex-row items-start lg:items-center',
           'gap-10 lg:gap-[76px]',
-          isRtl ? 'lg:flex-row-reverse' : '',
+          '',
         ].join(' ')}
       >
         <div className="flex flex-col shrink-0 w-full lg:w-[331px]">
@@ -49,10 +45,10 @@ export async function AboutTEDx({ locale }: AboutTEDxProps) {
             <h2
               id="about-tedx-heading"
               className={[
-                'font-helvetica text-[48px] sm:text-[60px] font-light',
+                'text-[60px] font-light',
                 'text-white leading-[1.2] tracking-[-0.5px]',
-                'mb-[-28px] sm:mb-[-36px]',
-                isRtl ? 'text-right' : '',
+                'mb-[-30px]',
+                isRtl ? 'font-arabic text-right' : 'font-helvetica',
               ].join(' ')}
             >
               {t('title')}
@@ -74,9 +70,9 @@ export async function AboutTEDx({ locale }: AboutTEDxProps) {
         <MotionReveal
           delay={0.28}
           className={[
-            isRtl ? 'font-arabic text-right' : 'font-helvetica',
-            'text-base font-normal text-white/90 leading-[24px] tracking-[0.15px]',
-            'lg:max-w-[872px]',
+            isRtl ? 'font-arabic' : 'font-helvetica',
+            'text-base font-normal text-white leading-[24px] tracking-[0.15px]',
+            'flex-1',
           ].join(' ')}
         >
           <p>{t('description')}</p>

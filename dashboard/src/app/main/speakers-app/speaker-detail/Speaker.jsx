@@ -25,7 +25,10 @@ const speakerSchema = z.object({
   bio: localeObjectSchema.optional(),
   description: localeObjectSchema.optional(),
   speaker_image: z.string().optional(),
-  social_links: z.array(z.string()).optional(),
+  linkedin_url: z.string().optional(),
+  twitter_url: z.string().optional(),
+  facebook_url: z.string().optional(),
+  website_url: z.string().optional(),
   gallery: z.array(z.string()).optional(),
   video_link: z.string().optional(),
   phone: z.string().optional(),
@@ -57,26 +60,67 @@ function Speaker() {
 
   useEffect(() => {
     if (speaker && !isNew) {
+      const links = Array.isArray(speaker.social_links) ? speaker.social_links : [];
+      const linkedin_url = links.find((u) => u.includes('linkedin')) ?? '';
+      const twitter_url = links.find((u) => u.includes('twitter') || u.includes('x.com')) ?? '';
+      const facebook_url = links.find((u) => u.includes('facebook')) ?? '';
+      const website_url =
+        links.find(
+          (u) =>
+            !u.includes('linkedin') &&
+            !u.includes('twitter') &&
+            !u.includes('x.com') &&
+            !u.includes('facebook'),
+        ) ?? '';
+
       reset({
-        ...speaker,
         name: ensureLocaleValue(speaker.name),
         bio: ensureLocaleValue(speaker.bio),
         description: ensureLocaleValue(speaker.description),
         speaker_image: speaker.speaker_image || '',
-        social_links: Array.isArray(speaker.social_links) ? speaker.social_links : [],
+        linkedin_url,
+        twitter_url,
+        facebook_url,
+        website_url,
         gallery: Array.isArray(speaker.gallery) ? speaker.gallery : [],
         video_link: speaker.video_link || '',
+        email: speaker.email || '',
+        phone: speaker.phone || '',
+        featured: speaker.featured ?? false,
+        active: speaker.active ?? true,
       });
     }
   }, [speaker, isNew, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     try {
+      const socialLinks = [
+        formData.linkedin_url,
+        formData.twitter_url,
+        formData.facebook_url,
+        formData.website_url,
+      ].filter((u) => u?.trim());
+
+      const payload = {
+        name: formData.name,
+        bio: formData.bio,
+        description: formData.description,
+        featured: formData.featured,
+        active: formData.active,
+      };
+
+      if (formData.email?.trim()) payload.email = formData.email.trim();
+      if (formData.phone?.trim()) payload.phone = formData.phone.trim();
+      if (formData.speaker_image) payload.speaker_image = formData.speaker_image;
+      if (formData.video_link?.trim()) payload.video_link = formData.video_link.trim();
+      if (formData.gallery?.length) payload.gallery = formData.gallery;
+      if (socialLinks.length) payload.social_links = socialLinks;
+
       if (isNew) {
-        await createSpeaker(data).unwrap();
+        await createSpeaker(payload).unwrap();
         enqueueSnackbar('Speaker created successfully', { variant: 'success' });
       } else {
-        await updateSpeaker({ id: speakerId, data }).unwrap();
+        await updateSpeaker({ id: speakerId, data: payload }).unwrap();
         enqueueSnackbar('Speaker updated successfully', { variant: 'success' });
       }
       navigate('/speakers');

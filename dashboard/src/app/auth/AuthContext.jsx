@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
     }
 
     dispatch(setUser(tokenUser));
-    navigate('/dashboard');
+    navigate('/events');
   };
 
   const logout = () => {

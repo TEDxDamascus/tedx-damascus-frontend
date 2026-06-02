@@ -58,6 +58,14 @@ function CustomAutocomplete({
     ...valueArr.filter(Boolean),
     ...options.filter((o) => !valueIds.has(o?.id ?? o?.value)),
   ];
+
+  // Prefer label from loaded options so pre-selected IDs display as names
+  const enrichedValue = multiple
+    ? valueArr.map((v) => (v ? (options.find((o) => isEqual(o, v)) ?? v) : v))
+    : value
+      ? (options.find((o) => isEqual(o, value)) ?? value)
+      : null;
+
   const errorMessage =
     scopeError ||
     (externalError?.message ?? (typeof externalError === 'string' ? externalError : null));
@@ -67,7 +75,7 @@ function CustomAutocomplete({
     <Box>
       <Autocomplete
         multiple={multiple}
-        value={value ?? (multiple ? [] : null)}
+        value={enrichedValue ?? (multiple ? [] : null)}
         onChange={(event, newValue) => onChange?.(newValue)}
         inputValue={inputValue}
         onInputChange={handleInputChange}

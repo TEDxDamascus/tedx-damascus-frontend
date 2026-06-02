@@ -240,9 +240,21 @@ export default function FormSettings({ control, shareableUrl }) {
             control={control}
             render={({ field }) => (
               <input
-                {...field}
+                value={field.value ?? ''}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === '') {
+                    field.onChange('');
+                    return;
+                  }
+                  const parsed = parseInt(raw, 10);
+                  if (!Number.isNaN(parsed) && parsed >= 1) {
+                    field.onChange(parsed);
+                  }
+                }}
                 type="number"
                 min={1}
+                step={1}
                 placeholder="Unlimited"
                 className={inputCls}
               />

@@ -13,19 +13,22 @@ import {
   useUpdatePartnerMutation,
 } from '../PartnersApi';
 import BasicInfoTab from './tabs/BasicInfoTab';
+import SocialLinksTab from './tabs/SocialLinksTab';
 import PartnerModel from './models/PartnerModel';
 import { ensureLocaleValue } from '../../../shared-components/locale-input';
 
 const localeObjectSchema = z.object({ ar: z.string(), en: z.string() });
 
 const partnerSchema = z.object({
-  title: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Title is required'),
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  name: localeObjectSchema.refine((v) => v?.en?.trim() || v?.ar?.trim(), 'Name is required'),
+  slug: localeObjectSchema.optional(),
   description: localeObjectSchema.optional(),
   image: z.string().optional(),
-  phone: z.string().optional(),
-  type: z.string().min(1, 'Partner type is required'),
-  active: z.boolean().optional(),
+  partnership_type: z.string().min(1, 'Partnership type is required'),
+  website_url: z.string().optional(),
+  instagram_url: z.string().optional(),
+  linkedin_url: z.string().optional(),
+  facebook_url: z.string().optional(),
 });
 
 function Partner() {
@@ -52,25 +55,53 @@ function Partner() {
 
   useEffect(() => {
     if (partner && !isNew) {
+      const links = Array.isArray(partner.social_links) ? partner.social_links : [];
+      const website_url =
+        links.find(
+          (u) => !u.includes('instagram') && !u.includes('linkedin') && !u.includes('facebook'),
+        ) ?? '';
+      const instagram_url = links.find((u) => u.includes('instagram')) ?? '';
+      const linkedin_url = links.find((u) => u.includes('linkedin')) ?? '';
+      const facebook_url = links.find((u) => u.includes('facebook')) ?? '';
+
       reset({
-        ...partner,
-        title: ensureLocaleValue(partner.title),
+        name: ensureLocaleValue(partner.name),
+        slug: ensureLocaleValue(partner.slug),
         description: ensureLocaleValue(partner.description),
         image: partner.image || '',
-        type: partner.type || '',
-        phone: partner.phone || '',
-        email: partner.email || '',
+        partnership_type: partner.partnership_type || '',
+        website_url,
+        instagram_url,
+        linkedin_url,
+        facebook_url,
       });
     }
   }, [partner, isNew, reset]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     try {
+      const socialLinks = [
+        formData.website_url,
+        formData.instagram_url,
+        formData.linkedin_url,
+        formData.facebook_url,
+      ].filter((u) => u?.trim());
+
+      const payload = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        partnership_type: formData.partnership_type,
+      };
+
+      if (formData.image) payload.image = formData.image;
+      if (socialLinks.length) payload.social_links = socialLinks;
+
       if (isNew) {
-        await createPartner(data).unwrap();
+        await createPartner(payload).unwrap();
         enqueueSnackbar('Partner created successfully', { variant: 'success' });
       } else {
-        await updatePartner({ id: partnerId, data }).unwrap();
+        await updatePartner({ id: partnerId, data: payload }).unwrap();
         enqueueSnackbar('Partner updated successfully', { variant: 'success' });
       }
       navigate('/partners');
@@ -139,8 +170,12 @@ function Partner() {
           }}
         >
           <Tab label="Partner Information" />
+          <Tab label="Social Links" />
         </Tabs>
-        <Box>{currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}</Box>
+        <Box>
+          {currentTab === 0 && <BasicInfoTab control={control} errors={errors} />}
+          {currentTab === 1 && <SocialLinksTab control={control} errors={errors} />}
+        </Box>
       </Paper>
     </div>
   );

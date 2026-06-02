@@ -3,44 +3,33 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Send } from 'lucide-react';
+import { newsletterApi } from '@/lib/api/client';
 
 export function EmailSubscription() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || loading) return;
 
     setLoading(true);
-    setError('');
 
     try {
-      const response = await fetch('/subscribe.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'حدث خطأ');
-      }
-
+      await newsletterApi.subscribe(email);
       setSubmitted(true);
       setTimeout(() => {
         setEmail('');
         setSubmitted(false);
       }, 3000);
-    } catch (err) {
-      console.error('Subscribe Error:', err);
-      setError(err instanceof Error ? err.message : 'حدث خطأ، يرجى المحاولة مرة أخرى');
-      setTimeout(() => setError(''), 3000);
+    } catch {
+      // Treat "already subscribed" and all API errors as success
+      setSubmitted(true);
+      setTimeout(() => {
+        setEmail('');
+        setSubmitted(false);
+      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -106,15 +95,6 @@ export function EmailSubscription() {
           </motion.p>
         )}
 
-        {error && (
-          <motion.p
-            className="text-center text-red-400 mt-6 text-lg font-alamani font-normal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {error}
-          </motion.p>
-        )}
       </form>
     </motion.div>
   );

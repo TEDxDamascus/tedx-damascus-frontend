@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
@@ -29,8 +29,13 @@ export function useFormBuilder(formId) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const didReset = useRef(false);
+  const [lastAddedIndex, setLastAddedIndex] = useState(null);
 
-  const { data: formResponse, isLoading: isFormLoading } = useGetFormQuery(formId, {
+  const {
+    data: formResponse,
+    isLoading: isFormLoading,
+    refetch: refetchForm,
+  } = useGetFormQuery(formId, {
     skip: isNew,
   });
   const form = formResponse?.data;
@@ -52,6 +57,18 @@ export function useFormBuilder(formId) {
       didReset.current = true;
     }
   }, [form, reset]);
+
+  // Strip empty-string / null config values and ensure every option has orderIndex
+  const preparePayload = (question) => {
+    const config = Object.fromEntries(
+      Object.entries(question.config ?? {}).filter(([, v]) => v !== '' && v != null),
+    );
+    const options = (question.options ?? []).map((opt, i) => ({
+      ...opt,
+      orderIndex: opt.orderIndex ?? i,
+    }));
+    return { ...question, config, options };
+  };
 
   const [createForm, { isLoading: isCreating }] = useCreateFormMutation();
   const [updateForm, { isLoading: isUpdating }] = useUpdateFormMutation();
@@ -76,23 +93,31 @@ export function useFormBuilder(formId) {
     }
   });
 
-  const handleAddQuestion = async (type) => {
-    const questions = form?.questions ?? [];
+  const handleAddQuestion = async (type, parentId = null) => {
+    const allQuestions = form?.questions ?? [];
+    // orderIndex = count of existing siblings under the same parent
+    const orderIndex = allQuestions.filter(
+      (q) => String(q.parentId ?? null) === String(parentId),
+    ).length;
+    // lastAddedIndex uses the flat list position so the card auto-expands
+    setLastAddedIndex(allQuestions.length);
     try {
       await addQuestionMutation({
         formId,
-        data: createQuestion(type, questions.length),
+        data: preparePayload(createQuestion(type, orderIndex, parentId)),
       }).unwrap();
     } catch {
+      setLastAddedIndex(null);
       enqueueSnackbar('Failed to add question', { variant: 'error' });
     }
   };
 
   const handleUpdateQuestion = async (questionId, data) => {
     try {
-      await updateQuestionMutation({ formId, questionId, data }).unwrap();
-    } catch {
+      await updateQuestionMutation({ formId, questionId, data: preparePayload(data) }).unwrap();
+    } catch (err) {
       enqueueSnackbar('Failed to update question', { variant: 'error' });
+      throw err; // re-throw so QuestionCard can stay dirty on failure
     }
   };
 
@@ -122,7 +147,6 @@ export function useFormBuilder(formId) {
     }
   };
 
-  // Normalize questions: ensure each has `id` (backend may return `_id`)
   const questions = (form?.questions ?? []).map((q) => ({
     ...q,
     id: q.id ?? q._id,
@@ -132,10 +156,12 @@ export function useFormBuilder(formId) {
     isNew,
     form,
     isFormLoading,
+    refetchForm,
     settingsForm,
     saveSettings,
     isSavingSettings: isCreating || isUpdating,
     questions,
+    lastAddedIndex,
     isAddingQuestion,
     handleAddQuestion,
     handleUpdateQuestion,

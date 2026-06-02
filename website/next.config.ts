@@ -4,8 +4,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://187.127.114.46:3000';
+
 const nextConfig: NextConfig = {
-  output: 'export',
   trailingSlash: true,
   poweredByHeader: false,
   images: {
@@ -14,7 +15,14 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
-  outputFileTracingRoot: path.join(__dirname, '../'),
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${BACKEND_URL}/:path*`,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -8,7 +8,7 @@ const TABLE_ID = 'events';
 
 function EventsList() {
   const { params } = useTableState(TABLE_ID);
-  const { data, isLoading } = useGetEventsQuery(params);
+  const { data, isLoading } = useGetEventsQuery(params, { refetchOnMountOrArgChange: true });
 
   const [filteredData, setFilteredData] = useState([]);
 

@@ -10,13 +10,13 @@ import {
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import GroupsIcon from '@mui/icons-material/Groups';
 const navigationConfig = [
-  {
-    id: 'dashboard',
-    title: 'Dashboard',
-    type: 'item',
-    icon: Dashboard,
-    url: '/dashboard',
-  },
+  // {
+  //   id: 'dashboard',
+  //   title: 'Dashboard',
+  //   type: 'item',
+  //   icon: Dashboard,
+  //   url: '/dashboard',
+  // },
   {
     id: 'speakers',
     title: 'Speakers',
@@ -80,7 +80,7 @@ const navigationConfig = [
   },
   {
     id: 'settings',
-    title: 'Settings',
+    title: 'Home Settings',
     type: 'item',
     icon: Settings,
     url: '/settings',
