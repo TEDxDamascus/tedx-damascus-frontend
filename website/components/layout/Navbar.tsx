@@ -131,7 +131,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
           {/* Desktop nav + inline language switcher (xl+) */}
           <nav
             ref={navRef as React.RefObject<HTMLElement>}
-            className={['hidden xl:flex items-center gap-5 2xl:gap-7 pt-1', isRtl ? 'flex-row-reverse' : ''].join(' ')}
+            className="hidden xl:flex items-center gap-5 2xl:gap-7 pt-1"
             aria-label="Main navigation"
           >
             {NAV_ITEMS.map(({ key, href }) => {
@@ -149,7 +149,6 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                       'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200',
                       isActive  ? 'text-primary' : 'text-[#F1F1F1] hover:opacity-80',
                       isSoon    ? 'cursor-default' : '',
-                      isRtl     ? 'flex-row-reverse' : '',
                     ].join(' ')}
                   >
                     {isActive && (

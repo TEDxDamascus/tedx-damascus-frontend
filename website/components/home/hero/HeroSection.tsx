@@ -147,8 +147,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
           />
         </div>
 
-        {/* "Damascus" — Figma shows left:183.31 in BOTH LTR and RTL */}
+        {/* "Damascus" — always LTR so SplitText chars stay left-to-right in RTL pages */}
         <span
+          dir="ltr"
           className="absolute font-helvetica font-light leading-none select-none text-[60px] tracking-[0] text-secondary"
           style={{ left: 183.31, top: 77.89 }}
         >

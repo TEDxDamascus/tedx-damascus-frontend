@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
@@ -14,11 +14,14 @@ export function LeaveGuardDialog({ isDirty, locale }: LeaveGuardDialogProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const isRtl = locale === 'ar';
+  // When the user confirms leave we flip this so the beforeunload guard skips
+  const allowLeaveRef = useRef(false);
 
   // Prevent browser reload / tab close
   useEffect(() => {
     if (!isDirty) return;
     const handler = (e: BeforeUnloadEvent) => {
+      if (allowLeaveRef.current) return;
       e.preventDefault();
       e.returnValue = '';
     };
@@ -49,6 +52,7 @@ export function LeaveGuardDialog({ isDirty, locale }: LeaveGuardDialogProps) {
   }, [isDirty]);
 
   const confirmLeave = useCallback(() => {
+    allowLeaveRef.current = true;  // suppress beforeunload for this navigation
     setShowDialog(false);
     if (pendingHref) window.location.href = pendingHref;
   }, [pendingHref]);
