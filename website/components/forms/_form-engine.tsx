@@ -6,61 +6,163 @@ import type { ApiQuestion } from '@/types/form-schema';
 
 // ─── Phone input with country code ────────────────────────────────────────────
 
-const COUNTRY_CODES = [
-  { label: '+963 SY', value: '+963' },
-  { label: '+1 US',   value: '+1'   },
-  { label: '+44 GB',  value: '+44'  },
-  { label: '+966 SA', value: '+966' },
-  { label: '+971 AE', value: '+971' },
-  { label: '+961 LB', value: '+961' },
-  { label: '+962 JO', value: '+962' },
-  { label: '+20 EG',  value: '+20'  },
-  { label: '+90 TR',  value: '+90'  },
-  { label: '+49 DE',  value: '+49'  },
-  { label: '+33 FR',  value: '+33'  },
-  { label: '+7 RU',   value: '+7'   },
-];
+
+function SyrianFlagIcon() {
+  return (
+    <div className="w-6 h-[17px] relative overflow-hidden shrink-0 rounded-[1px] select-none" aria-hidden>
+      <div className="absolute inset-x-0 h-[5.67px] bg-[#007A3D]" style={{ top: 0 }} />
+      <div className="absolute inset-x-0 h-[5.66px] bg-[#F1F1F1]" style={{ top: 5.67 }} />
+      <div className="absolute inset-x-0 h-[5.67px] bg-[#101010]" style={{ top: 11.33 }} />
+      <div className="absolute w-[2.5px] h-[2.5px] bg-[#EB0028]" style={{ left: '19%', top: '43%' }} />
+      <div className="absolute w-[2.5px] h-[2.5px] bg-[#EB0028]" style={{ left: '45%', top: '43%' }} />
+      <div className="absolute w-[2.5px] h-[2.5px] bg-[#EB0028]" style={{ left: '71%', top: '43%' }} />
+    </div>
+  );
+}
 
 function PhoneInput({ label, value, onChange, error }: {
   label: string; value: string;
   onChange: (v: string) => void; error?: string;
 }) {
-  const parseValue = (v: string) => {
-    if (!v.trim()) return { code: '+963', number: '' };
-    const parts = v.trim().split(' ');
-    return parts.length > 1 && parts[0].startsWith('+')
-      ? { code: parts[0], number: parts.slice(1).join(' ') }
-      : { code: '+963', number: v };
+  const parseNumber = (v: string) => {
+    if (!v.trim()) return '';
+    // strip +963 with or without trailing space
+    return v.trim().replace(/^\+963\s*/, '');
   };
-  const { code: ic, number: iNum } = parseValue(value);
-  const [code,   setCode]   = useState(ic);
-  const [number, setNumber] = useState(iNum);
+  const [number,    setNumber]    = useState(parseNumber(value));
+  const [isFocused, setIsFocused] = useState(false);
 
-  const update = (c: string, n: string) => onChange(n.trim() ? `${c} ${n}` : c);
+  // No space between country code and digits — backend expects +963XXXXXXXXX
+  const update = (n: string) => onChange(n.trim() ? `+963${n}` : '');
+
+  const isError = !!error;
+
+  const underlineBg    = isError ? 'bg-[#eb0028]' : isFocused ? 'bg-[#eb0028]' : 'bg-[#525252]';
+  const underlineStyle = isFocused && !isError
+    ? { boxShadow: '0px 1px 5px 0px rgba(235,0,40,0.4)' }
+    : undefined;
 
   return (
-    <div className="flex flex-col gap-1">
-      <label className="font-helvetica text-sm text-[#a0a0a0] mb-1">{label}</label>
-      <div className={`flex items-center gap-3 border-b pb-1 transition-colors ${error ? 'border-[#eb0028]' : 'border-[#525252] focus-within:border-[#eb0028]'}`}>
-        <select
-          value={code}
-          onChange={(e) => { setCode(e.target.value); update(e.target.value, number); }}
-          className="bg-transparent text-[#bebebe] font-helvetica text-sm outline-none cursor-pointer shrink-0 py-1"
-        >
-          {COUNTRY_CODES.map((c) => (
-            <option key={c.value} value={c.value} className="bg-[#1a1a1a] text-white">{c.label}</option>
-          ))}
-        </select>
-        <span className="text-[#525252] select-none">|</span>
-        <input
-          type="tel"
-          value={number}
-          onChange={(e) => { setNumber(e.target.value); update(code, e.target.value); }}
-          placeholder="xxxxxxxxx"
-          className="flex-1 bg-transparent text-[#bebebe] font-helvetica text-base outline-none placeholder:text-[rgba(255,255,255,0.3)] py-1 caret-[#eb0028]"
-        />
+    <div className="flex flex-col gap-[2px] items-start w-full">
+      <div className="relative w-full">
+        {/* Label always pinned at top — flag is always visible so no floating needed */}
+        {label && (
+          <label className="absolute start-[10px] top-[3px] text-[10px] leading-none text-[#E0E0E0] pointer-events-none select-none font-helvetica">
+            {label}
+          </label>
+        )}
+        <div className="flex items-center gap-2 w-full ps-[10px] pe-[10px] pt-[18px] pb-[6px] overflow-hidden">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <SyrianFlagIcon />
+            <span className="text-[#bebebe] font-helvetica text-sm select-none">+963</span>
+          </div>
+          <span className="text-[#525252] select-none shrink-0">|</span>
+          <input
+            type="tel"
+            value={number}
+            maxLength={15}
+            onChange={(e) => {
+              const digitsOnly = e.target.value.replace(/\D/g, '');
+              setNumber(digitsOnly);
+              update(digitsOnly);
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder="xxxxxxxxx"
+            className="flex-1 min-w-0 bg-transparent border-none text-[#BEBEBE] font-helvetica text-base outline-none placeholder:text-transparent focus:placeholder:text-[rgba(255,255,255,0.3)] caret-[#eb0028]"
+          />
+        </div>
+        <div className={`h-px w-full transition-colors duration-150 ${underlineBg}`} style={underlineStyle} />
       </div>
-      {error && <p className="text-xs text-[#eb0028] mt-1">{error}</p>}
+      {isError && (
+        <div className="flex items-center gap-2 w-full mt-[2px]">
+          <svg aria-hidden className="shrink-0 w-4 h-4" viewBox="0 0 24 24" fill="none">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#eb0028" strokeWidth="1.5" strokeLinejoin="round" />
+            <line x1="12" y1="9" x2="12" y2="13" stroke="#eb0028" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="12" cy="17" r="0.5" fill="#eb0028" stroke="#eb0028" strokeWidth="1" />
+          </svg>
+          <span className="font-helvetica text-xs text-[#eb0028]">{error}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NumberInput({ label, value, onChange, error, min, max }: {
+  label: string; value: string;
+  onChange: (v: number | '') => void; error?: string;
+  min?: number; max?: number;
+}) {
+  const [isFocused, setIsFocused] = useState(false);
+  const hasValue   = value !== '' && value != null;
+  const isError    = !!error;
+  const isFloating = Boolean(hasValue) || isFocused || isError;
+
+  const underlineBg    = isError ? 'bg-[#eb0028]' : isFocused ? 'bg-[#eb0028]' : 'bg-[#525252]';
+  const underlineStyle = isFocused && !isError
+    ? { boxShadow: '0px 1px 5px 0px rgba(235,0,40,0.4)' }
+    : undefined;
+
+  const increment = () => {
+    const current = value !== '' ? Number(value) : 0;
+    if (max === undefined || current < max) onChange(current + 1);
+  };
+
+  const decrement = () => {
+    const current = value !== '' ? Number(value) : 0;
+    const next = current - 1;
+    if (min === undefined || next >= min) onChange(next);
+  };
+
+  return (
+    <div className="flex flex-col gap-[2px] items-start w-full">
+      <div className="relative w-full">
+        {label && (
+          <label className={[
+            'absolute start-[10px] pointer-events-none select-none font-helvetica transition-all duration-150',
+            isFloating
+              ? 'top-[3px] text-[10px] leading-none text-[#E0E0E0] opacity-100'
+              : 'top-[3px] text-[10px] leading-none text-[#E0E0E0] opacity-0',
+          ].join(' ')}>
+            {label}
+          </label>
+        )}
+        <div className="flex items-center gap-2 w-full ps-[10px] pe-[10px] pt-[18px] pb-[6px]">
+          <input
+            type="number"
+            value={value}
+            min={min}
+            max={max}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
+            className="flex-1 min-w-0 font-helvetica text-base bg-transparent border-none outline-none text-[#BEBEBE] caret-[#eb0028] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          />
+          <div className="flex flex-col shrink-0 gap-[3px]">
+            <button type="button" onClick={increment} className="flex items-center justify-center hover:opacity-70 transition-opacity">
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                <path d="M1 6L6 1L11 6" stroke="#EB0028" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button type="button" onClick={decrement} className="flex items-center justify-center hover:opacity-70 transition-opacity">
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                <path d="M1 1L6 6L11 1" stroke="#EB0028" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className={`h-px w-full transition-colors duration-150 ${underlineBg}`} style={underlineStyle} />
+      </div>
+      {isError && (
+        <div className="flex items-center gap-2 w-full mt-[2px]">
+          <svg aria-hidden className="shrink-0 w-4 h-4" viewBox="0 0 24 24" fill="none">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#eb0028" strokeWidth="1.5" strokeLinejoin="round" />
+            <line x1="12" y1="9" x2="12" y2="13" stroke="#eb0028" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="12" cy="17" r="0.5" fill="#eb0028" stroke="#eb0028" strokeWidth="1" />
+          </svg>
+          <span className="font-helvetica text-xs text-[#eb0028]">{error}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -248,14 +350,13 @@ export function QuestionField({
 
     case 'number':
       return (
-        <TextInput
+        <NumberInput
           label={titleText}
-          type="number"
           value={value != null ? String(value) : ''}
-          onChange={(e) =>
-            onChange(e.target.value === '' ? '' : Number(e.target.value))
-          }
+          onChange={(v) => onChange(v)}
           error={error}
+          min={question.config.min}
+          max={question.config.max}
         />
       );
 

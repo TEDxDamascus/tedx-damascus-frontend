@@ -27,6 +27,7 @@ function CardShapes() {
     </>
   );
 }
+
 function VoiceCard({ ghostIcon, children }: { ghostIcon: string; children: ReactNode }) {
   return (
     <div className="relative w-[498.6px] h-[311.96px]">
@@ -42,16 +43,32 @@ function VoiceCard({ ghostIcon, children }: { ghostIcon: string; children: React
   );
 }
 
+// Inline RTL-aware arrow for CTAs
+function CtaArrow({ isRtl }: { isRtl: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+      <path
+        d={isRtl ? 'M10 2L4 7L10 12' : 'M4 2L10 7L4 12'}
+        stroke="#EB0028"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export async function CallForVoices({ locale }: CallForVoicesProps) {
   setRequestLocale(locale);
   const t = await getTranslations('CallForVoices');
+  const isRtl = locale === 'ar';
 
   const speakerFormHref = `/${locale}/forms/speakers-2026`;
 
   return (
     <section className="w-full px-[140px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
 
-      {/* Title — centered, decorative images positioned on the sides */}
+      {/* Title — centered, decorative images on sides */}
       <div className="relative w-full flex justify-center items-center py-12">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -78,36 +95,42 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
 
         <VoiceCard ghostIcon="/images/call-for-voices/user.svg">
           <div className="relative z-10 self-stretch flex flex-col justify-center items-start gap-8">
-            <p className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words">
+            <p
+              className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words"
+              dir={isRtl ? 'rtl' : 'ltr'}
+            >
               {t('nominateLine1')}<br />{t('nominateLine2')}
             </p>
-            <div className="flex items-center gap-1">
+            <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              {isRtl && <CtaArrow isRtl />}
               <Link
                 href={speakerFormHref}
-                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
+                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px] hover:underline underline-offset-2 transition-all"
               >
                 {t('nominateCta')}
               </Link>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/call-for-voices/arrow-right.png" alt="" aria-hidden draggable={false} loading="lazy" className="w-3 h-[18px] shrink-0" />
+              {!isRtl && <CtaArrow isRtl={false} />}
             </div>
           </div>
         </VoiceCard>
 
         <VoiceCard ghostIcon="/images/call-for-voices/podcast.svg">
           <div className="relative z-10 self-stretch flex flex-col justify-center items-start gap-8">
-            <p className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words">
+            <p
+              className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words"
+              dir={isRtl ? 'rtl' : 'ltr'}
+            >
               {t('applyLine1')}<br />{t('applyLine2')}
             </p>
-            <div className="flex items-center gap-1">
+            <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              {isRtl && <CtaArrow isRtl />}
               <Link
                 href={speakerFormHref}
-                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px]"
+                className="whitespace-nowrap text-primary text-base font-helvetica leading-6 tracking-[0.15px] hover:underline underline-offset-2 transition-all"
               >
                 {t('applyCta')}
               </Link>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/call-for-voices/arrow-right.png" alt="" aria-hidden draggable={false} loading="lazy" className="w-3 h-[18px] shrink-0" />
+              {!isRtl && <CtaArrow isRtl={false} />}
             </div>
           </div>
         </VoiceCard>

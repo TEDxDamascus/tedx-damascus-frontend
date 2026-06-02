@@ -55,7 +55,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-      <body className={`${inter.variable} ${cairo.variable} ${manrope.variable} ${almarai.variable}`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${cairo.variable} ${manrope.variable} ${almarai.variable}`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

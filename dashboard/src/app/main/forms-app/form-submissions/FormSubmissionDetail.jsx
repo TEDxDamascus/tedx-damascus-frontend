@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
-  Visibility,
-  Person,
   PictureAsPdf,
   Close,
   CheckBox,
   CheckBoxOutlineBlank,
+  CalendarToday,
 } from '@mui/icons-material';
 import {
   Dialog,
@@ -17,21 +17,14 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
-  CircularProgress,
+  CircularProgress, // used inside ExportPdfDialog
   ToggleButtonGroup,
   ToggleButton,
 } from '@mui/material';
-import {
-  useGetFormQuery,
-  useGetFormSubmissionsQuery,
-  useExportSubmissionPdfMutation,
-} from '../FormsApi';
-import { useTableState } from '../../../shared-components/custom-table';
-import CustomTable from '../../../shared-components/custom-table';
-import StatusBadge from '../../../shared-components/status-badge';
+import { useExportSubmissionPdfMutation } from '../FormsApi';
+import { selectUserRole } from '../../../auth/store/userSlice';
 import Breadcrumb from '../../../shared-components/breadcrumb';
-
-const TABLE_ID = 'form-submissions';
+import StatusBadge from '../../../shared-components/status-badge';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -48,7 +41,7 @@ function buildAnswerMap(answers) {
 }
 
 function formatAnswer(value, question) {
-  if (value === undefined || value === null || value === '') return '—';
+  if (value === undefined || value === null || value === '') return null;
 
   switch (question?.type) {
     case 'single_choice': {
@@ -65,7 +58,7 @@ function formatAnswer(value, question) {
         .join(' ، ');
     }
     case 'date_range':
-      return value?.start && value?.end ? `${value.start} → ${value.end}` : '—';
+      return value?.start && value?.end ? `${value.start} → ${value.end}` : null;
     case 'rating':
       return `${value} ★`;
     default:
@@ -206,120 +199,96 @@ function ExportPdfDialog({ open, onClose, questions, submission, formId }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
-export default function FormSubmissions() {
+export default function FormSubmissionDetail() {
   const { formId } = useParams();
-  const navigate = useNavigate();
-  const [exportTarget, setExportTarget] = useState(null);
+  const location = useLocation();
+  const [exportOpen, setExportOpen] = useState(false);
+  const role = useSelector(selectUserRole);
 
-  const { data: formResponse } = useGetFormQuery(formId);
-  const form = formResponse?.data;
-  const formName = resolveLabel(form?.name) || 'Form';
+  const { submission, questions: stateQuestions = [], formName = 'Form' } = location.state ?? {};
 
-  const allQuestions = [...(form?.questions ?? [])].sort((a, b) => a.orderIndex - b.orderIndex);
-  const displayQuestions = allQuestions.filter((q) => q.type !== 'section');
+  const questions = [...stateQuestions].sort((a, b) => a.orderIndex - b.orderIndex);
+  const displayQuestions = questions.filter((q) => q.type !== 'section');
 
-  // Only 3 question columns so the action buttons stay reachable
-  const colQuestions = displayQuestions.slice(0, 3);
-
-  const { params } = useTableState(TABLE_ID);
-  const { data, isLoading } = useGetFormSubmissionsQuery({ formId, ...params });
-
-  const submissions = (data?.data?.items ?? []).map((sub) => ({
-    ...sub,
-    _answerMap: buildAnswerMap(sub.answers),
-  }));
-  const totalCount = data?.data?.total ?? 0;
-
-  const COLUMNS = [
-    ...colQuestions.map((q) => ({
-      id: `answer_${q.id}`,
-      header: resolveLabel(q.title),
-      renderCell: (_, row) => {
-        const value = row._answerMap?.[q.id];
-        const text = formatAnswer(value, q);
-        return (
-          <span
-            className="block max-w-[160px] truncate text-sm text-gray-700"
-            dir="rtl"
-            title={text !== '—' ? text : undefined}
-          >
-            {text}
-          </span>
-        );
-      },
-    })),
-    {
-      id: 'status',
-      header: 'Status',
-      renderCell: (value) => <StatusBadge status={(value ?? 'pending').toLowerCase()} />,
-    },
-    {
-      id: 'submittedAt',
-      header: 'Submitted At',
-      sortable: true,
-      renderCell: (value) => (
-        <span className="whitespace-nowrap text-sm text-gray-500">{formatDate(value)}</span>
-      ),
-    },
-  ];
-
-  const rowActions = (row) => [
-    {
-      icon: <Visibility style={{ fontSize: 18 }} />,
-      label: 'View',
-      onClick: () =>
-        navigate(`/forms/${formId}/submissions/${row.id}`, {
-          state: { submission: row, questions: allQuestions, formName },
-        }),
-    },
-    {
-      icon: <PictureAsPdf style={{ fontSize: 18, color: '#dc2626' }} />,
-      label: 'Export PDF',
-      onClick: () => setExportTarget(row),
-    },
-  ];
+  const answerMap = buildAnswerMap(submission?.answers);
+  const isSuperAdmin = role === 'SuperAdmin' || role === 'super_admin';
 
   return (
-    <div className="p-6 pt-4">
+    <div className="mx-auto max-w-3xl p-6 pt-4">
       <Breadcrumb
         items={[
           { label: 'Forms', href: '/forms' },
           { label: formName, href: `/forms/${formId}` },
-          { label: 'Submissions' },
+          { label: 'Submissions', href: `/forms/${formId}/submissions` },
+          { label: 'Submission Detail' },
         ]}
       />
 
-      <div className="mb-6 flex items-start justify-between">
+      {/* Header */}
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-tedx-dark">Submissions</h1>
-          <p className="mt-1 text-sm text-gray-500" dir="rtl">
-            {formName}
-          </p>
+          <h1 className="text-3xl font-bold text-tedx-dark">Submission Detail</h1>
+          {submission && (
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <StatusBadge status={(submission.status ?? 'pending').toLowerCase()} />
+              <span className="flex items-center gap-1 text-sm text-gray-400">
+                <CalendarToday style={{ fontSize: 14 }} />
+                {formatDate(submission.submittedAt)}
+              </span>
+            </div>
+          )}
         </div>
-        {totalCount > 0 && (
-          <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
-            <Person style={{ fontSize: 16 }} />
-            {totalCount}
-          </span>
+
+        {isSuperAdmin && submission && (
+          <button
+            onClick={() => setExportOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50"
+          >
+            <PictureAsPdf style={{ fontSize: 18, color: '#dc2626' }} />
+            Export PDF
+          </button>
         )}
       </div>
 
-      <CustomTable
-        tableId={TABLE_ID}
-        columns={COLUMNS}
-        data={submissions}
-        totalCount={totalCount}
-        isLoading={isLoading}
-        rowActions={rowActions}
-        emptyMessage="No submissions yet for this form."
-      />
+      {/* Q&A list */}
+      {!submission ? (
+        <div className="flex justify-center py-16 text-sm text-gray-400">
+          No submission data available.
+        </div>
+      ) : (
+        <div className="space-y-6" dir="rtl">
+          {displayQuestions.map((q, idx) => {
+            const value = answerMap[q.id];
+            const formatted = formatAnswer(value, q);
+            return (
+              <div key={q.id} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  سؤال {idx + 1}
+                </p>
+                <p className="mb-3 text-sm font-medium leading-relaxed text-gray-800">
+                  {resolveLabel(q.title) || `Question ${idx + 1}`}
+                </p>
+                <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+                  {formatted ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
+                      {formatted}
+                    </p>
+                  ) : (
+                    <p className="text-sm italic text-gray-400">لا توجد إجابة</p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      {exportTarget && (
+      {isSuperAdmin && submission && (
         <ExportPdfDialog
-          open={!!exportTarget}
-          onClose={() => setExportTarget(null)}
+          open={exportOpen}
+          onClose={() => setExportOpen(false)}
           questions={displayQuestions}
-          submission={exportTarget}
+          submission={submission}
           formId={formId}
         />
       )}

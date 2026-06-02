@@ -1,6 +1,7 @@
+import axiosInstance from '../../services/axiosInstance';
 import { apiService } from 'app/store/apiService';
 
-export const addTagTypes = ['Forms', 'Form', 'FormSubmissions'];
+export const addTagTypes = ['Forms', 'Form', 'FormSubmissions', 'FormSubmission'];
 
 const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
   endpoints: (builder) => ({
@@ -128,6 +129,46 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       invalidatesTags: ['Forms', 'Form'],
     }),
 
+    getFormSubmission: builder.query({
+      query: ({ formId, submissionId }) => ({
+        url: `/forms/${formId}/submissions/${submissionId}`,
+        method: 'GET',
+      }),
+      transformResponse: (response) => {
+        const schema = response?.data?.schema ?? {};
+        const submission = response?.data?.submission ?? {};
+        const questions = (schema.questions ?? []).map((q) => ({ ...q, id: q._id || q.id }));
+        return {
+          data: {
+            schema: { ...schema, id: schema._id || schema.id, questions },
+            submission: { ...submission, id: submission._id || submission.id },
+          },
+        };
+      },
+      providesTags: ['FormSubmission'],
+    }),
+
+    exportSubmissionPdf: builder.mutation({
+      queryFn: async ({ formId, body }) => {
+        try {
+          const result = await axiosInstance({
+            url: `/forms/${formId}/submissions/export/pdf`,
+            method: 'POST',
+            data: body,
+            responseType: 'blob',
+          });
+          return { data: result.data };
+        } catch (error) {
+          return {
+            error: {
+              status: error.response?.status,
+              data: error.response?.data || error.message,
+            },
+          };
+        }
+      },
+    }),
+
     getFormSubmissions: builder.query({
       query: ({ formId, page = 1, pageSize = 10 }) => ({
         url: `/forms/${formId}/submissions`,
@@ -137,11 +178,7 @@ const formsApi = apiService.enhanceEndpoints({ addTagTypes }).injectEndpoints({
       transformResponse: (response) => {
         // Handle both { data: [...] } and { data: { items: [...], total, page, limit } }
         const raw = response?.data;
-        const itemsArr = Array.isArray(raw)
-          ? raw
-          : Array.isArray(raw?.items)
-          ? raw.items
-          : [];
+        const itemsArr = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
         const items = itemsArr.map((s) => ({ ...s, id: s._id || s.id }));
         return {
           data: {
@@ -170,6 +207,8 @@ export const {
   usePublishFormMutation,
   useUnpublishFormMutation,
   useGetFormSubmissionsQuery,
+  useGetFormSubmissionQuery,
+  useExportSubmissionPdfMutation,
 } = formsApi;
 
 export default formsApi;
