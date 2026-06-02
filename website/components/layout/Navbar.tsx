@@ -219,7 +219,8 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             <nav className="flex flex-col flex-1 justify-center px-8 gap-5" aria-label="Mobile navigation">
               {NAV_ITEMS.map(({ key, href }, i) => {
                 const fullHref = `/${locale}${href}`;
-                const isActive = pathname === fullHref;
+                const isActive = pathname === fullHref ||
+                  (key === 'home' && (pathname === `/${locale}` || pathname === `/${locale}/`));
                 const isSoon   = COMING_SOON.has(key);
                 const showing  = mobileSoon === key;
 
