@@ -136,7 +136,8 @@ export function Navbar({ locale, navRef }: NavbarProps) {
           >
             {NAV_ITEMS.map(({ key, href }) => {
               const fullHref = `/${locale}${href}`;
-              const isActive = pathname === fullHref;
+              const isActive = pathname === fullHref ||
+                (key === 'home' && (pathname === `/${locale}` || pathname === `/${locale}/`));
               const isSoon   = COMING_SOON.has(key);
               const showing  = desktopSoon === key;
 
