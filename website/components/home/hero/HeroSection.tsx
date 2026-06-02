@@ -127,7 +127,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
             delay={45}
             duration={1.0}
             ease="power3.out"
-            splitType="chars"
+            splitType={isRtl ? 'words' : 'chars'}
             from={{ opacity: 0, y: 32 }}
             to={{ opacity: 1, y: 0 }}
             threshold={0.1}
