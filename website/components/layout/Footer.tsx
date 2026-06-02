@@ -142,7 +142,7 @@ export function Footer({ locale }: FooterProps) {
             {/* ── Upper row: tagline + email + subscribe ── */}
             <div className="flex w-full items-center gap-8">
 
-              <p className="font-helvetica text-black shrink-0 break-words w-[700px] text-[34px] font-medium leading-[41.99px] tracking-[0.25px]">
+              <p className="font-helvetica text-black shrink-0 break-words w-[55%] max-w-[700px] text-[34px] font-medium leading-[41.99px] tracking-[0.25px]">
                 {t('tagline')}
               </p>
 
@@ -157,7 +157,7 @@ export function Footer({ locale }: FooterProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
                   placeholder={submitted ? t('submitted') : t('emailLabel')}
-                  className="footer-input font-helvetica bg-transparent text-base font-normal leading-6 tracking-[0.15px] text-black placeholder:text-black/60 disabled:opacity-60 flex-1 min-w-0 pb-2 focus:ring-0 focus:shadow-none"
+                  className="footer-input font-helvetica bg-transparent text-base font-normal leading-6 tracking-[0.15px] text-black placeholder:text-black/80 disabled:opacity-60 flex-1 min-w-0 pb-2 focus:ring-0 focus:shadow-none"
                   style={EMAIL_UNDERLINE_STYLE}
                 />
                 <motion.button
@@ -269,7 +269,7 @@ export function Footer({ locale }: FooterProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 placeholder={submitted ? t('submitted') : t('emailLabel')}
-                className="footer-input font-sans bg-transparent w-full text-base text-black placeholder:text-black/50 disabled:opacity-60 px-[13px] py-[19px] focus:ring-0 focus:shadow-none"
+                className="footer-input font-sans bg-transparent w-full text-base text-black placeholder:text-black/80 disabled:opacity-60 px-[13px] py-[19px] focus:ring-0 focus:shadow-none"
                 style={EMAIL_BOX_STYLE}
               />
               <motion.button
@@ -396,30 +396,29 @@ export function Footer({ locale }: FooterProps) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.88, opacity: 0, y: 24 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-[#EB0028] text-white max-w-sm w-full px-8 py-10 text-center"
+              className="bg-[#0d0d0d] text-white max-w-sm w-full px-8 py-10 text-center border border-[#EB0028]/25"
               dir={isRtl ? 'rtl' : 'ltr'}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/footer/Rectangle (1).png"
-                alt="TEDx"
-                width={64}
-                height={38}
-                className="mx-auto mb-5 select-none brightness-0 invert"
-                draggable={false}
-              />
+              {/* Checkmark icon */}
+              <div className="w-16 h-16 rounded-full bg-[#EB0028]/15 flex items-center justify-center mx-auto mb-6">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#EB0028" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
               <h2 className="font-helvetica text-xl font-bold leading-tight mb-3">
                 {t('dialogTitle')}
               </h2>
-              <p className="font-helvetica text-sm leading-6 opacity-90 mb-8">
+              <div className="w-8 h-px bg-[#EB0028] mx-auto my-4" />
+              <p className="font-helvetica text-sm leading-6 text-white/70 mb-8">
                 {t('dialogMessage')}
               </p>
               <motion.button
                 onClick={() => setShowDialog(false)}
-                whileHover={{ opacity: 0.85 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                className="font-helvetica bg-white text-[#EB0028] px-8 py-3 text-sm font-bold tracking-[0.5px] uppercase"
+                className="font-helvetica border border-[#EB0028] text-[#EB0028] px-8 py-3 text-sm font-bold tracking-[0.5px] uppercase hover:bg-[#EB0028]/10 transition-colors"
               >
                 {t('dialogClose')}
               </motion.button>

@@ -76,8 +76,8 @@ export function UsSection({ locale }: UsSectionProps) {
             />
           </div>
 
-          <div id="us-section-heading" className="relative z-10">
-            <div className={`flex items-baseline gap-3 flex-wrap ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div id="us-section-heading" className={`relative z-10 w-full ${isRtl ? 'text-right' : ''}`}>
+            <div className={`flex items-baseline gap-3 flex-wrap ${isRtl ? 'justify-end' : ''}`}>
               <span
                 className="font-helvetica font-normal text-primary leading-[1.167] tracking-[-1.5px] text-[clamp(58px,7.5vw,96px)]"
               >
@@ -90,7 +90,7 @@ export function UsSection({ locale }: UsSectionProps) {
               </span>
             </div>
             <p
-              className={`font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] mt-1 max-w-[380px] ${isRtl ? 'font-arabic text-right' : 'font-helvetica'}`}
+              className={`font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] mt-1 ${isRtl ? 'font-arabic text-right' : 'font-helvetica max-w-[380px]'}`}
             >
               {t('subtitle')}
             </p>
