@@ -147,3 +147,10 @@ export const newsletterApi = {
   subscribe: (email: string) =>
     apiClient.post('/newsletter/subscribe', { email }),
 };
+
+export const wallApi = {
+  getCurrent: () =>
+    apiClient.get('/wall-cards/current'),
+  submitAnswer: (answer: string) =>
+    apiClient.post('/wall-cards/current/answers', { answer }),
+};

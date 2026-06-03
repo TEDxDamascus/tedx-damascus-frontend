@@ -48,7 +48,7 @@ export async function AboutTEDx({ locale }: AboutTEDxProps) {
                 'text-[60px] font-light',
                 'text-white leading-[1.2] tracking-[-0.5px]',
                 'mb-[-30px]',
-                isRtl ? 'font-arabic text-right' : 'font-helvetica',
+                'font-helvetica',
               ].join(' ')}
             >
               {t('title')}
@@ -70,7 +70,7 @@ export async function AboutTEDx({ locale }: AboutTEDxProps) {
         <MotionReveal
           delay={0.28}
           className={[
-            isRtl ? 'font-arabic' : 'font-helvetica',
+            'font-helvetica',
             'text-base font-normal text-white leading-[24px] tracking-[0.15px]',
             'flex-1',
           ].join(' ')}
