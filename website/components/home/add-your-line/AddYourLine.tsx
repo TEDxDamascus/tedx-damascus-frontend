@@ -1,10 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { wallApi } from '@/lib/api/client';
 
 interface AddYourLineProps {
   locale: string;
@@ -137,23 +136,42 @@ export function AddYourLine({ locale }: AddYourLineProps) {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submittedMessage, setSubmittedMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiQuestion, setApiQuestion] = useState<string | null>(null);
+
+  useEffect(() => {
+    wallApi.getCurrent()
+      .then((data: any) => {
+        const q = data?.data?.question ?? data?.question;
+        const text = typeof q === 'object' ? (q[locale] ?? q.en ?? q.ar) : (typeof q === 'string' ? q : null);
+        if (text) setApiQuestion(text);
+      })
+      .catch(() => {/* fall back to translation */});
+  }, [locale]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setMessage(sanitizeMessage(e.target.value));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const clean = message.trim();
-    if (clean) {
+    if (!clean || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await wallApi.submitAnswer(clean);
+    } catch {
+      // show the card locally even if the API call fails
+    } finally {
       setSubmittedMessage(clean);
       setSubmitted(true);
+      setIsSubmitting(false);
     }
   }
 
   return (
     <section
-      className="relative bg-page-bg overflow-hidden flex flex-col items-center justify-center py-16 lg:py-0 lg:h-[595px]"
+      className="relative bg-page-bg overflow-hidden flex flex-col items-center justify-center pt-20 pb-16 lg:py-0 lg:h-[595px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >      <div className="hidden lg:block absolute inset-0 pointer-events-none" aria-hidden>
         {ANSWER_CARDS.map((card, i) => {
@@ -230,10 +248,10 @@ export function AddYourLine({ locale }: AddYourLineProps) {
               'lg:absolute lg:text-[34px] lg:w-[573px]',
               'lg:left-1/2 lg:-translate-x-1/2',
               'lg:top-[calc(50%-50.31px)] lg:-translate-y-1/2',
-              isRtl ? 'font-arabic' : 'font-helvetica',
+              'font-helvetica',
             ].join(' ')}
           >
-            {t('question')}<span className="text-primary"> ?</span>
+            {apiQuestion ?? t('question')}<span className="text-primary"> ?</span>
           </h2>
           <form
             onSubmit={handleSubmit}
@@ -257,7 +275,7 @@ export function AddYourLine({ locale }: AddYourLineProps) {
                     'focus:ring-0 focus:ring-offset-0 focus:border-white',
                     'text-[20px] font-medium leading-[1.2] tracking-[0.15px]',
                     'placeholder:text-white/60 w-full',
-                    isRtl ? 'font-arabic text-right' : 'font-helvetica',
+                    'font-helvetica',
                   ].join(' ')}
                 />
               )}
@@ -265,9 +283,10 @@ export function AddYourLine({ locale }: AddYourLineProps) {
             {!submitted && (
               <button
                 type="submit"
-                className={`bg-black text-white text-base leading-6 tracking-[0.15px] px-6 py-3 whitespace-nowrap hover:bg-card-bg transition-colors shrink-0 ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                disabled={isSubmitting}
+                className="bg-black text-white text-base leading-6 tracking-[0.15px] px-6 py-3 whitespace-nowrap hover:bg-card-bg transition-colors shrink-0 font-helvetica disabled:opacity-50"
               >
-                {t('submit')}
+                {isSubmitting ? '…' : t('submit')}
               </button>
             )}
           </form>
@@ -288,35 +307,6 @@ export function AddYourLine({ locale }: AddYourLineProps) {
         </motion.div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={VIEWPORT}
-        transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-        className="relative z-10 mt-8 lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2 lg:mt-0"
-      >
-        <Link
-          href={`/${locale}/answers`}
-          className={[
-            'flex items-center gap-2 text-primary text-base leading-6 tracking-[0.15px]',
-            'hover:gap-3 transition-all duration-200 group',
-            isRtl ? 'font-arabic' : 'font-helvetica',
-          ].join(' ')}
-        >
-          {t('viewAll')}
-          <ArrowRight
-            size={20}
-            strokeWidth={1.75}
-            className={[
-              'shrink-0 transition-transform',
-              isRtl
-                ? '-scale-x-100 group-hover:-translate-x-0.5'
-                : 'group-hover:translate-x-0.5',
-            ].join(' ')}
-            aria-hidden
-          />
-        </Link>
-      </motion.div>
     </section>
   );
 }

@@ -54,6 +54,8 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const t = useTranslations('Navigation');
   const rawPathname = usePathname();
   const pathname = rawPathname.endsWith('/') ? rawPathname.slice(0, -1) : rawPathname;
+  // Path without locale prefix — works whether usePathname includes locale or not
+  const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, '') || '/';
   const isRtl = locale === 'ar';
 
   const altLocale = isRtl ? 'en' : 'ar';
@@ -107,9 +109,31 @@ export function Navbar({ locale, navRef }: NavbarProps) {
 
         {/* ── Logo ─────────────────────────────────────────────────────────────── */}
         <div dir="ltr">
+          {/* Mobile: scaled TEDx Damascus wordmark (~55% of sm+ version) */}
           <Link
             href={`/${locale}/home`}
-            className="shrink-0 inline-grid grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
+            className="sm:hidden inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
+          >
+            <Image
+              src="/images/icons/tedx-logo.png"
+              alt="TEDxDamascus"
+              width={55}
+              height={32}
+              priority
+              className="object-contain [grid-column:1] [grid-row:1]"
+            />
+            <span className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
+              Damascus
+            </span>
+            <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[28px] text-[7px] font-helvetica font-black text-primary leading-none select-none">
+              x
+            </span>
+          </Link>
+
+          {/* sm+: full TEDxDamascus wordmark */}
+          <Link
+            href={`/${locale}/home`}
+            className="hidden sm:inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
           >
             <Image src="/images/icons/tedx-logo.png" alt="TEDxDamascus" width={100} height={58}
               className="object-contain [grid-column:1] [grid-row:1]" priority />
@@ -136,8 +160,14 @@ export function Navbar({ locale, navRef }: NavbarProps) {
           >
             {NAV_ITEMS.map(({ key, href }) => {
               const fullHref = `/${locale}${href}`;
-              const isActive = pathname === fullHref ||
-                (key === 'home' && (pathname === `/${locale}` || pathname === `/${locale}/`));
+              const isActive =
+                pathname === fullHref ||
+                pathWithoutLocale === href ||
+                (key === 'home' && (
+                  pathname === `/${locale}` ||
+                  pathWithoutLocale === '/' ||
+                  pathWithoutLocale === ''
+                ));
               const isSoon   = COMING_SOON.has(key);
               const showing  = desktopSoon === key;
 
@@ -145,6 +175,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                 <div key={key} className="relative">
                   <Link
                     href={fullHref}
+                    dir="ltr"
                     onClick={(e) => handleDesktopClick(e, key as NavKey)}
                     className={[
                       'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200',
@@ -154,9 +185,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                   >
                     {isActive && (
                       <Image src="/images/hero/indicator.png" alt="" width={28} height={28}
-                        className={isRtl ? 'rotate-180' : ''} aria-hidden />
+                        aria-hidden />
                     )}
-                    {t(key as NavKey)}
+                    <span dir={isRtl ? 'rtl' : 'ltr'}>{t(key as NavKey)}</span>
                   </Link>
 
                   {/* Coming-soon chip */}
@@ -219,8 +250,14 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             <nav className="flex flex-col flex-1 justify-center px-8 gap-5" aria-label="Mobile navigation">
               {NAV_ITEMS.map(({ key, href }, i) => {
                 const fullHref = `/${locale}${href}`;
-                const isActive = pathname === fullHref ||
-                  (key === 'home' && (pathname === `/${locale}` || pathname === `/${locale}/`));
+                const isActive =
+                  pathname === fullHref ||
+                  pathWithoutLocale === href ||
+                  (key === 'home' && (
+                    pathname === `/${locale}` ||
+                    pathWithoutLocale === '/' ||
+                    pathWithoutLocale === ''
+                  ));
                 const isSoon   = COMING_SOON.has(key);
                 const showing  = mobileSoon === key;
 
@@ -241,7 +278,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                         isSoon   ? 'cursor-default' : '',
                       ].join(' ')}
                     >
-                      {t(key as NavKey)}
+                      <span dir={isRtl ? 'rtl' : 'ltr'}>{t(key as NavKey)}</span>
                     </Link>
 
                     {/* Static "Soon" badge for coming-soon routes */}

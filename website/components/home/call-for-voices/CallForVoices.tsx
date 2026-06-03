@@ -28,12 +28,31 @@ function CardShapes() {
   );
 }
 
-function VoiceCard({ ghostIcon, children }: { ghostIcon: string; children: ReactNode }) {
+function VoiceCard({ ghostIcon, isRtl, children }: { ghostIcon: string; isRtl: boolean; children: ReactNode }) {
   return (
-    <div className="relative w-[498.6px] h-[311.96px]">
-      <CardShapes />
-      <div className="absolute w-[340px] h-[200px] left-[57px] top-[33px] px-[42px] py-[36px] bg-card-bg overflow-hidden flex flex-col justify-between items-start shadow-[1.724px_1.724px_4.311px_0.862px_rgba(0,0,0,0.50)]">
-        <div aria-hidden className="absolute right-0 top-1/2 -translate-y-1/2 w-[190px] h-[190px] opacity-[0.35]">
+    <div className="relative w-full max-w-[498.6px] mx-auto sm:h-[311.96px] lg:flex-1 lg:max-w-none lg:mx-0">
+      {/* Decorative shapes only at sm+ where container has full pixel width */}
+      <div className="hidden sm:block"><CardShapes /></div>
+
+      {/*
+        Mobile: normal flow block, horizontally centered
+        sm+: absolute positioned per Figma spec
+      */}
+      <div
+        className={[
+          'bg-card-bg overflow-hidden flex flex-col justify-between items-start',
+          'shadow-[1.724px_1.724px_4.311px_0.862px_rgba(0,0,0,0.50)]',
+          'px-6 py-6 w-full',
+          // Desktop: absolute, fixed 340×200, Figma offsets
+          isRtl
+            ? 'sm:absolute sm:w-[340px] sm:h-[200px] sm:top-[33px] sm:right-[57px] sm:px-[42px] sm:py-[36px]'
+            : 'sm:absolute sm:w-[340px] sm:h-[200px] sm:top-[33px] sm:left-[57px] sm:px-[42px] sm:py-[36px]',
+        ].join(' ')}
+      >
+        <div
+          aria-hidden
+          className={`absolute ${isRtl ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 w-[190px] h-[190px] opacity-[0.35]`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={ghostIcon} alt="" className="w-full h-full" draggable={false} loading="lazy" />
         </div>
@@ -66,34 +85,34 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
   const speakerFormHref = `/${locale}/forms/speakers-2026`;
 
   return (
-    <section className="w-full px-[140px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
+    <section className="w-full px-4 sm:px-10 lg:px-[20px] xl:px-[60px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
 
-      {/* Title — centered, decorative images on sides */}
+      {/* Title — centered, decorative images on sides (hidden on small screens) */}
       <div className="relative w-full flex justify-center items-center py-12">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/call-for-voices/group-right.png"
+          src={isRtl ? '/images/call-for-voices/group-left.png' : '/images/call-for-voices/group-right.png'}
           alt="" aria-hidden draggable={false} loading="lazy"
-          className="absolute left-0 w-[320px] h-auto object-contain pointer-events-none"
+          className="hidden lg:block absolute left-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
         />
         <BlurText
           text={t('title')}
           delay={120}
           direction="top"
-          className="text-center text-white text-[48px] font-helvetica font-normal leading-[72px] break-words"
+          className="text-center text-white text-[32px] sm:text-[48px] font-helvetica font-normal leading-tight sm:leading-[72px] break-words"
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/call-for-voices/group-left.png"
+          src={isRtl ? '/images/call-for-voices/group-right.png' : '/images/call-for-voices/group-left.png'}
           alt="" aria-hidden draggable={false} loading="lazy"
-          className="absolute right-0 w-[320px] h-auto object-contain pointer-events-none"
+          className="hidden lg:block absolute right-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
         />
       </div>
 
-      {/* Cards */}
-      <div className="px-[21px] flex justify-center items-center gap-8">
+      {/* Cards — side by side on sm+, stacked and centered on mobile */}
+      <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap justify-center items-center sm:items-start gap-8 lg:gap-6 w-full max-w-[1100px]">
 
-        <VoiceCard ghostIcon="/images/call-for-voices/user.svg">
+        <VoiceCard ghostIcon="/images/call-for-voices/user.svg" isRtl={isRtl}>
           <div className="relative z-10 self-stretch flex flex-col justify-center items-start gap-8">
             <p
               className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words"
@@ -114,7 +133,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
           </div>
         </VoiceCard>
 
-        <VoiceCard ghostIcon="/images/call-for-voices/podcast.svg">
+        <VoiceCard ghostIcon="/images/call-for-voices/podcast.svg" isRtl={isRtl}>
           <div className="relative z-10 self-stretch flex flex-col justify-center items-start gap-8">
             <p
               className="self-stretch text-white text-2xl font-helvetica font-bold leading-[32.02px] break-words"

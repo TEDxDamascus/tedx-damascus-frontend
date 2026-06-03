@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import {
   Visibility,
   Person,
   PictureAsPdf,
+  TableChart,
   Close,
   CheckBox,
   CheckBoxOutlineBlank,
@@ -108,7 +110,7 @@ function ExportPdfDialog({ open, onClose, questions, submission, formId }) {
   async function handleExport() {
     const result = await exportPdf({
       formId,
-      body: { userId: submission.userId, questionIds: [...selected], locale },
+      body: { userId: submission.userId, submissionId: submission.id, questionIds: [...selected], locale },
     });
     if (result.data) {
       const blob = new Blob([result.data], { type: 'application/pdf' });
@@ -230,6 +232,41 @@ export default function FormSubmissions() {
   }));
   const totalCount = data?.data?.total ?? 0;
 
+  function handleExportExcel() {
+    const headers = [
+      'Submission ID',
+      ...displayQuestions.map((q) => resolveLabel(q.title) || `Question ${q.orderIndex + 1}`),
+      'Status',
+      'Submitted At',
+    ];
+
+    const rows = submissions.map((sub) => [
+      sub.id,
+      ...displayQuestions.map((q) => {
+        const val = formatAnswer(sub._answerMap?.[q.id], q);
+        return val === '—' ? '' : val;
+      }),
+      sub.status ?? 'pending',
+      formatDate(sub.submittedAt),
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws['!cols'] = headers.map((_, i) => ({ wch: i === 0 ? 28 : 24 }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Submissions');
+
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `submissions-${formId}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   const COLUMNS = [
     ...colQuestions.map((q) => ({
       id: `answer_${q.id}`,
@@ -296,12 +333,23 @@ export default function FormSubmissions() {
             {formName}
           </p>
         </div>
-        {totalCount > 0 && (
-          <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
-            <Person style={{ fontSize: 16 }} />
-            {totalCount}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {totalCount > 0 && (
+            <button
+              onClick={handleExportExcel}
+              className="flex items-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
+            >
+              <TableChart style={{ fontSize: 16 }} />
+              Export Excel
+            </button>
+          )}
+          {totalCount > 0 && (
+            <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
+              <Person style={{ fontSize: 16 }} />
+              {totalCount}
+            </span>
+          )}
+        </div>
       </div>
 
       <CustomTable

@@ -51,11 +51,11 @@ export function UsSection({ locale }: UsSectionProps) {
       <div
         className={[
           'relative z-10 max-w-[1440px] mx-auto',
-          'px-6 sm:px-12 lg:px-[80px]',
+          'px-6 sm:px-10 md:px-12 lg:px-[80px]',
           'pt-[40px] pb-[40px]',
-          'flex flex-col lg:flex-row items-center',
-          'gap-12 lg:gap-10',
-          isRtl ? 'lg:flex-row-reverse' : '',
+          'flex flex-col md:flex-row',
+          'gap-12 sm:gap-16 md:gap-10 lg:gap-12',
+          isRtl ? 'md:flex-row-reverse' : '',
         ].join(' ')}
       >
         <motion.div
@@ -63,34 +63,34 @@ export function UsSection({ locale }: UsSectionProps) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={VIEWPORT}
           transition={{ duration: 0.65, ease: 'easeOut' }}
-          className={`relative shrink-0 w-full lg:w-[440px] flex flex-col ${isRtl ? 'items-end text-right' : 'items-start'}`}
+          className="relative shrink-0 w-full md:w-[340px] lg:w-[440px] flex flex-col items-center min-h-[240px] md:min-h-0"
         >
-          <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-center" aria-hidden>
+          <div className="absolute inset-0 pointer-events-none select-none flex items-start justify-center" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/teams-partners/Group.png"
               alt=""
-              className="w-[280px] h-auto -translate-x-1/4"
+              className="w-[280px] h-auto mt-4"
               draggable={false}
               loading="lazy"
             />
           </div>
 
-          <div id="us-section-heading" className={`relative z-10 w-full ${isRtl ? 'text-right' : ''}`}>
-            <div className={`flex items-baseline gap-3 flex-wrap ${isRtl ? 'justify-end' : ''}`}>
+          <div id="us-section-heading" className="relative z-10 w-full text-center">
+            <div className="flex items-baseline gap-3 flex-wrap justify-center">
               <span
                 className="font-helvetica font-normal text-primary leading-[1.167] tracking-[-1.5px] text-[clamp(58px,7.5vw,96px)]"
               >
                 {t('ideasWord')}
               </span>
               <span
-                className={`font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] font-helvetica"
               >
                 {t('growWord')}
               </span>
             </div>
             <p
-              className={`font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] mt-1 ${isRtl ? 'font-arabic text-right' : 'font-helvetica max-w-[380px]'}`}
+              className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] mt-1 font-helvetica text-center"
             >
               {t('subtitle')}
             </p>
@@ -101,7 +101,7 @@ export function UsSection({ locale }: UsSectionProps) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={VIEWPORT}
           transition={{ duration: 0.65, delay: 0.15, ease: 'easeOut' }}
-          className="flex flex-col gap-3 w-full lg:flex-1"
+          className="flex flex-col gap-3 w-full md:flex-1 min-w-0"
         >
           {CARDS.map((card) => {
             const isActive = active === card.key;
@@ -115,6 +115,7 @@ export function UsSection({ locale }: UsSectionProps) {
                 className="relative overflow-hidden cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                 onMouseEnter={() => setActive(card.key)}
                 onMouseLeave={() => setActive(null)}
+                onClick={() => setActive(prev => prev === card.key ? null : card.key)}
                 role="button"
                 tabIndex={0}
                 aria-expanded={isActive}
@@ -143,8 +144,8 @@ export function UsSection({ locale }: UsSectionProps) {
                   draggable={false}
                   loading="lazy"
                 />
-                <div className={`relative z-10 flex flex-col h-full px-[42px] py-[36px] items-start ${isActive ? 'justify-between' : 'justify-center'}`}>
-                  <p className="text-primary text-[34px] font-helvetica font-medium leading-[41.99px] tracking-[0.25px] break-words">
+                <div className={`relative z-10 flex flex-col h-full px-4 md:px-6 lg:px-[42px] py-5 lg:py-[36px] items-start ${isActive ? 'justify-between' : 'justify-center'}`}>
+                  <p className="text-primary text-[clamp(20px,2.8vw,34px)] font-helvetica font-medium leading-tight lg:leading-[41.99px] tracking-[0.25px] break-words">
                     {t(card.key)}
                   </p>
                   {isActive && (
@@ -154,7 +155,7 @@ export function UsSection({ locale }: UsSectionProps) {
                       transition={{ duration: 0.28, delay: 0.18 }}
                     >
                       <p
-                        className={`font-bold text-white relative z-10 text-[clamp(16px,1.8vw,24px)] leading-[1.334] -mb-[6px] ${isRtl ? 'font-arabic text-right' : 'font-helvetica'}`}
+                        className={`font-bold text-white relative z-10 text-[clamp(16px,1.8vw,24px)] leading-[1.334] -mb-[6px] font-helvetica ${isRtl ? 'text-right' : ''}`}
                       >
                         {t(`${card.key}Subtitle`)}
                       </p>

@@ -223,7 +223,7 @@ export function SpeakerForm({ locale }: { locale: string }) {
       <LeaveGuardDialog isDirty={isDirty} locale={locale} />
       <FormHero
         locale={locale}
-        backgroundImage="/images/forms/hero-speaker.png"
+        backgroundImage="/images/forms/hero-speaker.jpg"
         formType="speaker"
         title={heroTitle}
       />

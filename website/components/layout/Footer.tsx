@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { newsletterApi } from '@/lib/api/client';
 
 interface FooterProps {
   locale: string;
 }
+
+// Routes not yet live — same set as Navbar
+const FOOTER_COMING_SOON = new Set(['about', 'team', 'partners', 'events', 'speakers', 'blog']);
 
 const ABOUT_LINKS = [
   { key: 'about'    as const, href: '/about'    },
@@ -84,6 +87,14 @@ export function Footer({ locale }: FooterProps) {
   const [submitted, setSubmitted]   = useState(false);
   const [loading, setLoading]       = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [footerSoon, setFooterSoon] = useState<string | null>(null);
+
+  const handleFooterClick = useCallback((e: React.MouseEvent, key: string) => {
+    if (!FOOTER_COMING_SOON.has(key)) return;
+    e.preventDefault();
+    setFooterSoon(key);
+    setTimeout(() => setFooterSoon(null), 1600);
+  }, []);
 
   // useInView on the container — not on the vectors themselves. The vectors
   // start at y:160 outside the overflow-hidden boundary so IntersectionObserver
@@ -218,13 +229,27 @@ export function Footer({ locale }: FooterProps) {
                 <nav aria-label={isRtl ? 'روابط عن' : 'About links'}>
                   <ul className="flex flex-col gap-2 list-none m-0 p-0 w-[77px]">
                     {ABOUT_LINKS.map(({ key, href }) => (
-                      <li key={key}>
+                      <li key={key} className="relative">
                         <Link
                           href={`/${locale}${href}`}
+                          onClick={(e) => handleFooterClick(e, key)}
                           className="font-helvetica text-black block break-words hover:underline underline-offset-2 transition-all text-base font-bold leading-6 tracking-[0.15px]"
                         >
                           {tNav(key)}
                         </Link>
+                        <AnimatePresence>
+                          {footerSoon === key && (
+                            <motion.span
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute top-full left-0 mt-1 z-10 text-[9px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5 whitespace-nowrap pointer-events-none"
+                            >
+                              {tNav('comingSoon')}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
                       </li>
                     ))}
                   </ul>
@@ -233,13 +258,27 @@ export function Footer({ locale }: FooterProps) {
                 <nav aria-label={isRtl ? 'روابط استكشاف' : 'Explore links'}>
                   <ul className="flex flex-col gap-2 list-none m-0 p-0 w-[81px]">
                     {EXPLORE_LINKS.map(({ key, href }) => (
-                      <li key={key}>
+                      <li key={key} className="relative">
                         <Link
                           href={`/${locale}${href}`}
+                          onClick={(e) => handleFooterClick(e, key)}
                           className="font-helvetica text-black block break-words hover:underline underline-offset-2 transition-all text-base font-bold leading-6 tracking-[0.15px]"
                         >
                           {tNav(key)}
                         </Link>
+                        <AnimatePresence>
+                          {footerSoon === key && (
+                            <motion.span
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute top-full left-0 mt-1 z-10 text-[9px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5 whitespace-nowrap pointer-events-none"
+                            >
+                              {tNav('comingSoon')}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
                       </li>
                     ))}
                   </ul>
@@ -317,13 +356,28 @@ export function Footer({ locale }: FooterProps) {
 
               <div className="grid grid-cols-2 gap-y-2 w-full pt-10">
                 {MOBILE_NAV_LINKS.map(({ key, href }) => (
-                  <Link
-                    key={key}
-                    href={`/${locale}${href}`}
-                    className="font-sans font-black text-black uppercase hover:underline underline-offset-2 transition-all text-xs leading-4 tracking-[1.2px]"
-                  >
-                    {tNav(key)}
-                  </Link>
+                  <div key={key} className="relative">
+                    <Link
+                      href={`/${locale}${href}`}
+                      onClick={(e) => handleFooterClick(e, key)}
+                      className="font-sans font-black text-black uppercase hover:underline underline-offset-2 transition-all text-xs leading-4 tracking-[1.2px]"
+                    >
+                      {tNav(key)}
+                    </Link>
+                    <AnimatePresence>
+                      {footerSoon === key && (
+                        <motion.span
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-full left-0 mt-0.5 z-10 text-[8px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-1.5 py-0.5 whitespace-nowrap pointer-events-none"
+                        >
+                          {tNav('comingSoon')}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 ))}
               </div>
             </div>
