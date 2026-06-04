@@ -1,5 +1,6 @@
 import { defineRouting } from 'next-intl/routing';
-import createMiddleware from 'next-intl/middleware';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export const routing = defineRouting({
   locales: ['en', 'ar'],
@@ -7,7 +8,9 @@ export const routing = defineRouting({
   localePrefix: 'always',
 });
 
-export default createMiddleware(routing);
+export default function proxy(_request: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ['/', '/(ar|en)/:path*', '/((?!api|_next|_vercel|.*\\..*).*)'],
