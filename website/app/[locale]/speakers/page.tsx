@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

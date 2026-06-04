@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 import { DynamicFormRenderer } from '@/components/forms/DynamicFormRenderer';
 
 const FORM_SLUGS = ['speaker', 'attendee', 'volunteer', 'speakers-2026', '6a12eba6eb565d20493de36d'];

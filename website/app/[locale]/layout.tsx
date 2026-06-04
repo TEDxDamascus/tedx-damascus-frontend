@@ -1,5 +1,5 @@
 import { Inter, Cairo, Manrope, Almarai } from 'next/font/google';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
