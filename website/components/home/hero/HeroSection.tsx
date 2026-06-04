@@ -194,11 +194,16 @@ export function HeroSection({ locale }: HeroSectionProps) {
             >
               {isRtl ? 'نحن' : 'WE ARE'}
             </span>
-            {/* TEDx Damascus as styled text — avoids duplicating the Navbar logo image */}
-            <span className="flex items-baseline gap-[2px]" dir="ltr">
-              <span className="text-[36px] font-extrabold text-primary leading-[1.15]">TED</span>
-              <span className="text-[18px] font-extrabold text-primary" style={{ marginBottom: -2 }}>x</span>
-              <span className="text-[36px] font-light text-white leading-[1.15]"> Damascus</span>
+            <span className="flex items-end gap-2" dir="ltr">
+              <Image
+                src="/images/hero/tedx-hero.png"
+                alt="TEDx"
+                width={110}
+                height={31}
+                className="object-contain mb-[2px]"
+                priority
+              />
+              <span className="text-[36px] font-light text-white leading-[1.15]">Damascus</span>
             </span>
           </h1>
         </div>

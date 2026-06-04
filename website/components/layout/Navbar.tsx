@@ -125,8 +125,11 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             <span className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
               Damascus
             </span>
-            <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[28px] text-[7px] font-helvetica font-black text-primary leading-none select-none">
+            <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
               x
+            </span>
+            <span className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
+              = independently organized TED event
             </span>
           </Link>
 

@@ -51,11 +51,11 @@ export function UsSection({ locale }: UsSectionProps) {
       <div
         className={[
           'relative z-10 max-w-[1440px] mx-auto',
-          'px-6 sm:px-10 md:px-12 lg:px-[80px]',
+          'px-4 sm:px-10 md:px-12 lg:px-[80px]',
           'pt-[40px] pb-[40px]',
-          'flex flex-col md:flex-row',
-          'gap-12 sm:gap-16 md:gap-10 lg:gap-12',
-          isRtl ? 'md:flex-row-reverse' : '',
+          'flex flex-row',
+          'gap-4 sm:gap-10 md:gap-10 lg:gap-12',
+          isRtl ? 'flex-row-reverse' : '',
         ].join(' ')}
       >
         <motion.div
@@ -63,34 +63,36 @@ export function UsSection({ locale }: UsSectionProps) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={VIEWPORT}
           transition={{ duration: 0.65, ease: 'easeOut' }}
-          className="relative shrink-0 w-full md:w-[340px] lg:w-[440px] flex flex-col items-center min-h-[240px] md:min-h-0"
+          className="relative shrink-0 w-[130px] sm:w-[220px] md:w-[340px] lg:w-[440px] self-stretch"
         >
-          <div className="absolute inset-0 pointer-events-none select-none flex items-start justify-center" aria-hidden>
+          {/* Decorative graphic — covers full panel on mobile, natural size on desktop */}
+          <div className="absolute inset-0 pointer-events-none select-none overflow-hidden sm:flex sm:items-start sm:justify-center" aria-hidden>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/teams-partners/Group.png"
               alt=""
-              className="w-[280px] h-auto mt-4"
+              className="w-full h-full object-cover object-center sm:h-auto sm:w-[280px] sm:mt-4"
               draggable={false}
               loading="lazy"
             />
           </div>
 
-          <div id="us-section-heading" className="relative z-10 w-full text-center">
-            <div className="flex items-baseline gap-3 flex-wrap justify-center">
+          {/* Text — top-1/2 + -translate-y-1/2 is the only reliable vertical-center for absolute children */}
+          <div id="us-section-heading" className="absolute top-1/2 left-0 right-0 z-10 -translate-y-1/2 text-center px-2">
+            <div className="flex items-baseline gap-2 flex-wrap justify-center w-full">
               <span
-                className="font-helvetica font-normal text-primary leading-[1.167] tracking-[-1.5px] text-[clamp(58px,7.5vw,96px)]"
+                className="font-helvetica font-normal text-primary leading-[1.167] tracking-[-1.5px] text-[clamp(28px,7.5vw,96px)]"
               >
                 {t('ideasWord')}
               </span>
               <span
-                className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] font-helvetica"
+                className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(12px,2.8vw,34px)] font-helvetica"
               >
                 {t('growWord')}
               </span>
             </div>
             <p
-              className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(20px,2.8vw,34px)] mt-1 font-helvetica text-center"
+              className="font-medium text-white leading-[1.235] tracking-[0.25px] text-[clamp(10px,2.8vw,34px)] mt-1 font-helvetica"
             >
               {t('subtitle')}
             </p>
@@ -113,8 +115,16 @@ export function UsSection({ locale }: UsSectionProps) {
                 transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
                 initial={{ height: 115 }}
                 className="relative overflow-hidden cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
-                onMouseEnter={() => setActive(card.key)}
-                onMouseLeave={() => setActive(null)}
+                onMouseEnter={() => {
+                  if (typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches) {
+                    setActive(card.key);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches) {
+                    setActive(null);
+                  }
+                }}
                 onClick={() => setActive(prev => prev === card.key ? null : card.key)}
                 role="button"
                 tabIndex={0}

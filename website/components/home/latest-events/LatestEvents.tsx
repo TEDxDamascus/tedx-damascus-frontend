@@ -40,7 +40,7 @@ export function LatestEvents({ locale }: LatestEventsProps) {
 
           {/* Image */}
           <Image
-            src="/images/events/event-bg.png"
+            src="/images/events/event-b.png"
             alt=""
             width={1200}
             height={240}
