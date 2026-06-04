@@ -12,6 +12,7 @@ import {
   submitAnswers,
 } from './_form-engine';
 import { LeaveGuardDialog } from './LeaveGuardDialog';
+import { FormErrorPopup } from './FormErrorPopup';
 
 const FORM_ID = '6a12eba6eb565d20493de36d';
 
@@ -32,21 +33,29 @@ export function SpeakerForm({ locale }: { locale: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
   const questionsRef    = useRef<HTMLDivElement>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getFormSchema(FORM_ID).then((result) => {
-      if (result.ok) setSchema(result.schema);
-      else
-        setFetchError(
-          result.reason === 'not_found'
-            ? 'Form not found.'
-            : 'Failed to load form. Please try again.',
-        );
+      if (result.ok) {
+        setSchema(result.schema);
+      } else {
+        const isAr = locale === 'ar';
+        const msg = result.reason === 'not_found'
+          ? (isAr ? 'النموذج غير موجود.' : 'Form not found.')
+          : (isAr ? 'فشل تحميل النموذج. يرجى المحاولة مرة أخرى.' : 'Failed to load form. Please try again.');
+        setFetchError(msg);
+        if (result.reason !== 'not_found') {
+          setPopupMessage(msg);
+          setShowErrorPopup(true);
+        }
+      }
       setLoading(false);
     });
-  }, []);
+  }, [locale]);
 
   const updateAnswer = (questionId: string, val: unknown) => {
     setAnswers((prev) => ({ ...prev, [questionId]: val }));
@@ -60,7 +69,7 @@ export function SpeakerForm({ locale }: { locale: string }) {
   const validate = (): boolean => {
     if (!schema) return false;
     const errors: Record<string, string> = {};
-    for (const q of schema.questions) {
+    for (const q of (schema.questions ?? [])) {
       if (q.type === 'section') continue;
       const val = answers[q.id];
 
@@ -142,6 +151,11 @@ export function SpeakerForm({ locale }: { locale: string }) {
     if (result.success) {
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (result.isNetworkError) {
+      const msg = locale === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.';
+      setSubmitError(msg);
+      setPopupMessage(msg);
+      setShowErrorPopup(true);
     } else {
       setSubmitError(translateApiError(result.message ?? ''));
     }
@@ -162,14 +176,22 @@ export function SpeakerForm({ locale }: { locale: string }) {
   if (fetchError || !schema) {
     return (
       <div className="bg-[#101010] min-h-screen flex items-center justify-center px-6 text-center">
-        <p className="text-[#bebebe] font-helvetica">{fetchError ?? 'Form not found.'}</p>
+        {!showErrorPopup && (
+          <p className="text-[#bebebe] font-helvetica">{fetchError ?? (locale === 'ar' ? 'النموذج غير موجود.' : 'Form not found.')}</p>
+        )}
+        <FormErrorPopup
+          isOpen={showErrorPopup}
+          onClose={() => setShowErrorPopup(false)}
+          message={popupMessage}
+          locale={locale}
+        />
       </div>
     );
   }
 
   // Schema is guaranteed non-null beyond this point
   const formDescription = schema.description?.ar || schema.description?.en;
-  const sortedQuestions = [...schema.questions].sort(
+  const sortedQuestions = [...(schema.questions ?? [])].sort(
     (a, b) => a.orderIndex - b.orderIndex,
   );
 
@@ -179,7 +201,7 @@ export function SpeakerForm({ locale }: { locale: string }) {
       className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-tight text-center block"
       dir="rtl"
     >
-      {schema.name.ar || schema.name.en}
+      {schema.name?.ar || schema.name?.en}
     </span>
   );
 
@@ -285,7 +307,7 @@ export function SpeakerForm({ locale }: { locale: string }) {
                 })()}
               </div>
 
-              {submitError && (
+              {submitError && !showErrorPopup && (
                 <p className="mt-8 text-sm text-[#eb0028] font-arabic text-right">{submitError}</p>
               )}
 
@@ -318,6 +340,13 @@ export function SpeakerForm({ locale }: { locale: string }) {
       </div>
 
       <Footer locale={locale} />
+
+      <FormErrorPopup
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        message={popupMessage}
+        locale={locale}
+      />
     </div>
   );
 }

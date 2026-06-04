@@ -44,9 +44,7 @@ function VoiceCard({ ghostIcon, isRtl, children }: { ghostIcon: string; isRtl: b
           'shadow-[1.724px_1.724px_4.311px_0.862px_rgba(0,0,0,0.50)]',
           'px-6 py-6 w-full',
           // Desktop: absolute, fixed 340×200, Figma offsets
-          isRtl
-            ? 'sm:absolute sm:w-[340px] sm:h-[200px] sm:top-[33px] sm:right-[57px] sm:px-[42px] sm:py-[36px]'
-            : 'sm:absolute sm:w-[340px] sm:h-[200px] sm:top-[33px] sm:left-[57px] sm:px-[42px] sm:py-[36px]',
+          'sm:absolute sm:w-[340px] sm:h-[200px] sm:top-[33px] sm:left-[57px] sm:px-[42px] sm:py-[36px]',
         ].join(' ')}
       >
         <div
