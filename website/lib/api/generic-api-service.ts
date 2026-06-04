@@ -138,7 +138,7 @@ export class CrudService<T> {
   constructor(endpoint: string, isAuthenticated: boolean = false) {
     this.endpoint = endpoint;
     this.client = new ApiClient(
-      'http://187.127.114.46:3000',
+      'https://api.tedxdamascus.sy',
       isAuthenticated
     );
   }
@@ -198,12 +198,12 @@ export class CrudService<T> {
 }
 
 export const publicApiClient = new ApiClient(
-  'http://187.127.114.46:3000',
+  'https://api.tedxdamascus.sy',
   false
 );
 
 export const adminApiClient = new ApiClient(
-  'http://187.127.114.46:3000',
+  'https://api.tedxdamascus.sy',
   true
 );
 

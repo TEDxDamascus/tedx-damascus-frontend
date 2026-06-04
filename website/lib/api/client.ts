@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = 'http://187.127.114.46:3000';
+const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
 class ApiClient {
   private client: AxiosInstance;

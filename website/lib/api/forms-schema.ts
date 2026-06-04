@@ -1,6 +1,6 @@
 import type { ApiFormData, ApiFormResponse, FormSubmitResponse } from '@/types/form-schema';
 
-const FORMS_API_BASE = 'http://187.127.114.46:3000';
+const FORMS_API_BASE = 'https://api.tedxdamascus.sy';
 
 export type FormSchemaResult =
   | { ok: true; schema: ApiFormData }
