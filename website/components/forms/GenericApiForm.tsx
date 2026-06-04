@@ -12,6 +12,7 @@ import {
   submitAnswers,
 } from './_form-engine';
 import { ROLE_MAP } from './form-role-map';
+import { FormErrorPopup } from './FormErrorPopup';
 
 export function GenericApiForm({
   formId,
@@ -28,19 +29,27 @@ export function GenericApiForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
   useEffect(() => {
     getFormSchema(formId).then((result) => {
-      if (result.ok) setSchema(result.schema);
-      else
-        setFetchError(
-          result.reason === 'not_found'
-            ? 'Form not found.'
-            : 'Failed to load form. Please try again.',
-        );
+      if (result.ok) {
+        setSchema(result.schema);
+      } else {
+        const isAr = locale === 'ar';
+        const msg = result.reason === 'not_found'
+          ? (isAr ? 'النموذج غير موجود.' : 'Form not found.')
+          : (isAr ? 'فشل تحميل النموذج. يرجى المحاولة مرة أخرى.' : 'Failed to load form. Please try again.');
+        setFetchError(msg);
+        if (result.reason !== 'not_found') {
+          setPopupMessage(msg);
+          setShowErrorPopup(true);
+        }
+      }
       setLoading(false);
     });
-  }, [formId]);
+  }, [formId, locale]);
 
   // If the API returns a known targetRole, delegate to the role-specific form
   const RoleForm = schema?.targetRole ? ROLE_MAP[schema.targetRole] : undefined;
@@ -83,8 +92,16 @@ export function GenericApiForm({
     setSubmitError(null);
     const result = await submitAnswers(schema.id, answers);
     setSubmitting(false);
-    if (result.success) setSubmitted(true);
-    else setSubmitError(result.message ?? 'Submission failed. Please try again.');
+    if (result.success) {
+      setSubmitted(true);
+    } else if (result.isNetworkError) {
+      const msg = locale === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.';
+      setSubmitError(msg);
+      setPopupMessage(msg);
+      setShowErrorPopup(true);
+    } else {
+      setSubmitError(result.message ?? (locale === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.'));
+    }
   };
 
   // ── Loading ──────────────────────────────────────────────────────────────────
@@ -110,9 +127,17 @@ export function GenericApiForm({
       <div className="relative bg-[#101010] min-h-screen">
         <Navbar locale={locale} />
         <div className="flex items-center justify-center min-h-screen">
-          <p className="text-[#bebebe] font-helvetica">{fetchError ?? 'Form not found.'}</p>
+          {!showErrorPopup && (
+            <p className="text-[#bebebe] font-helvetica">{fetchError ?? (locale === 'ar' ? 'النموذج غير موجود.' : 'Form not found.')}</p>
+          )}
         </div>
         <Footer locale={locale} />
+        <FormErrorPopup
+          isOpen={showErrorPopup}
+          onClose={() => setShowErrorPopup(false)}
+          message={popupMessage}
+          locale={locale}
+        />
       </div>
     );
   }
@@ -194,7 +219,7 @@ export function GenericApiForm({
               ))}
             </div>
 
-            {submitError && (
+            {submitError && !showErrorPopup && (
               <p className="mt-8 text-sm text-[#eb0028] font-helvetica">{submitError}</p>
             )}
 
@@ -214,6 +239,13 @@ export function GenericApiForm({
       </div>
 
       <Footer locale={locale} />
+
+      <FormErrorPopup
+        isOpen={showErrorPopup}
+        onClose={() => setShowErrorPopup(false)}
+        message={popupMessage}
+        locale={locale}
+      />
     </div>
   );
 }

@@ -1,8 +1,6 @@
 import type { ApiFormData, ApiFormResponse, FormSubmitResponse } from '@/types/form-schema';
 
-const FORMS_API_BASE =
-  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_FORMS_API_URL) ||
-  '/api';
+const FORMS_API_BASE = 'http://187.127.114.46:3000';
 
 export type FormSchemaResult =
   | { ok: true; schema: ApiFormData }
@@ -15,11 +13,10 @@ export async function getFormSchema(slug: string): Promise<FormSchemaResult> {
     });
     if (res.status === 404) return { ok: false, reason: 'not_found' };
     if (!res.ok) return { ok: false, reason: 'network_error' };
-    const body = (await res.json()) as ApiFormResponse;
-    if (!body.success || !body.data) return { ok: false, reason: 'not_found' };
+    const body = await res.json().catch(() => null) as ApiFormResponse | null;
+    if (!body?.success || !body?.data) return { ok: false, reason: 'not_found' };
     return { ok: true, schema: body.data };
-  } catch (err) {
-    console.error('[DynamicForm] fetch error:', err);
+  } catch {
     return { ok: false, reason: 'network_error' };
   }
 }
@@ -32,11 +29,10 @@ export async function getFormBySlug(slug: string): Promise<FormSchemaResult> {
     );
     if (res.status === 404) return { ok: false, reason: 'not_found' };
     if (!res.ok) return { ok: false, reason: 'network_error' };
-    const body = (await res.json()) as ApiFormResponse;
-    if (!body.success || !body.data) return { ok: false, reason: 'not_found' };
+    const body = await res.json().catch(() => null) as ApiFormResponse | null;
+    if (!body?.success || !body?.data) return { ok: false, reason: 'not_found' };
     return { ok: true, schema: body.data };
-  } catch (err) {
-    console.error('[DynamicForm] fetch error:', err);
+  } catch {
     return { ok: false, reason: 'network_error' };
   }
 }
@@ -45,9 +41,11 @@ export async function getAllFormSlugs(): Promise<string[]> {
   try {
     const res = await fetch(`${FORMS_API_BASE}/forms`, { cache: 'no-store' });
     if (!res.ok) return [];
-    const body = (await res.json()) as
+    const body = await res.json().catch(() => null) as
       | { success?: boolean; data?: { id: string }[] }
-      | { id: string }[];
+      | { id: string }[]
+      | null;
+    if (!body) return [];
     const forms = Array.isArray(body)
       ? body
       : ((body as { data?: { id: string }[] }).data ?? []);
@@ -68,10 +66,10 @@ export async function submitFormData(
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = (await res.json().catch(() => ({}))) as { message?: string };
+      const err = await res.json().catch(() => ({})) as { message?: string };
       return { success: false, message: err.message || 'Submission failed' };
     }
-    const body = (await res.json().catch(() => ({}))) as { id?: string };
+    const body = await res.json().catch(() => ({})) as { id?: string };
     return { success: true, id: body.id };
   } catch {
     return { success: false, message: 'Network error. Please try again.' };

@@ -51,7 +51,7 @@ function PhoneInput({ label, value, onChange, error }: {
             {label}
           </label>
         )}
-        <div className="flex items-center gap-2 w-full ps-[10px] pe-[10px] pt-[18px] pb-[6px] overflow-hidden">
+        <div className={`flex items-center gap-2 w-full ps-[10px] pe-[10px] overflow-hidden ${label ? 'pt-[18px] pb-[6px]' : 'py-[8px]'}`}>
           <div className="flex items-center gap-1.5 shrink-0">
             <SyrianFlagIcon />
             <span className="text-[#bebebe] font-helvetica text-sm select-none">+963</span>
@@ -127,7 +127,7 @@ function NumberInput({ label, value, onChange, error, min, max }: {
             {label}
           </label>
         )}
-        <div className="flex items-center gap-2 w-full ps-[10px] pe-[10px] pt-[18px] pb-[6px]">
+        <div className={`flex items-center gap-2 w-full ps-[10px] pe-[10px] ${label ? 'pt-[18px] pb-[6px]' : 'py-[8px]'}`}>
           <input
             type="number"
             value={value}
@@ -169,9 +169,7 @@ function NumberInput({ label, value, onChange, error, min, max }: {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-export const FORMS_API_BASE =
-  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_FORMS_API_URL) ||
-  '/api';
+export const FORMS_API_BASE = 'http://187.127.114.46:3000';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -192,7 +190,7 @@ export function isoToDate(s: string): Date | null {
 export async function submitAnswers(
   formId: string,
   answers: Record<string, unknown>,
-): Promise<{ success: boolean; message?: string }> {
+): Promise<{ success: boolean; message?: string; isNetworkError?: boolean }> {
   try {
     const res = await fetch(`${FORMS_API_BASE}/forms/${formId}/submit`, {
       method: 'POST',
@@ -201,11 +199,11 @@ export async function submitAnswers(
     });
     if (!res.ok) {
       const err = (await res.json().catch(() => ({}))) as { message?: string };
-      return { success: false, message: err.message || 'Submission failed' };
+      return { success: false, message: err.message || 'Submission failed', isNetworkError: false };
     }
     return { success: true };
   } catch {
-    return { success: false, message: 'Network error. Please try again.' };
+    return { success: false, message: 'Network error. Please try again.', isNetworkError: true };
   }
 }
 
@@ -297,12 +295,15 @@ export function QuestionField({
     case 'short_text':
     case 'text':
       return (
-        <TextInput
-          label={titleText}
-          value={(value as string) ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          error={error}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <TextInput
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            error={error}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'long_text':
@@ -329,46 +330,60 @@ export function QuestionField({
 
     case 'email':
       return (
-        <TextInput
-          label={titleText}
-          type="email"
-          value={(value as string) ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          error={error}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <TextInput
+            type="email"
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            error={error}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'phone_number':
       return (
-        <PhoneInput
-          label={titleText}
-          value={(value as string) ?? ''}
-          onChange={(v) => onChange(v)}
-          error={error}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <PhoneInput
+            label=""
+            value={(value as string) ?? ''}
+            onChange={(v) => onChange(v)}
+            error={error}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'number':
       return (
-        <NumberInput
-          label={titleText}
-          value={value != null ? String(value) : ''}
-          onChange={(v) => onChange(v)}
-          error={error}
-          min={question.config.min}
-          max={question.config.max}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <NumberInput
+            label=""
+            value={value != null ? String(value) : ''}
+            onChange={(v) => onChange(v)}
+            error={error}
+            min={question.config.min}
+            max={question.config.max}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'url':
       return (
-        <TextInput
-          label={titleText}
-          type="url"
-          value={(value as string) ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          error={error}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <TextInput
+            type="url"
+            value={(value as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            error={error}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'single_choice':
@@ -417,12 +432,15 @@ export function QuestionField({
 
     case 'date':
       return (
-        <DatePicker
-          label={titleText}
-          value={isoToDate((value as string) ?? '')}
-          onChange={(d) => onChange(d ? dateToIso(d) : null)}
-          error={error}
-        />
+        <div className="flex flex-col gap-2">
+          <label className="font-helvetica text-base text-[#e0e0e0]">{titleText}</label>
+          <DatePicker
+            value={isoToDate((value as string) ?? '')}
+            onChange={(d) => onChange(d ? dateToIso(d) : null)}
+            error={error}
+          />
+          {helpText && <p className="text-xs text-[#888] font-helvetica">{helpText}</p>}
+        </div>
       );
 
     case 'date_range': {

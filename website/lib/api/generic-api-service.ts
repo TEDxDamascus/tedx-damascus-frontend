@@ -138,7 +138,7 @@ export class CrudService<T> {
   constructor(endpoint: string, isAuthenticated: boolean = false) {
     this.endpoint = endpoint;
     this.client = new ApiClient(
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+      'http://187.127.114.46:3000',
       isAuthenticated
     );
   }
@@ -198,12 +198,12 @@ export class CrudService<T> {
 }
 
 export const publicApiClient = new ApiClient(
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  'http://187.127.114.46:3000',
   false
 );
 
 export const adminApiClient = new ApiClient(
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  'http://187.127.114.46:3000',
   true
 );
 
