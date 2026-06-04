@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && echo '=== website/ ===' && ls -la && echo '=== parent/ ===' && ls -la ../",
+    "build": "find . -maxdepth 1 -name '*.next.config.ts' -exec cp {} next.config.ts \\; && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
