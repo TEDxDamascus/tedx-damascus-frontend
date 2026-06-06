@@ -28,7 +28,7 @@ const CARDS = [
     key: 'speakers' as const,
     collapsedImg: '/images/teams-partners/speakers-card.png',
     expandedImg: '/images/teams-partners/speakers-color.jpg',
-    href: '/speakers',
+    href: 'https://forms.gle/bQhuvrwVWSp1k72AA',
     cta: 'applyCta' as const,
   },
   {
@@ -144,7 +144,7 @@ export function CallForVoicesSection({ locale }: CallForVoicesSectionProps) {
                       className="mt-3"
                     >
                       <Link
-                        href={`/${locale}${card.href}`}
+                        href={card.href.startsWith('http') ? card.href : `/${locale}${card.href}`}
                         className="font-helvetica hover:underline"
                         style={{
                           color: '#EB0028',
@@ -245,7 +245,7 @@ export function CallForVoicesSection({ locale }: CallForVoicesSectionProps) {
                     transition={{ duration: 0.28, delay: 0.18 }}
                   >
                     <Link
-                      href={`/${locale}${card.href}`}
+                      href={card.href.startsWith('http') ? card.href : `/${locale}${card.href}`}
                       className="font-helvetica hover:underline"
                       style={{
                         color: '#EB0028',

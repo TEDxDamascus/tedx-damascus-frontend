@@ -68,7 +68,7 @@ export function LatestEvents({ locale }: LatestEventsProps) {
                 {isRtl ? EVENT.titleAr : EVENT.titleEn}
               </p>
               <Link
-                href={`/${locale}/forms/${EVENT.slug}`}
+                href={'https://forms.gle/bQhuvrwVWSp1k72AA'}
                 className={`shrink-0 w-[90px] sm:w-[102px] h-[38px] sm:h-[42px] border border-primary text-primary text-[14px] sm:text-[16px] font-normal leading-[24px] tracking-[0.15px] flex items-center justify-center transition-colors hover:bg-primary/10 ${'font-helvetica'}`}
               >
                 {t('seeMore')}
