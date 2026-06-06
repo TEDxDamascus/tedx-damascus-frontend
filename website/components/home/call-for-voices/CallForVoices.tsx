@@ -80,7 +80,7 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
   const t = await getTranslations('CallForVoices');
   const isRtl = locale === 'ar';
 
-  const speakerFormHref = `/${locale}/forms/speakers-2026`;
+  const speakerFormHref = 'https://forms.gle/bQhuvrwVWSp1k72AA';
 
   return (
     <section className="w-full px-4 sm:px-10 lg:px-[20px] xl:px-[60px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
