@@ -3,19 +3,20 @@
 import { type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Navbar } from '@/components/layout';
-import type { PastQuestionMsgKey } from './data';
-
 const PATTERN_SRC = '/images/about/pattern.svg';
 
 export type HistoryHeroQuestion = {
-  week: number;
-  questionKey: PastQuestionMsgKey;
+  /** Shown with `weekNumber` (e.g. ISO week of the prompt). */
+  weekLabel: number;
+  questionText: string;
   responses: number;
 };
 
 interface AnswersHeroProps {
   locale: string;
   children: ReactNode;
+  /** API headline for the active wall-card question; falls back to static i18n when null. */
+  currentQuestionText?: string | null;
   /** When set, hero shows this archived prompt instead of the current weekly headline. */
   historyQuestion?: HistoryHeroQuestion | null;
   onClearHistorySelection?: () => void;
@@ -24,6 +25,7 @@ interface AnswersHeroProps {
 export function AnswersHero({
   locale,
   children,
+  currentQuestionText = null,
   historyQuestion = null,
   onClearHistorySelection,
 }: AnswersHeroProps) {
@@ -78,7 +80,7 @@ export function AnswersHero({
                     isRtl ? 'font-arabic normal-case' : 'font-helvetica uppercase',
                   ].join(' ')}
                 >
-                  {t('weekNumber', { n: historyQuestion.week })}
+                  {t('weekNumber', { n: historyQuestion.weekLabel })}
                 </p>
                 <p
                   className={[
@@ -94,7 +96,7 @@ export function AnswersHero({
                     isRtl ? 'font-arabic' : 'font-helvetica',
                   ].join(' ')}
                 >
-                  {t(historyQuestion.questionKey)}
+                  {historyQuestion.questionText}
                 </h1>
                 <p
                   className={[
@@ -125,14 +127,20 @@ export function AnswersHero({
                 </p>
                 <h1
                   className={[
-                    'font-helvetica max-w-[420px] font-semibold text-3xl sm:text-4xl lg:text-[42px] lg:leading-[1.30] tracking-tight mb-5',
+                    'font-helvetica max-w-[520px] font-semibold text-3xl sm:text-4xl lg:text-[42px] lg:leading-[1.30] tracking-tight mb-5',
                     isRtl ? 'font-arabic' : '',
                   ].join(' ')}
                 >
-                  <span className="text-white">{t('headlineStart')} </span>
-                  <span className="text-primary ">{t('headlineCity')}</span>
-                  <span className="text-white "> {t('headlineEnd')}</span>
-                  <span className="text-primary">{t('headlineQuestionMark')}</span>
+                  {currentQuestionText ? (
+                    <span className="text-white">{currentQuestionText}</span>
+                  ) : (
+                    <>
+                      <span className="text-white">{t('headlineStart')} </span>
+                      <span className="text-primary ">{t('headlineCity')}</span>
+                      <span className="text-white "> {t('headlineEnd')}</span>
+                      <span className="text-primary">{t('headlineQuestionMark')}</span>
+                    </>
+                  )}
                 </h1>
                 <p
                   className={[
