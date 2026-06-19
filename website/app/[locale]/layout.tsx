@@ -1,5 +1,5 @@
 import { Inter, Cairo, Manrope, Almarai } from 'next/font/google';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
@@ -55,7 +55,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-      <body className={`${inter.variable} ${cairo.variable} ${manrope.variable} ${almarai.variable}`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${cairo.variable} ${manrope.variable} ${almarai.variable}`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

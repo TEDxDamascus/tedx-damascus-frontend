@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 import { AttendeeForm } from '@/components/forms/AttendeeForm';
 
 export function generateStaticParams() {

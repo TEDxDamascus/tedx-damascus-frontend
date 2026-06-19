@@ -1,17 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import type { ApiError } from '@/lib/api/generic-api-service';
-import {
-  getCurrentWallCard,
-  getFeaturedWallAnswers,
-  submitCurrentWallAnswer,
-  type CurrentWallCardPayload,
-} from '@/lib/api/wall-cards';
+import { useState, useEffect } from 'react';
+import { wallApi } from '@/lib/api/client';
 
 interface AddYourLineProps {
   locale: string;
@@ -46,9 +38,14 @@ function sanitizeMessage(raw: string): string {
     .slice(0, MAX_CHARS);
 }
 
-/** Positions/gradients only — text comes from API featured answers. */
-const WALL_FEATURED_LAYOUTS: { ltr: { posClass: string; gradient: string }; rtl: { posClass: string; gradient: string } }[] = [
+// Gradient: red is concentrated at the corner closest to the section center.
+const ANSWER_CARDS: {
+  text: string;
+  ltr: { posClass: string; gradient: string };
+  rtl: { posClass: string; gradient: string };
+}[] = [
   {
+    text: 'Kindness in difficult environments is one of the strongest forces in the world.',
     ltr: {
       posClass: 'left-[110px] top-[54px]',
       gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
@@ -59,6 +56,7 @@ const WALL_FEATURED_LAYOUTS: { ltr: { posClass: string; gradient: string }; rtl:
     },
   },
   {
+    text: "That culture is not something we inherit — it's something we actively shape every day, Beauty still exists, even in the hardest places.",
     ltr: {
       posClass: 'right-[78px] top-[11px]',
       gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
@@ -69,6 +67,7 @@ const WALL_FEATURED_LAYOUTS: { ltr: { posClass: string; gradient: string }; rtl:
     },
   },
   {
+    text: 'Kindness in difficult environments is one of the strongest forces in the world.',
     ltr: {
       posClass: 'right-[107px] top-[464px]',
       gradient: 'linear-gradient(to right, #101010 40%, #DF2127 100%)',
@@ -131,53 +130,26 @@ const USER_CARD_TEXT_STYLE: React.CSSProperties = {
   wordWrap: 'break-word',
 };
 
-function questionNeedsSuffixMark(text: string): boolean {
-  const s = text.trim();
-  if (!s) return true;
-  return !s.endsWith('?') && !s.endsWith('؟');
-}
-
 export function AddYourLine({ locale }: AddYourLineProps) {
   const t = useTranslations('AddYourLine');
   const isRtl = locale === 'ar';
-  const [wallCard, setWallCard] = useState<CurrentWallCardPayload | null>(null);
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [apiQuestion, setApiQuestion] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    void getCurrentWallCard()
-      .then((data) => {
-        if (!cancelled) setWallCard(data);
+    wallApi.getCurrent()
+      .then((data: any) => {
+        const q = data?.data?.question ?? data?.question;
+        const text = typeof q === 'object' ? (q[locale] ?? q.en ?? q.ar) : (typeof q === 'string' ? q : null);
+        if (text) setApiQuestion(text);
       })
-      .catch(() => {
-        if (!cancelled) setWallCard(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const desktopFeaturedCards = useMemo(() => {
-    const q = wallCard?.question;
-    const answers = wallCard?.answers ?? [];
-    const featured = q ? getFeaturedWallAnswers(q, answers) : [];
-    return featured.slice(0, WALL_FEATURED_LAYOUTS.length).map((ans, i) => {
-      const layout = WALL_FEATURED_LAYOUTS[i];
-      return {
-        id: ans.id,
-        text: ans.text,
-        ltr: layout.ltr,
-        rtl: layout.rtl,
-      };
-    });
-  }, [wallCard]);
+      .catch(() => {/* fall back to translation */});
+  }, [locale]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSubmitError(null);
     setMessage(sanitizeMessage(e.target.value));
   }
 
@@ -185,36 +157,28 @@ export function AddYourLine({ locale }: AddYourLineProps) {
     e.preventDefault();
     const clean = message.trim();
     if (!clean || isSubmitting) return;
-
-    setSubmitError(null);
     setIsSubmitting(true);
     try {
-      const result = await submitCurrentWallAnswer(clean);
-      if (result.success && result.data?.text) {
-        setSubmittedMessage(result.data.text);
-        setSubmitted(true);
-        setMessage('');
-      } else {
-        setSubmitError(result.message ?? t('submitErrorGeneric'));
-      }
-    } catch (err) {
-      const apiErr = err as ApiError;
-      setSubmitError(apiErr.message || t('submitErrorGeneric'));
+      await wallApi.submitAnswer(clean);
+    } catch {
+      // show the card locally even if the API call fails
     } finally {
+      setSubmittedMessage(clean);
+      setSubmitted(true);
       setIsSubmitting(false);
     }
   }
 
   return (
     <section
-      className="relative bg-page-bg overflow-hidden flex flex-col items-center justify-center py-16 lg:py-0 lg:h-[595px]"
+      className="relative bg-page-bg overflow-hidden flex flex-col items-center justify-center pt-20 pb-16 lg:py-0 lg:h-[595px]"
       dir={isRtl ? 'rtl' : 'ltr'}
     >      <div className="hidden lg:block absolute inset-0 pointer-events-none" aria-hidden>
-        {desktopFeaturedCards.map((card) => {
+        {ANSWER_CARDS.map((card, i) => {
           const { posClass, gradient } = isRtl ? card.rtl : card.ltr;
           return (
             <div
-              key={card.id}
+              key={i}
               className={`absolute ${posClass}`}
               style={{ padding: 1, borderRadius: 6, background: gradient, display: 'inline-flex' }}
             >
@@ -284,26 +248,10 @@ export function AddYourLine({ locale }: AddYourLineProps) {
               'lg:absolute lg:text-[34px] lg:w-[573px]',
               'lg:left-1/2 lg:-translate-x-1/2',
               'lg:top-[calc(50%-50.31px)] lg:-translate-y-1/2',
-              isRtl ? 'font-arabic' : 'font-helvetica',
+              'font-helvetica',
             ].join(' ')}
           >
-            {(() => {
-              const apiQ = wallCard?.question.text?.trim();
-              if (apiQ) {
-                return (
-                  <>
-                    {apiQ}
-                    {questionNeedsSuffixMark(apiQ) && <span className="text-primary"> ?</span>}
-                  </>
-                );
-              }
-              return (
-                <>
-                  {t('question')}
-                  <span className="text-primary"> ?</span>
-                </>
-              );
-            })()}
+            {apiQuestion ?? t('question')}<span className="text-primary"> ?</span>
           </h2>
           <form
             onSubmit={handleSubmit}
@@ -314,46 +262,31 @@ export function AddYourLine({ locale }: AddYourLineProps) {
           >
             <div className={`flex flex-col gap-[6px] w-[240px] sm:w-[300px] lg:w-[360px] ${isRtl ? 'items-end' : 'items-start'}`}>
               {!submitted && (
-                <>
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={handleChange}
-                    placeholder={t('inputPlaceholder')}
-                    maxLength={MAX_CHARS}
-                    autoComplete="off"
-                    disabled={isSubmitting}
-                    aria-invalid={submitError ? true : undefined}
-                    aria-describedby={submitError ? 'add-your-line-error' : undefined}
-                    className={[
-                      'bg-transparent border-0 border-b border-white text-white pb-1',
-                      'outline-none focus:outline-none focus-visible:outline-none',
-                      'focus:ring-0 focus:ring-offset-0 focus:border-white',
-                      'text-[20px] font-medium leading-[1.2] tracking-[0.15px]',
-                      'placeholder:text-white/60 w-full',
-                      'disabled:opacity-60',
-                      isRtl ? 'font-arabic text-right' : 'font-helvetica',
-                    ].join(' ')}
-                  />
-                  {submitError && (
-                    <p
-                      id="add-your-line-error"
-                      role="alert"
-                      className={`text-sm text-primary max-w-full ${isRtl ? 'text-right' : 'text-left'}`}
-                    >
-                      {submitError}
-                    </p>
-                  )}
-                </>
+                <input
+                  type="text"
+                  value={message}
+                  onChange={handleChange}
+                  placeholder={t('inputPlaceholder')}
+                  maxLength={MAX_CHARS}
+                  autoComplete="off"
+                  className={[
+                    'bg-transparent border-0 border-b border-white text-white pb-1',
+                    'outline-none focus:outline-none focus-visible:outline-none',
+                    'focus:ring-0 focus:ring-offset-0 focus:border-white',
+                    'text-[20px] font-medium leading-[1.2] tracking-[0.15px]',
+                    'placeholder:text-white/60 w-full',
+                    'font-helvetica',
+                  ].join(' ')}
+                />
               )}
             </div>
             {!submitted && (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`bg-black text-white text-base leading-6 tracking-[0.15px] px-6 py-3 whitespace-nowrap hover:bg-card-bg transition-colors shrink-0 disabled:opacity-60 disabled:pointer-events-none ${isRtl ? 'font-arabic' : 'font-helvetica'}`}
+                className="bg-black text-white text-base leading-6 tracking-[0.15px] px-6 py-3 whitespace-nowrap hover:bg-card-bg transition-colors shrink-0 font-helvetica disabled:opacity-50"
               >
-                {isSubmitting ? t('submitting') : t('submit')}
+                {isSubmitting ? '…' : t('submit')}
               </button>
             )}
           </form>
@@ -374,35 +307,6 @@ export function AddYourLine({ locale }: AddYourLineProps) {
         </motion.div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={VIEWPORT}
-        transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-        className="relative z-10 mt-8 lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2 lg:mt-0"
-      >
-        <Link
-          href={`/${locale}/answers`}
-          className={[
-            'flex items-center gap-2 text-primary text-base leading-6 tracking-[0.15px]',
-            'hover:gap-3 transition-all duration-200 group',
-            isRtl ? 'font-arabic' : 'font-helvetica',
-          ].join(' ')}
-        >
-          {t('viewAll')}
-          <ArrowRight
-            size={20}
-            strokeWidth={1.75}
-            className={[
-              'shrink-0 transition-transform',
-              isRtl
-                ? '-scale-x-100 group-hover:-translate-x-0.5'
-                : 'group-hover:translate-x-0.5',
-            ].join(' ')}
-            aria-hidden
-          />
-        </Link>
-      </motion.div>
     </section>
   );
 }

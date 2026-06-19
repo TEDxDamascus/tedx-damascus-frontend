@@ -17,7 +17,8 @@
     "blog": "Blog",
     "about": "About us",
     "volunteer": "Volunteer",
-    "contact": "Contact"
+    "contact": "Contact",
+    "comingSoon": "Coming Soon"
   },
   "Speakers": {
     "title": "Our Speakers",
@@ -32,7 +33,14 @@
     "past": "Past Events",
     "details": "Event Details",
     "date": "Date",
-    "location": "Location"
+    "location": "Location",
+    "searchPlaceholder": "Search for an event ...",
+    "loadMore": "Load More",
+    "noResults": "No events match your search.",
+    "cardDate": "16 Jan",
+    "cardTime": "10 am - 4:00 pm",
+    "cardBadge": "Damascus When the story is told anew",
+    "cardTitle": "Because the Syrian story is too profound to be told just once."
   },
   "Blog": {
     "title": "Blog",
@@ -58,7 +66,7 @@
     "description": "Get in touch with the TEDxDamascus team"
   },
   "Footer": {
-    "tagline": "From the city of history to a future of ideas, stay connected to what's shaping tomorrow",
+    "tagline": "Damascus: where the story is told anew. Subscribe and let the next chapter find you.",
     "emailLabel": "Your email address",
     "submit": "Submit",
     "subscribe": "Subscribe",
@@ -183,6 +191,11 @@
     "notFound": "Form not found.",
     "fetchError": "Could not load this form. Please try again later.",
     "submitError": "Submission failed. Please try again.",
+    "backToHome": "Return to Homepage",
+    "leaveDialogTitle": "Leave this page?",
+    "leaveDialogMessage": "Your progress will be lost if you leave now.",
+    "leaveDialogStay": "Stay",
+    "leaveDialogLeave": "Leave",
     "damascus": "Damascus",
     "cities": {
       "damascus": "Damascus",
@@ -202,7 +215,7 @@
       "preferNotToSay": "I'd rather not say"
     },
     "attendee": {
-      "heroTitle": "Attendance form for",
+      "heroTitle": "Attendance Application",
       "welcome": "Welcome!",
       "welcomeText": "We're thrilled to have you here. Please fill out this form to secure your spot at TEDx Damascus.",
       "success": "Thank you for applying to attend TEDx Damascus. We'll review your application and get back to you soon.",
@@ -278,7 +291,7 @@
       "length18": "18 minutes"
     },
     "volunteer": {
-      "heroTitle": "Volunteer form for",
+      "heroTitle": "Volunteer Application",
       "welcome": "Join our team!",
       "welcomeText": "Help us make TEDx Damascus an unforgettable experience. Fill out this form and let us know how you'd like to contribute.",
       "success": "Thank you for applying to volunteer at TEDx Damascus. We'll be in touch with more details soon.",

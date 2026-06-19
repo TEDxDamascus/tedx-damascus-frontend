@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { routing } from '@/proxy';
+import { routing } from '@/routing';
 import ComingSoonClient from './ComingSoonClient';
 
 export function generateStaticParams() {

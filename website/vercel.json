@@ -1,1 +1,14 @@
-{}
+{
+  "redirects": [
+    {
+      "source": "/:path(home|about|answers|attendee|blog|coming-soon|contact|events|forms|speaker|speakers|volunteer)/:rest*",
+      "destination": "/en/:path/:rest*",
+      "permanent": false
+    },
+    {
+      "source": "/:path(home|about|answers|attendee|blog|coming-soon|contact|events|forms|speaker|speakers|volunteer)",
+      "destination": "/en/:path",
+      "permanent": false
+    }
+  ]
+}

@@ -1,35 +1,24 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-/** This app’s root (folder of `next.config`). Stops Turbopack from using a parent `yarn.lock` as workspace root. */
-const appRoot = path.dirname(fileURLToPath(import.meta.url));
-
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://187.127.114.46:3000';
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: appRoot,
-  turbopack: {
-    root: appRoot,
-  },
+  output: 'export',
   trailingSlash: true,
   poweredByHeader: false,
   images: {
     unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+  },
+  turbopack: {
+    root: process.cwd(),
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${BACKEND_URL}/:path*`,
-      },
-    ];
   },
 };
 

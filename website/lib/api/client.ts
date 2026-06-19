@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -146,4 +146,11 @@ export const authApi = {
 export const newsletterApi = {
   subscribe: (email: string) =>
     apiClient.post('/newsletter/subscribe', { email }),
+};
+
+export const wallApi = {
+  getCurrent: () =>
+    apiClient.get('/wall-cards/current'),
+  submitAnswer: (answer: string) =>
+    apiClient.post('/wall-cards/current/answers', { answer }),
 };

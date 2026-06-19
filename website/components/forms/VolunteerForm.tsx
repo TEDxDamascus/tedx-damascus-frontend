@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Footer } from '@/components/layout/Footer';
 import { TextInput, Select, MultipleChoice, FileUpload } from '@/components/shared';
 import { FormHero } from './FormHero';
 import { StepIndicator } from './StepIndicator';
+import { LeaveGuardDialog } from './LeaveGuardDialog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,7 +71,7 @@ function PersonalInfoStep({
     if (!data.firstName.trim())    e.firstName = 'First name is required';
     if (!data.lastName.trim())     e.lastName  = 'Last name is required';
     if (!data.gender)              e.gender    = 'Please select a gender';
-    if (!data.email.includes('@')) e.email     = 'Please enter a valid email';
+    if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(data.email)) e.email = 'Please enter a valid email address';
     if (!data.phone.trim())        e.phone     = 'Phone number is required';
     if (!data.city)                e.city      = 'Please select a city';
     if (!data.applyAs)             e.applyAs   = 'Please select how you want to apply';
@@ -86,12 +87,14 @@ function PersonalInfoStep({
         <TextInput
           label={tA('firstName')}
           value={data.firstName}
+          maxLength={50}
           onChange={(e) => onChange({ firstName: e.target.value })}
           error={errors.firstName}
         />
         <TextInput
           label={tA('lastName')}
           value={data.lastName}
+          maxLength={50}
           onChange={(e) => onChange({ lastName: e.target.value })}
           error={errors.lastName}
         />
@@ -110,6 +113,7 @@ function PersonalInfoStep({
           label={tA('email')}
           type="email"
           value={data.email}
+          maxLength={100}
           onChange={(e) => onChange({ email: e.target.value })}
           error={errors.email}
         />
@@ -118,7 +122,8 @@ function PersonalInfoStep({
           type="tel"
           placeholder="+963 xxxxxxxxx"
           value={data.phone}
-          onChange={(e) => onChange({ phone: e.target.value })}
+          maxLength={20}
+          onChange={(e) => onChange({ phone: e.target.value.replace(/(?!^\+)\D/g, '') })}
           error={errors.phone}
         />
       </div>
@@ -205,12 +210,14 @@ function ExperienceStep({
         <TextInput
           label={t('jobTitle')}
           value={data.jobTitle}
+          maxLength={100}
           onChange={(e) => onChange({ jobTitle: e.target.value })}
           error={errors.jobTitle}
         />
         <TextInput
           label={t('organization')}
           value={data.organization}
+          maxLength={100}
           onChange={(e) => onChange({ organization: e.target.value })}
           error={errors.organization}
         />
@@ -240,6 +247,7 @@ function ExperienceStep({
           value={data.whyVolunteer}
           onChange={(e) => onChange({ whyVolunteer: e.target.value })}
           rows={4}
+          maxLength={800}
           placeholder={t('whyVolunteerPlaceholder')}
           className="bg-transparent border-b border-[#525252] focus:border-primary outline-none resize-none font-helvetica text-base text-[#bebebe] placeholder:text-[rgba(255,255,255,0.4)] caret-primary py-2 transition-colors"
         />
@@ -254,6 +262,7 @@ function ExperienceStep({
           value={data.relevantExperience}
           onChange={(e) => onChange({ relevantExperience: e.target.value })}
           rows={4}
+          maxLength={1000}
           placeholder={t('relevantExperiencePlaceholder')}
           className="bg-transparent border-b border-[#525252] focus:border-primary outline-none resize-none font-helvetica text-base text-[#bebebe] placeholder:text-[rgba(255,255,255,0.4)] caret-primary py-2 transition-colors"
         />
@@ -313,52 +322,50 @@ export function VolunteerForm({ locale }: { locale: string }) {
     await new Promise((r) => setTimeout(r, 1500));
     setSubmitting(false);
     setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const title = (
-    <div className="flex flex-wrap items-center justify-center gap-3">
-      <span className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-none whitespace-nowrap">
-        {t('heroTitle')}
-      </span>
-      <Image
-        src="/images/icons/tedx-logo.png"
-        alt="TEDx"
-        width={140}
-        height={85}
-        className="object-contain shrink-0"
-        style={{ mixBlendMode: 'screen' }}
-      />
-      <span className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-none whitespace-nowrap">
-        Damascus
-      </span>
-    </div>
+    <span className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-tight text-center block">
+      {t('heroTitle')}
+    </span>
   );
 
   if (submitted) {
     return (
-      <div className="relative bg-[#101010] min-h-screen">
-        <FormHero locale={locale} backgroundImage="/images/forms/hero-volunteer.png" formType="volunteer" title={title} />
-        <div className="flex justify-center px-4 sm:px-6 lg:px-10 pb-20">
-          <div className="w-full max-w-[1100px] bg-[#101010] shadow-[0_8px_40px_rgba(0,0,0,0.7)] px-8 sm:px-14 lg:px-20 py-16 mt-[-7rem] relative z-10 flex flex-col items-center gap-6 text-center">
-            <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#eb0028" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div>
-            <h2 className="text-3xl font-helvetica text-white">{tF('submitted')}</h2>
-            <p className="text-[#bebebe] font-helvetica max-w-md">
-              {t('success')}
-            </p>
-          </div>
+      <div className="bg-[#101010] min-h-screen flex flex-col items-center justify-center px-6 text-center gap-8">
+        <div className="w-20 h-20 rounded-full bg-[#EB0028]/20 flex items-center justify-center">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#EB0028" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
         </div>
-        <Footer locale={locale} />
+        <div className="flex flex-col gap-3 max-w-lg">
+          <h2 className="text-3xl font-helvetica text-white font-light">{tF('submitted')}</h2>
+          <p className="text-[#bebebe] font-helvetica leading-relaxed">{t('success')}</p>
+        </div>
+        <div className="w-12 h-0.5 bg-[#EB0028]" />
+        <Link
+          href={`/${locale}/home`}
+          className="border border-[#EB0028] text-[#EB0028] font-helvetica text-sm uppercase tracking-wider px-8 py-3 hover:bg-[#EB0028]/10 transition-colors"
+        >
+          {tF('backToHome')}
+        </Link>
       </div>
     );
   }
 
+  const isDirty = !!(
+    personal.firstName || personal.lastName || personal.email || personal.phone ||
+    personal.gender || personal.city || personal.applyAs ||
+    experience.jobTitle || experience.organization ||
+    experience.expertise.length > 0 || experience.availability ||
+    experience.whyVolunteer || experience.relevantExperience
+  );
+
   return (
     <div className="relative bg-[#101010] min-h-screen">
+      <LeaveGuardDialog isDirty={isDirty} locale={locale} />
       <FormHero
         locale={locale}
         backgroundImage="/images/forms/hero-volunteer.png"
