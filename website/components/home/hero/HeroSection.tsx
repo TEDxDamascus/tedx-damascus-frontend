@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { motion } from 'framer-motion';
 import { CircularText } from './CircularText';
 import { SplitText } from './SplitText';
 import { Navbar } from '../../layout/Navbar';
@@ -9,7 +10,6 @@ import { Navbar } from '../../layout/Navbar';
 // 5 columns — exact Figma positions (node 84-9336)
 // Each column: 243px wide, 50px overlap (mr-[-50px] in Figma flex layout)
 // topOffset: image top within 700px column | leftOffset: image left within column
-// 2nd and 4th cards raised from 75→38 so they sit higher in the viewport
 const COLUMNS = [
   { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 1', topOffset: 21, leftOffset:  0 },
   { src: '/images/hero/slides/img2.png', alt: 'TEDxDamascus — moment 2', topOffset: 38, leftOffset: -9 },
@@ -18,7 +18,18 @@ const COLUMNS = [
   { src: '/images/hero/slides/img1.png', alt: 'TEDxDamascus — moment 5', topOffset:  0, leftOffset:  0 },
 ] as const;
 
+// Mobile strips — 4 parallelogram image strips
+const MOBILE_STRIPS = [
+  { src: '/images/hero/slides/img1.png', offset: 0   },
+  { src: '/images/hero/slides/img2.png', offset: 32  },
+  { src: '/images/hero/slides/img3.png', offset: -16 },
+  { src: '/images/hero/slides/img4.png', offset: 48  },
+] as const;
+
 const CIRCULAR_TEXT = 'Damascus where the story is told again ...  ·  ';
+
+// Figma animation: columns 1 & 3 slide in from top, 2 & 4 from bottom
+const SLIDE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]; // easeOutQuint
 
 interface HeroSectionProps {
   locale: string;
@@ -30,7 +41,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
 
   return (
     <section
-      className="relative w-full overflow-hidden h-[100svh] min-h-[600px] max-h-[700px] sm:max-h-none sm:min-h-[716px] bg-[#101010]"
+      // sm:min-h-[800px] — circular badge sits at top:592 + height:174 = 766px,
+      // needs at least 780px to avoid overflow-hidden clipping the bottom arc.
+      className="relative w-full overflow-hidden h-[100svh] min-h-[600px] max-h-[700px] sm:max-h-none sm:min-h-[800px] bg-[#101010]"
       aria-label={t('title')}
     >
       <Navbar locale={locale} />
@@ -62,10 +75,8 @@ export function HeroSection({ locale }: HeroSectionProps) {
       />
 
       {/* ── Image columns (sm+) ─────────────────────────────────────────────────
-       * Matches Figma node 84-9336 exactly:
-       * 5 columns, each 243px wide, flex row with mr-[-50px] overlap.
-       * LTR: left 617px / 43% of 1440px canvas
-       * RTL: mirrored via right: 43%
+       * Figma animation: odd indices (0,2,4) slide in from top, even (1,3) from bottom.
+       * Container overflow-hidden clips the off-screen start positions.
        */}
       <div
         className={[
@@ -77,40 +88,55 @@ export function HeroSection({ locale }: HeroSectionProps) {
         style={{ top: 91, height: 700 }}
         aria-hidden
       >
-        {/* Direction flips the visual order for RTL: img1 appears at the right edge */}
+        {/* Left-edge fade: blends card columns into the #101010 background */}
+        <div
+          className={[
+            'absolute top-0 h-full w-24 z-[3] pointer-events-none',
+            isRtl
+              ? 'right-0 bg-gradient-to-l from-[#101010] to-transparent'
+              : 'left-0 bg-gradient-to-r from-[#101010] to-transparent',
+          ].join(' ')}
+        />
         <div
           className="flex items-start h-full"
           style={{ direction: isRtl ? 'rtl' : 'ltr' }}
         >
           {COLUMNS.map((col, i) => {
             const notLast = i < COLUMNS.length - 1;
+            const fromTop = i % 2 === 0; // 1st, 3rd, 5th from top; 2nd, 4th from bottom
             return (
-            <div
-              key={i}
-              className="relative shrink-0 h-full"
-              style={{
-                width: 'clamp(180px, 16.9vw, 243px)',
-                // RTL: overlap pulls toward the left (trailing side); LTR: toward right (trailing side)
-                ...(isRtl
-                  ? { marginLeft: notLast ? -50 : 0 }
-                  : { marginRight: notLast ? -50 : 0 }),
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={col.src}
-                alt={col.alt}
-                fetchPriority={i === 0 ? 'high' : 'auto'}
-                loading="eager"
-                className="absolute object-cover [filter:var(--hero-slide-filter)]"
-                style={{
-                  top: col.topOffset,
-                  left: col.leftOffset,
-                  width: 'clamp(180px, 16.9vw, 243px)',
-                  height: 625.5,
+              <motion.div
+                key={i}
+                className="relative shrink-0 h-full"
+                initial={{ y: fromTop ? -700 : 700 }}
+                animate={{ y: 0 }}
+                transition={{
+                  duration: 1.1,
+                  ease: SLIDE_EASE,
+                  delay: 0.15 + i * 0.07,
                 }}
-              />
-            </div>
+                style={{
+                  width: 'clamp(180px, 16.9vw, 243px)',
+                  ...(isRtl
+                    ? { marginLeft: notLast ? -50 : 0 }
+                    : { marginRight: notLast ? -50 : 0 }),
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={col.src}
+                  alt={col.alt}
+                  fetchPriority={i === 0 ? 'high' : 'auto'}
+                  loading="eager"
+                  className="absolute object-cover [filter:var(--hero-slide-filter)]"
+                  style={{
+                    top: col.topOffset,
+                    left: col.leftOffset,
+                    width: 'clamp(180px, 16.9vw, 243px)',
+                    height: 625.5,
+                  }}
+                />
+              </motion.div>
             );
           })}
         </div>
@@ -124,7 +150,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
           height: 153,
         }}
       >
-        {/* "WE ARE" / "نحن" — full container width */}
+        {/* "WE ARE" / "نحن" */}
         <h1
           className={[
             'absolute top-0 left-0 w-full font-helvetica font-light leading-[72px] select-none',
@@ -147,7 +173,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
           />
         </h1>
 
-        {/* TEDx logo — Figma shows left:0 in BOTH LTR and RTL */}
+        {/* TEDx logo */}
         <div className="absolute" style={{ left: 0, top: 77.48 }}>
           <Image
             src="/images/hero/tedx-hero.png"
@@ -182,14 +208,19 @@ export function HeroSection({ locale }: HeroSectionProps) {
       </div>
 
       {/* ── Mobile hero layout (< sm) ───────────────────────────────────────────
-       * Figma node 126-4567: text at top + 4 staggered parallelogram image strips
+       * Full-height flex column: text at top + 4 animated parallelogram strips below.
+       * Strips use flex-1 so they fill whatever space remains after the text block,
+       * adapting to any phone height without overflow.
        */}
-      <div className="sm:hidden absolute inset-0 z-[10] flex flex-col bg-[#101010]" style={{ paddingTop: 76 }}>
+      <div
+        className="sm:hidden absolute inset-0 z-[10] flex flex-col bg-[#101010]"
+        style={{ paddingTop: 76 }}
+      >
         {/* Mobile text */}
-        <div className="px-6 pb-8 shrink-0">
+        <div className="relative px-6 pb-4 shrink-0">
           <h1 className="font-helvetica select-none">
             <span
-              className="block text-[36px] font-light leading-[1.15] text-white"
+              className="block text-[clamp(26px,9vw,36px)] font-light leading-[1.15] text-white"
               dir={isRtl ? 'rtl' : 'ltr'}
             >
               {isRtl ? 'نحن' : 'WE ARE'}
@@ -201,49 +232,55 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 width={110}
                 height={31}
                 className="object-contain mb-[2px]"
+                style={{ width: 'clamp(80px, 28vw, 110px)', height: 'auto' }}
                 priority
               />
-              <span className="text-[36px] font-light text-white leading-[1.15]">Damascus</span>
+              <span className="text-[clamp(26px,9vw,36px)] font-light text-white leading-[1.15]">Damascus</span>
             </span>
           </h1>
         </div>
 
-        {/* Mobile image strips — Figma: 4×96px cards, 8px gap, staggered offsets */}
+        {/* Mobile image strips — flex-1 fills the remaining viewport height */}
         <div
-          className="flex shrink-0 w-full"
-          style={{ height: 384, gap: 6, background: '#101010', overflow: 'hidden' }}
+          className="relative flex flex-1 min-h-0 w-full"
+          style={{ gap: 6, overflow: 'hidden' }}
         >
-          {([
-            { src: '/images/hero/slides/img1.png', offset: 0   },
-            { src: '/images/hero/slides/img2.png', offset: 32  },
-            { src: '/images/hero/slides/img3.png', offset: -16 },
-            { src: '/images/hero/slides/img4.png', offset: 48  },
-          ] as const).map((col, i) => (
-            <div
-              key={i}
-              className="relative flex-1 overflow-hidden"
-              style={{ clipPath: 'polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%)' }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={col.src}
-                alt=""
-                loading="eager"
-                className="absolute left-0 w-full object-cover [filter:var(--hero-slide-filter)]"
-                style={{ top: col.offset, height: 'calc(100% + 64px)' }}
-              />
-            </div>
-          ))}
+          {MOBILE_STRIPS.map((col, i) => {
+            const fromTop = i % 2 === 0;
+            return (
+              <motion.div
+                key={i}
+                className="relative flex-1 overflow-hidden"
+                initial={{ y: fromTop ? -400 : 400 }}
+                animate={{ y: 0 }}
+                transition={{
+                  duration: 1.0,
+                  ease: SLIDE_EASE,
+                  delay: 0.2 + i * 0.07,
+                }}
+                style={{ clipPath: 'polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%)' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={col.src}
+                  alt=""
+                  loading="eager"
+                  className="absolute left-0 w-full object-cover [filter:var(--hero-slide-filter)]"
+                  style={{ top: col.offset, height: 'calc(100% + 64px)' }}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Circular scroll badge ────────────────────────────────────────────────
-       * Figma shows left:540 in BOTH LTR and RTL — not mirrored.
-       * 540/1440 = 37.5% keeps it proportional on different viewport widths.
+       * Figma: left:540px = 37.5% of 1440px canvas. Center of ring at (627px, 679px).
+       * Icon uses CSS transform centering so it stays centered regardless of container size.
        */}
       <div
-        className="absolute z-20 hidden sm:block"
-        style={{ left: '37.5%', top: 592, width: 174, height: 174 }}
+        className="absolute z-20 hidden sm:block sm:left-[calc(50%_-_87px)] lg:left-[37.5%]"
+        style={{ top: 592, width: 174, height: 174 }}
       >
         <CircularText
           text={CIRCULAR_TEXT}
@@ -252,10 +289,10 @@ export function HeroSection({ locale }: HeroSectionProps) {
           className="w-full h-full"
         />
 
-        {/* Scroll icon — Figma: left:63.13, top:59.13 within the ring */}
-        <div className="absolute w-12 h-14" style={{ left: 63, top: 59 }}>
-          <div className="absolute w-[16.59px] h-[25.71px] left-4 top-[10px] outline outline-[2.68px] outline-white [outline-offset:-1.34px] rounded-[8px]" />
-          <div className="animate-scroll-wheel absolute w-[2.14px] h-[5.36px] left-[23.23px] top-[14.29px] bg-white rounded-[1px]" />
+        {/* Scroll icon — centered with CSS transforms, not hardcoded pixels */}
+        <div className="absolute w-12 h-14 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute w-[16.59px] h-[25.71px] left-4 top-[15px] outline outline-[2.68px] outline-white [outline-offset:-1.34px] rounded-[8px]" />
+          <div className="animate-scroll-wheel absolute w-[2.14px] h-[5.36px] left-[23.23px] top-[19px] bg-white rounded-[1px]" />
         </div>
       </div>
     </section>
