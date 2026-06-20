@@ -35,9 +35,9 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-black pb-12 sm:pb-16 lg:pb-20">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden bg-black"
+  <section className="relative overflow-hidden bg-page-bg pb-12 sm:pb-16 lg:pb-20">
+          <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden bg-page-bg"
           aria-hidden
         >
           <div className="relative mx-auto aspect-[1440/398] w-full max-h-[min(398px,52vh)] max-w-[1440px]">
@@ -102,7 +102,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
       </section>
 
       <section
-        className="bg-black px-[clamp(1rem,10vw,7.5rem)] pb-20 pt-16"
+        className="bg-page-bg px-[clamp(1rem,10vw,7.5rem)] pb-20 pt-16"
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         <div className="mx-auto w-full max-w-[1180px]">
@@ -121,7 +121,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
               }}
               placeholder={t('searchPlaceholder')}
               className={[
-                'w-full rounded-lg border border-white/[0.08] bg-card-bg py-3.5 pe-5 ps-12 font-sans text-base text-white outline-none',
+                'w-full rounded-lg border border-none bg-card-bg py-3.5 pe-5 ps-12 font-sans text-base text-white outline-none',
                 'placeholder:text-secondary-200',
                 'transition-[box-shadow,border-color] focus-visible:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/25',
                 'text-start',
