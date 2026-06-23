@@ -110,15 +110,15 @@ export function EventDetailsVenue({ locale, event }: EventDetailsVenueProps) {
   const hasMap = typeof lat === 'number' && typeof lng === 'number';
 
   const venueName = event
-    ? localizeField(event.location, locale)
+    ? localizeField(event.location, locale ?? 'en')
     : (isRtl ? 'دار الأوبرا دمشق' : 'DAMASCUS OPERA HOUSE');
 
   const venueAddress = event
-    ? localizeField(event.location_address, locale)
+    ? localizeField(event.location_address, locale ?? 'en')
     : (isRtl ? 'ساحة الأمويين، دمشق، سوريا' : 'Umayyeen Square, Damascus, Syria');
 
   const venueDesc = event
-    ? localizeField(event.location_description, locale)
+    ? localizeField(event.location_description, locale ?? 'en')
     : (isRtl
         ? 'منارة للفن والثقافة في قلب دمشق. توفر بيئة رائعة تعكس موضوعنا.'
         : 'A beacon of art and culture in the heart of Damascus.');
