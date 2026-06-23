@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 const CALENDAR_SRC = '/images/events/calendar-03.svg';
 const EVENT_IMAGE_SRC = '/images/events/event-card.png';
@@ -10,11 +11,13 @@ export type EventCardProps = {
     dateLabel: string;
     timeLabel: string;
     badge: string;
+    bio?: string;
     isRtl: boolean;
+    href?: string;
 };
 
-export function EventCard({ title, dateLabel, timeLabel, badge, isRtl }: EventCardProps) {
-    return (
+export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href }: EventCardProps) {
+    const card = (
         <article
             className="flex w-full flex-col overflow-hidden rounded-2xl  "
             dir={isRtl ? 'rtl' : 'ltr'}
@@ -93,4 +96,13 @@ export function EventCard({ title, dateLabel, timeLabel, badge, isRtl }: EventCa
             </div>
         </article>
     );
+
+    if (href) {
+        return (
+            <Link href={href} className="block transition-opacity hover:opacity-90">
+                {card}
+            </Link>
+        );
+    }
+    return card;
 }
