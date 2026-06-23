@@ -248,7 +248,7 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
     const load = async () => {
       try {
         const cached = getCachedEvent(slug);
-        const cachedId = String(cached?._id ?? cached?.id ?? '').trim();
+        const cachedId = String(cached?._id ?? (cached as any)?.id ?? '').trim();
         const res = cachedId
           ? await eventsApi.getById(cachedId, locale)
           : await eventsApi.getBySlug(slug, locale);
