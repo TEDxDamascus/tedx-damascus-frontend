@@ -104,6 +104,8 @@
     "question": "What idea rising from Damascus should reach the world",
     "inputPlaceholder": "Share your idea...",
     "submit": "Submit",
+    "submitting": "Sending…",
+    "submitErrorGeneric": "Something went wrong. Please try again.",
     "submitted": "Your line has been added!",
     "viewAll": "View All Answers"
   },
@@ -150,7 +152,11 @@
     "paginationLabel": "Answers pages",
     "goToPage": "Go to page {page}",
     "pastQuestionBrowse": "Community answers for this prompt. Use the arrows below to move between pages.",
-    "backToCurrentQuestion": "Back to this week's question"
+    "backToCurrentQuestion": "Back to this week's question",
+    "loadError": "We could not load this content. Please try again in a moment.",
+    "loadingAnswers": "Loading answers…",
+    "noAnswersYet": "No approved answers to show for this question yet.",
+    "historyEmpty": "No archived questions are available yet. When your team adds past prompts to the API, they will appear here."
   },
   "UsSection": {
     "ideasWord": "Ideas",
@@ -166,8 +172,14 @@
     "partnersSubtitle": "Supporters who make it possible"
   },
   "LatestEvents": {
-    "title": "Upcoming event",
-    "seeMore": "See more"
+    "title": "Events",
+    "subtitle": "Discover TEDx Damascus events and be part of conversations that inspire change.",
+    "seeMore": "See all events",
+    "upcomingBadge": "Upcoming event",
+    "pastBadge": "Past event",
+    "viewDetails": "view details",
+    "pastLabel": "Past",
+    "upcomingLabel": "Upcoming"
   },
   "Gallery": {
     "title": "Photo Gallery",

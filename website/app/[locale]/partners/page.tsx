@@ -10,7 +10,7 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function BlogPage({ params }: Props) {
+export default async function PartnersPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   return <ComingSoonClient locale={locale} />;

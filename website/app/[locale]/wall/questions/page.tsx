@@ -1,5 +1,5 @@
+import { redirect } from 'next/navigation';
 import { routing } from '@/routing';
-import { EventsPageClient } from '@/components/events/EventsPageClient';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -9,7 +9,7 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function EventsPage({ params }: Props) {
+export default async function WallQuestionsPage({ params }: Props) {
   const { locale } = await params;
-  return <EventsPageClient locale={locale} />;
+  redirect(`/${locale}/home`);
 }

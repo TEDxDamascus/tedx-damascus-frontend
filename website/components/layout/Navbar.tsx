@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -23,9 +23,6 @@ const NAV_ITEMS = [
 ] as const;
 
 type NavKey = (typeof NAV_ITEMS)[number]['key'];
-
-// Routes not yet live — clicking shows "Coming Soon" chip instead of navigating
-const COMING_SOON = new Set<NavKey>(['events', 'speakers', 'team', 'partners', 'blog', 'about']);
 
 function SyrianFlag() {
   return (
@@ -54,7 +51,6 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const t = useTranslations('Navigation');
   const rawPathname = usePathname();
   const pathname = rawPathname.endsWith('/') ? rawPathname.slice(0, -1) : rawPathname;
-  // Path without locale prefix — works whether usePathname includes locale or not
   const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, '') || '/';
   const isRtl = locale === 'ar';
 
@@ -62,30 +58,12 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const altHref = `/${altLocale}${pathname.replace(/^\/(en|ar)/, '')}` || `/${altLocale}`;
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Key of the desktop link currently showing the "Coming Soon" chip
-  const [desktopSoon, setDesktopSoon] = useState<NavKey | null>(null);
-  // Key of the mobile link currently showing the "Coming Soon" chip
-  const [mobileSoon,  setMobileSoon]  = useState<NavKey | null>(null);
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
-
-  const handleDesktopClick = useCallback((e: React.MouseEvent, key: NavKey) => {
-    if (!COMING_SOON.has(key)) return;
-    e.preventDefault();
-    setDesktopSoon(key);
-    setTimeout(() => setDesktopSoon(null), 1600);
-  }, []);
-
-  const handleMobileClick = useCallback((e: React.MouseEvent, key: NavKey) => {
-    if (!COMING_SOON.has(key)) { setMobileOpen(false); return; }
-    e.preventDefault();
-    setMobileSoon(key);
-    setTimeout(() => setMobileSoon(null), 1600);
-  }, []);
 
   const langContent = isRtl ? (
     <span className="font-helvetica text-base font-normal text-[#F1F1F1] leading-6 tracking-[0.15px]">EN</span>
@@ -98,18 +76,10 @@ export function Navbar({ locale, navRef }: NavbarProps) {
 
   return (
     <>
-      {/*
-        Layout: flex justify-between keeps logo always on the left and
-        the right-side container always on the right — no grid centering
-        needed, no overlap possible. Hamburger lives in the right container
-        so it is always right-aligned at all viewport sizes.
-        xl (1280 px) is the breakpoint where the full desktop nav appears.
-      */}
       <header className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-5 sm:px-[80px] py-4">
 
         {/* ── Logo ─────────────────────────────────────────────────────────────── */}
         <div dir="ltr">
-          {/* Mobile: scaled TEDx Damascus wordmark (~55% of sm+ version) */}
           <Link
             href={`/${locale}/home`}
             className="sm:hidden inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
@@ -133,7 +103,6 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             </span>
           </Link>
 
-          {/* sm+: full TEDxDamascus wordmark */}
           <Link
             href={`/${locale}/home`}
             className="hidden sm:inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
@@ -166,53 +135,33 @@ export function Navbar({ locale, navRef }: NavbarProps) {
               const isActive =
                 pathname === fullHref ||
                 pathWithoutLocale === href ||
+                pathWithoutLocale.startsWith(href + '/') ||
                 (key === 'home' && (
                   pathname === `/${locale}` ||
                   pathWithoutLocale === '/' ||
                   pathWithoutLocale === ''
                 ));
-              const isSoon   = COMING_SOON.has(key);
-              const showing  = desktopSoon === key;
 
               return (
-                <div key={key} className="relative">
-                  <Link
-                    href={fullHref}
-                    dir="ltr"
-                    onClick={(e) => handleDesktopClick(e, key as NavKey)}
-                    className={[
-                      'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200',
-                      isActive  ? 'text-primary' : 'text-[#F1F1F1] hover:opacity-80',
-                      isSoon    ? 'cursor-default' : '',
-                    ].join(' ')}
-                  >
-                    {isActive && (
-                      <Image src="/images/hero/indicator.png" alt="" width={28} height={28}
-                        aria-hidden />
-                    )}
-                    <span dir={isRtl ? 'rtl' : 'ltr'}>{t(key as NavKey)}</span>
-                  </Link>
-
-                  {/* Coming-soon chip */}
-                  <AnimatePresence>
-                    {showing && (
-                      <motion.span
-                        key="soon"
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-10 text-[10px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5 whitespace-nowrap pointer-events-none"
-                      >
-                        {t('comingSoon')}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <Link
+                  key={key}
+                  href={fullHref}
+                  dir="ltr"
+                  className={[
+                    'flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200',
+                    isActive ? 'text-primary' : 'text-[#F1F1F1] hover:opacity-80',
+                  ].join(' ')}
+                >
+                  {isActive && (
+                    <Image src="/images/hero/indicator.png" alt="" width={28} height={28}
+                      aria-hidden />
+                  )}
+                  <span dir={isRtl ? 'rtl' : 'ltr'}>{t(key as NavKey)}</span>
+                </Link>
               );
             })}
 
-            {/* Language switcher — inline at the end of nav */}
+            {/* Language switcher */}
             <Link
               href={altHref}
               aria-label={isRtl ? 'Switch to English' : 'التحويل إلى العربية'}
@@ -222,7 +171,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             </Link>
           </nav>
 
-          {/* Mobile hamburger (< xl) — always right-most element */}
+          {/* Mobile hamburger (< xl) */}
           <button
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -256,60 +205,30 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                 const isActive =
                   pathname === fullHref ||
                   pathWithoutLocale === href ||
+                  pathWithoutLocale.startsWith(href + '/') ||
                   (key === 'home' && (
                     pathname === `/${locale}` ||
                     pathWithoutLocale === '/' ||
                     pathWithoutLocale === ''
                   ));
-                const isSoon   = COMING_SOON.has(key);
-                const showing  = mobileSoon === key;
 
                 return (
                   <motion.div
                     key={key}
-                    className="flex items-center gap-3"
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 + 0.05, duration: 0.22 }}
                   >
                     <Link
                       href={fullHref}
-                      onClick={(e) => handleMobileClick(e, key as NavKey)}
+                      onClick={() => setMobileOpen(false)}
                       className={[
                         'font-helvetica text-3xl font-light block py-0.5 transition-colors',
                         isActive ? 'text-[#EB0028]' : 'text-[#F1F1F1] hover:text-[#EB0028]',
-                        isSoon   ? 'cursor-default' : '',
                       ].join(' ')}
                     >
                       <span dir={isRtl ? 'rtl' : 'ltr'}>{t(key as NavKey)}</span>
                     </Link>
-
-                    {/* Static "Soon" badge for coming-soon routes */}
-                    {isSoon && (
-                      <AnimatePresence mode="wait">
-                        {showing ? (
-                          <motion.span
-                            key="chip-active"
-                            initial={{ opacity: 0, scale: 0.85 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.85 }}
-                            className="text-[10px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5"
-                          >
-                            {t('comingSoon')}
-                          </motion.span>
-                        ) : (
-                          <motion.span
-                            key="chip-idle"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="text-[10px] font-helvetica font-bold uppercase tracking-widest border border-[#EB0028]/50 text-[#EB0028]/70 px-2 py-0.5"
-                          >
-                            Soon
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    )}
                   </motion.div>
                 );
               })}
