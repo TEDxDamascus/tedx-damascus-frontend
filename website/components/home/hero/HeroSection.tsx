@@ -284,9 +284,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 initial={{ y: fromTop ? -400 : 400 }}
                 animate={{ y: 0 }}
                 transition={{
-                  duration: 1.6,
+                  duration: 0.9,
                   ease: SLIDE_EASE,
-                  delay: 0.2 + i * 0.1,
+                  delay: 0.05 + i * 0.07,
                 }}
                 style={{ clipPath: 'polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%)' }}
               >
