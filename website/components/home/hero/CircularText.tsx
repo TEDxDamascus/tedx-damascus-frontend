@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { motion, useAnimation, useMotionValue } from 'framer-motion';
+import { useEffect, useRef, useId } from 'react';
+import { motion, useMotionValue, animate, type AnimationPlaybackControls } from 'framer-motion';
 
 type OnHoverBehavior = 'speedUp' | 'slowDown' | 'pause' | 'goBonkers' | null;
 
@@ -12,19 +12,19 @@ interface CircularTextProps {
   className?: string;
 }
 
-const getRotationTransition = (duration: number, from: number, loop = true) => ({
-  from,
-  to: from + 360,
-  ease: 'linear' as const,
-  duration,
-  type: 'tween' as const,
-  repeat: loop ? Infinity : 0,
-});
+// Circle geometry — badge is 174×174, text sits at radius 74 from center (87,87)
+const R = 74;
+const CX = 87;
+const CY = 87;
+const CIRCUMFERENCE = 2 * Math.PI * R; // ≈ 465 px
 
-const getTransition = (duration: number, from: number) => ({
-  rotate: getRotationTransition(duration, from),
-  scale: { type: 'spring' as const, damping: 20, stiffness: 300 },
-});
+// Clockwise circle path starting from the leftmost point
+const CIRCLE_D = `M ${CX},${CY} m -${R},0 a ${R},${R} 0 1,1 ${R * 2},0 a ${R},${R} 0 1,1 -${R * 2},0`;
+
+// Arabic unicode range check
+function containsArabic(str: string): boolean {
+  return /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/.test(str);
+}
 
 export function CircularText({
   text,
@@ -32,82 +32,80 @@ export function CircularText({
   onHover = 'speedUp',
   className = '',
 }: CircularTextProps) {
-  const letters = Array.from(text);
-  const controls = useAnimation();
+  const rawId = useId();
+  const pathId = `ct${rawId.replace(/:/g, '')}`;
+
   const rotation = useMotionValue(0);
+  const ctrlRef = useRef<AnimationPlaybackControls | null>(null);
+
+  const isArabic = containsArabic(text);
+
+  const startSpin = (dur: number) => {
+    ctrlRef.current?.stop();
+    const from = rotation.get();
+    ctrlRef.current = animate(rotation, from - 360 * 200, {
+      duration: dur * 200,
+      ease: 'linear',
+    });
+  };
 
   useEffect(() => {
-    const start = rotation.get();
-    controls.start({
-      rotate: start + 360,
-      scale: 1,
-      transition: getTransition(spinDuration, start),
-    });
-  }, [spinDuration, text, onHover, controls, rotation]);
+    startSpin(spinDuration);
+    return () => ctrlRef.current?.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spinDuration, text]);
 
   const handleHoverStart = () => {
-    const start = rotation.get();
     if (!onHover) return;
-
-    let transitionConfig;
-    let scaleVal = 1;
-
-    switch (onHover) {
-      case 'slowDown':
-        transitionConfig = getTransition(spinDuration * 2, start);
-        break;
-      case 'speedUp':
-        transitionConfig = getTransition(spinDuration / 4, start);
-        break;
-      case 'pause':
-        transitionConfig = {
-          rotate: { type: 'spring' as const, damping: 20, stiffness: 300 },
-          scale: { type: 'spring' as const, damping: 20, stiffness: 300 },
-        };
-        break;
-      case 'goBonkers':
-        transitionConfig = getTransition(spinDuration / 20, start);
-        scaleVal = 0.8;
-        break;
-      default:
-        transitionConfig = getTransition(spinDuration, start);
-    }
-
-    controls.start({ rotate: start + 360, scale: scaleVal, transition: transitionConfig });
+    if (onHover === 'pause') { ctrlRef.current?.stop(); return; }
+    const durMap: Record<string, number> = {
+      slowDown:  spinDuration * 2,
+      speedUp:   spinDuration / 4,
+      goBonkers: spinDuration / 20,
+    };
+    startSpin(durMap[onHover] ?? spinDuration);
   };
 
-  const handleHoverEnd = () => {
-    const start = rotation.get();
-    controls.start({
-      rotate: start + 360,
-      scale: 1,
-      transition: getTransition(spinDuration, start),
-    });
-  };
+  const handleHoverEnd = () => startSpin(spinDuration);
 
   return (
     <motion.div
       className={`relative rounded-full ${className}`}
       style={{ rotate: rotation }}
-      initial={{ rotate: 0 }}
-      animate={controls}
       onMouseEnter={handleHoverStart}
       onMouseLeave={handleHoverEnd}
     >
-      {letters.map((letter, i) => {
-        const rotationDeg = (360 / letters.length) * i;
-        const transform = `rotateZ(${rotationDeg}deg)`;
-
-        return (
-          <span
-            key={i}
-            className="absolute inset-0 flex items-start justify-center pt-[11px] text-[12px] font-bold select-none text-secondary opacity-[0.8]"
-            style={{ transform, WebkitTransform: transform }}
+      {/* SVG textPath renders the full text string in one pass so the font shaper
+          can apply proper contextual forms — including Arabic letter joining.
+          For Arabic: skip textLength/lengthAdjust which adds artificial glyph spacing
+          and breaks connected-letter shaping. The text is pre-repeated in the caller
+          to fill the circumference without forced stretching. */}
+      <svg viewBox="0 0 174 174" className="w-full h-full" aria-hidden>
+        <defs>
+          <path id={pathId} d={CIRCLE_D} />
+        </defs>
+        {/* direction="ltr" forces clockwise flow so Arabic glyphs appear on the
+            outside of the circle. Without it, RTL text flows counterclockwise
+            (into the interior) and becomes invisible. */}
+        <text
+          direction="ltr"
+          fontSize="11.5"
+          fontWeight="bold"
+          fontFamily={isArabic ? 'Cairo, sans-serif' : 'Helvetica Neue, Helvetica, Arial, sans-serif'}
+          fill="white"
+          fillOpacity="0.8"
+        >
+          <textPath
+            href={`#${pathId}`}
+            {...(!isArabic && {
+              textLength: Math.round(CIRCUMFERENCE),
+              lengthAdjust: 'spacing',
+            })}
           >
-            {letter}
-          </span>
-        );
-      })}
+            {text}
+          </textPath>
+        </text>
+      </svg>
     </motion.div>
   );
 }

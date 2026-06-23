@@ -49,7 +49,8 @@ function VoiceCard({ ghostIcon, isRtl, children }: { ghostIcon: string; isRtl: b
       >
         <div
           aria-hidden
-          className={`absolute ${isRtl ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 w-[190px] h-[190px] opacity-[0.35]`}
+          className={`absolute ${isRtl ? 'left-0' : 'right-0'} top-1/2 -translate-y-1/2 w-[190px] h-[190px]`}
+          style={{ filter: 'brightness(0)' }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={ghostIcon} alt="" className="w-full h-full" draggable={false} loading="lazy" />
@@ -85,25 +86,25 @@ export async function CallForVoices({ locale }: CallForVoicesProps) {
   return (
     <section className="w-full px-4 sm:px-10 lg:px-[20px] xl:px-[60px] pb-[60px] overflow-hidden flex flex-col justify-center items-center bg-page-bg">
 
-      {/* Title — centered, decorative images on sides (hidden on small screens) */}
-      <div className="relative w-full flex justify-center items-center py-12">
+      {/* Title — images flush with page sides, title centered between them */}
+      <div className="w-full flex justify-between items-center py-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={isRtl ? '/images/call-for-voices/group-left.png' : '/images/call-for-voices/group-right.png'}
           alt="" aria-hidden draggable={false} loading="lazy"
-          className="hidden lg:block absolute left-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
+          className="hidden lg:block shrink-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
         />
         <BlurText
           text={t('title')}
           delay={120}
           direction="top"
-          className="text-center text-white text-[32px] sm:text-[48px] font-helvetica font-normal leading-tight sm:leading-[72px] break-words"
+          className="text-center text-white text-[32px] sm:text-[48px] font-helvetica font-normal leading-tight sm:leading-[72px] break-words px-4"
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={isRtl ? '/images/call-for-voices/group-right.png' : '/images/call-for-voices/group-left.png'}
           alt="" aria-hidden draggable={false} loading="lazy"
-          className="hidden lg:block absolute right-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
+          className="hidden lg:block shrink-0 w-[240px] xl:w-[320px] h-auto object-contain pointer-events-none"
         />
       </div>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -38,50 +40,63 @@ function sanitizeMessage(raw: string): string {
     .slice(0, MAX_CHARS);
 }
 
-// Gradient: red is concentrated at the corner closest to the section center.
+// Four answer cards at the section corners (desktop only, section is lg:h-[595px]).
+// LTR: top-left, top-right, bottom-left, bottom-right
+// RTL: mirrors left↔right
+// Using inline style objects to avoid Tailwind JIT not generating arbitrary values from variable strings.
 const ANSWER_CARDS: {
-  text: string;
-  ltr: { posClass: string; gradient: string };
-  rtl: { posClass: string; gradient: string };
+  ltr: { pos: React.CSSProperties; gradient: string };
+  rtl: { pos: React.CSSProperties; gradient: string };
 }[] = [
   {
-    text: 'Kindness in difficult environments is one of the strongest forces in the world.',
+    // Top-left
     ltr: {
-      posClass: 'left-[110px] top-[54px]',
-      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
-    },
-    rtl: {
-      posClass: 'right-[110px] top-[54px]',
-      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
-    },
-  },
-  {
-    text: "That culture is not something we inherit — it's something we actively shape every day, Beauty still exists, even in the hardest places.",
-    ltr: {
-      posClass: 'right-[78px] top-[11px]',
+      pos: { left: 78, top: 11 },
       gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
     },
     rtl: {
-      posClass: 'left-[78px] top-[11px]',
+      pos: { right: 78, top: 11 },
       gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
     },
   },
   {
-    text: 'Kindness in difficult environments is one of the strongest forces in the world.',
+    // Top-right
     ltr: {
-      posClass: 'right-[107px] top-[464px]',
-      gradient: 'linear-gradient(to right, #101010 40%, #DF2127 100%)',
+      pos: { right: 78, top: 11 },
+      gradient: 'linear-gradient(to bottom left, #DF2127 0%, #101010 55%)',
     },
     rtl: {
-      posClass: 'left-[107px] top-[464px]',
-      gradient: 'linear-gradient(to left, #101010 40%, #DF2127 100%)',
+      pos: { left: 78, top: 11 },
+      gradient: 'linear-gradient(to bottom right, #DF2127 0%, #101010 55%)',
+    },
+  },
+  {
+    // Bottom-left
+    ltr: {
+      pos: { left: 78, bottom: 11 },
+      gradient: 'linear-gradient(to top right, #DF2127 0%, #101010 55%)',
+    },
+    rtl: {
+      pos: { right: 78, bottom: 11 },
+      gradient: 'linear-gradient(to top left, #DF2127 0%, #101010 55%)',
+    },
+  },
+  {
+    // Bottom-right
+    ltr: {
+      pos: { right: 78, bottom: 11 },
+      gradient: 'linear-gradient(to top left, #DF2127 0%, #101010 55%)',
+    },
+    rtl: {
+      pos: { left: 78, bottom: 11 },
+      gradient: 'linear-gradient(to top right, #DF2127 0%, #101010 55%)',
     },
   },
 ];
 
 const CARD_INNER_STYLE: React.CSSProperties = {
   background: '#1A1A1A',
-  borderRadius: 5,
+  borderRadius: 0,
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 16,
@@ -108,7 +123,7 @@ const USER_CARD_GRADIENT_RTL = 'linear-gradient(to left,  #101010 40%, #FFFFFF 1
 
 const USER_CARD_INNER_STYLE: React.CSSProperties = {
   background: '#DF2127',
-  borderRadius: 5,
+  borderRadius: 0,
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 16,
@@ -138,15 +153,30 @@ export function AddYourLine({ locale }: AddYourLineProps) {
   const [submittedMessage, setSubmittedMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiQuestion, setApiQuestion] = useState<string | null>(null);
+  const [apiAnswers, setApiAnswers] = useState<string[]>([]);
+  const [currentWallId, setCurrentWallId] = useState<string | null>(null);
+  const [vpnBlocked, setVpnBlocked] = useState(false);
 
   useEffect(() => {
     wallApi.getCurrent()
       .then((data: any) => {
-        const q = data?.data?.question ?? data?.question;
-        const text = typeof q === 'object' ? (q[locale] ?? q.en ?? q.ar) : (typeof q === 'string' ? q : null);
+        const rawData = data?.data ?? data;
+        if (rawData?.question?.id) setCurrentWallId(String(rawData.question.id));
+        const q = rawData?.question;
+        const text = typeof q === 'object'
+          ? (q.text ?? q[locale] ?? q.en ?? q.ar)
+          : (typeof q === 'string' ? q : null);
         if (text) setApiQuestion(text);
+        const answers = rawData?.answers;
+        if (Array.isArray(answers)) {
+          const texts = answers
+            .filter((a: any) => a.status === 'public')
+            .map((a: any) => a.text)
+            .filter(Boolean);
+          setApiAnswers(texts);
+        }
       })
-      .catch(() => {/* fall back to translation */});
+      .catch(() => setVpnBlocked(true));
   }, [locale]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -175,23 +205,27 @@ export function AddYourLine({ locale }: AddYourLineProps) {
       dir={isRtl ? 'rtl' : 'ltr'}
     >      <div className="hidden lg:block absolute inset-0 pointer-events-none" aria-hidden>
         {ANSWER_CARDS.map((card, i) => {
-          const { posClass, gradient } = isRtl ? card.rtl : card.ltr;
+          const displayText = apiAnswers[i];
+          if (!displayText || (i === 2 && submitted)) return null;
+          const { pos, gradient } = isRtl ? card.rtl : card.ltr;
           return (
             <div
               key={i}
-              className={`absolute ${posClass}`}
-              style={{ padding: 1, borderRadius: 6, background: gradient, display: 'inline-flex' }}
+              style={{ position: 'absolute', ...pos, padding: 1, borderRadius: 0, background: gradient, display: 'inline-flex' }}
             >
               <div style={CARD_INNER_STYLE}>
-                <p style={CARD_TEXT_STYLE}>{card.text}</p>
+                <p style={CARD_TEXT_STYLE}>{displayText}</p>
               </div>
             </div>
           );
         })}
         {submitted && submittedMessage && (
           <motion.div
-            className={`absolute ${isRtl ? 'right-[77px]' : 'left-[77px]'} top-[404px]`}
-            style={{ padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR, display: 'inline-flex' }}
+            style={{
+              position: 'absolute',
+              ...(isRtl ? { right: 78, bottom: 11 } : { left: 78, bottom: 11 }),
+              display: 'inline-flex',
+            }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -298,7 +332,7 @@ export function AddYourLine({ locale }: AddYourLineProps) {
           className="lg:hidden inline-flex relative z-10 mt-6"
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{ scaleY: 1, opacity: 1 }}
-          style={{ transformOrigin: 'top', padding: 1, borderRadius: 6, background: isRtl ? USER_CARD_GRADIENT_RTL : USER_CARD_GRADIENT_LTR }}
+          style={{ transformOrigin: 'top' }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
           <div style={{ ...USER_CARD_INNER_STYLE, minWidth: 200, justifyContent: 'center' }}>
@@ -306,6 +340,35 @@ export function AddYourLine({ locale }: AddYourLineProps) {
           </div>
         </motion.div>
       )}
+
+      {vpnBlocked && (
+        <p className="relative z-10 mt-4 text-center font-helvetica text-[11px] text-white/30">
+          {isRtl ? 'أوقف VPN لرؤية البيانات المباشرة' : 'Disable VPN to load live data'}
+        </p>
+      )}
+
+      {/* View All Answers CTA */}
+      <Link
+        href={currentWallId ? `/${locale}/wall/questions/${currentWallId}` : `/${locale}/wall/questions`}
+        className="relative z-10 flex items-center gap-2 mt-8 font-helvetica text-[15px] font-bold text-primary hover:opacity-80 transition-opacity"
+      >
+        <span>{t('viewAll')}</span>
+        <svg
+          className="h-[16px] w-[16px] shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden
+        >
+          <path
+            d={isRtl ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'}
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Link>
 
     </section>
   );
