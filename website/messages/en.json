@@ -172,8 +172,14 @@
     "partnersSubtitle": "Supporters who make it possible"
   },
   "LatestEvents": {
-    "title": "Upcoming event",
-    "seeMore": "See more"
+    "title": "Events",
+    "subtitle": "Discover TEDx Damascus events and be part of conversations that inspire change.",
+    "seeMore": "See all events",
+    "upcomingBadge": "Upcoming event",
+    "pastBadge": "Past event",
+    "viewDetails": "view details",
+    "pastLabel": "Past",
+    "upcomingLabel": "Upcoming"
   },
   "Gallery": {
     "title": "Photo Gallery",

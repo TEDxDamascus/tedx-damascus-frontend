@@ -26,7 +26,9 @@ const MOBILE_STRIPS = [
   { src: '/images/hero/slides/img4.png', offset: 48  },
 ] as const;
 
-const CIRCULAR_TEXT = 'Damascus where the story is told again ...  ·  ';
+const CIRCULAR_TEXT_EN = 'Damascus where the story is told anew ...  ·  ';
+// Arabic text is repeated so it fills the circle without needing textLength (which breaks letter joining)
+const CIRCULAR_TEXT_AR = 'دمشق حيث تُروى الحكاية من جديد ...  ·  دمشق حيث تُروى الحكاية من جديد ...  ·  ';
 
 // Figma animation: columns 1 & 3 slide in from top, 2 & 4 from bottom
 const SLIDE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]; // easeOutQuint
@@ -41,8 +43,6 @@ export function HeroSection({ locale }: HeroSectionProps) {
 
   return (
     <section
-      // sm:min-h-[800px] — circular badge sits at top:592 + height:174 = 766px,
-      // needs at least 780px to avoid overflow-hidden clipping the bottom arc.
       className="relative w-full overflow-hidden h-[100svh] min-h-[600px] max-h-[700px] sm:max-h-none sm:min-h-[800px] bg-[#101010]"
       aria-label={t('title')}
     >
@@ -63,13 +63,11 @@ export function HeroSection({ locale }: HeroSectionProps) {
         />
       </div>
 
-      {/* Gradient overlay */}
+      {/* Far-edge fade — softens whichever viewport edge the image columns bleed off-screen toward */}
       <div
         className={[
-          'absolute top-0 h-[716px] pointer-events-none mix-blend-overlay z-[1] w-[1475px]',
-          isRtl
-            ? 'left-auto -right-[19px] bg-[image:var(--hero-gradient-rtl)]'
-            : 'right-auto -left-[19px] bg-[image:var(--hero-gradient)]',
+          'absolute inset-y-0 pointer-events-none z-[3] w-16',
+          isRtl ? 'left-0 bg-gradient-to-r from-[#101010] to-transparent' : 'right-0 bg-gradient-to-l from-[#101010] to-transparent',
         ].join(' ')}
         aria-hidden
       />
@@ -85,18 +83,29 @@ export function HeroSection({ locale }: HeroSectionProps) {
             ? 'sm:right-[38%] lg:right-[42%] xl:right-[47%]'
             : 'sm:left-[38%] lg:left-[42%] xl:left-[47%]',
         ].join(' ')}
-        style={{ top: 91, height: 700 }}
+        style={{ top: 80, height: 711 }}
         aria-hidden
       >
-        {/* Left-edge fade: blends card columns into the #101010 background */}
+        {/* Left-edge fade: gradient from the card side */}
         <div
           className={[
-            'absolute top-0 h-full w-24 z-[3] pointer-events-none',
+            'absolute top-0 h-full w-12 z-[3] pointer-events-none',
             isRtl
               ? 'right-0 bg-gradient-to-l from-[#101010] to-transparent'
               : 'left-0 bg-gradient-to-r from-[#101010] to-transparent',
           ].join(' ')}
         />
+        {/* Right-edge fade */}
+        <div
+          className={[
+            'absolute top-0 h-full w-32 z-[3] pointer-events-none',
+            isRtl
+              ? 'left-0 bg-gradient-to-r from-[#101010] to-transparent'
+              : 'right-0 bg-gradient-to-l from-[#101010] to-transparent',
+          ].join(' ')}
+        />
+        {/* Top-edge fade: covers navbar area so columns blend into background */}
+        <div className="absolute top-0 left-0 right-0 h-40 z-[3] pointer-events-none bg-gradient-to-b from-[#101010] via-[#101010]/60 to-transparent" />
         <div
           className="flex items-start h-full"
           style={{ direction: isRtl ? 'rtl' : 'ltr' }}
@@ -111,15 +120,15 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 initial={{ y: fromTop ? -700 : 700 }}
                 animate={{ y: 0 }}
                 transition={{
-                  duration: 1.1,
+                  duration: 1.8,
                   ease: SLIDE_EASE,
-                  delay: 0.15 + i * 0.07,
+                  delay: 0.15 + i * 0.1,
                 }}
                 style={{
                   width: 'clamp(180px, 16.9vw, 243px)',
                   ...(isRtl
-                    ? { marginLeft: notLast ? -50 : 0 }
-                    : { marginRight: notLast ? -50 : 0 }),
+                    ? { marginLeft: notLast ? -20 : 0 }
+                    : { marginRight: notLast ? -20 : 0 }),
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -213,9 +222,17 @@ export function HeroSection({ locale }: HeroSectionProps) {
        * adapting to any phone height without overflow.
        */}
       <div
-        className="sm:hidden absolute inset-0 z-[10] flex flex-col bg-[#101010]"
-        style={{ paddingTop: 76 }}
+        className="sm:hidden absolute inset-0 z-[10] flex flex-col"
+        style={{
+          paddingTop: 76,
+          background: 'linear-gradient(to bottom, #101010 0%, #1a0005 30%, #101010 65%)',
+        }}
       >
+        {/* Gradient that darkens the top edge behind the transparent Navbar */}
+        <div
+          className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
+          style={{ zIndex: 5, background: 'linear-gradient(to bottom, rgba(16,16,16,0.85) 0%, transparent 100%)' }}
+        />
         {/* Mobile text */}
         <div className="relative px-6 pb-4 shrink-0">
           <h1 className="font-helvetica select-none">
@@ -240,11 +257,28 @@ export function HeroSection({ locale }: HeroSectionProps) {
           </h1>
         </div>
 
-        {/* Mobile image strips — flex-1 fills the remaining viewport height */}
+        {/* Mobile image strips */}
         <div
-          className="relative flex flex-1 min-h-0 w-full"
+          className="relative flex flex-1 min-h-0 w-full max-h-[440px]"
           style={{ gap: 6, overflow: 'hidden' }}
         >
+          {/* Pattern background — matches events/wall page mobile style */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/about/pattern.svg"
+              alt=""
+              className={['absolute inset-0 w-full h-full select-none object-cover object-center', isRtl ? 'scale-x-[-1]' : ''].join(' ')}
+              draggable={false}
+            />
+            <div className="absolute inset-x-0 top-0 h-[55%] bg-gradient-to-b from-[#101010] via-[#101010]/70 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#101010] to-transparent" />
+          </div>
+          {/* Top fade — blends strips into text area above */}
+          <div className="absolute top-0 left-0 right-0 h-24 z-10 pointer-events-none bg-gradient-to-b from-[#101010] to-transparent" />
+          {/* Bottom fade — blends strips into section below */}
+          <div className="absolute bottom-0 left-0 right-0 h-20 z-10 pointer-events-none bg-gradient-to-t from-[#101010] to-transparent" />
+
           {MOBILE_STRIPS.map((col, i) => {
             const fromTop = i % 2 === 0;
             return (
@@ -254,9 +288,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 initial={{ y: fromTop ? -400 : 400 }}
                 animate={{ y: 0 }}
                 transition={{
-                  duration: 1.0,
+                  duration: 1.6,
                   ease: SLIDE_EASE,
-                  delay: 0.2 + i * 0.07,
+                  delay: 0.2 + i * 0.1,
                 }}
                 style={{ clipPath: 'polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%)' }}
               >
@@ -274,16 +308,18 @@ export function HeroSection({ locale }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* ── Circular scroll badge ────────────────────────────────────────────────
-       * Figma: left:540px = 37.5% of 1440px canvas. Center of ring at (627px, 679px).
-       * Icon uses CSS transform centering so it stays centered regardless of container size.
-       */}
+      {/* ── Circular scroll badge — sits at the graphic/image junction ── */}
       <div
-        className="absolute z-20 hidden sm:block sm:left-[calc(50%_-_87px)] lg:left-[37.5%]"
-        style={{ top: 592, width: 174, height: 174 }}
+        className={[
+          'absolute z-20 hidden sm:block -translate-x-1/2',
+          isRtl
+            ? 'sm:left-[62%] lg:left-[58%] xl:left-[53%]'
+            : 'sm:left-[38%] lg:left-[42%] xl:left-[47%]',
+        ].join(' ')}
+        style={{ top: 630, width: 174, height: 174 }}
       >
         <CircularText
-          text={CIRCULAR_TEXT}
+          text={isRtl ? CIRCULAR_TEXT_AR : CIRCULAR_TEXT_EN}
           spinDuration={20}
           onHover="slowDown"
           className="w-full h-full"
