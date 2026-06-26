@@ -4,16 +4,23 @@ import React from "react";
 
 interface PartnerTierHeaderProps {
   title: string;
-  titleColor?: string; 
+  titleColor?: string;
+  className?: string; //  لتمرير كلاسات إضافية وقت الحاجة
 }
 
-export default function PartnerTierHeader({ 
-  title, 
-  titleColor = "text-[#EB0028]" 
+export default function PartnerTierHeader({
+  title,
+  titleColor = "text-[#EB0028]",
+  className = "",
 }: PartnerTierHeaderProps) {
   return (
-    <div className="w-full flex items-center gap-4 my-8" dir="ltr">
-      <span className={`${titleColor} font-helvetica text-xs sm:text-lg font-bold uppercase tracking-widest whitespace-nowrap`}>
+    <div
+      className={`w-full flex items-center gap-4 pt-16 pb-8 ${className}`}
+      dir="ltr"
+    >
+      <span
+        className={`${titleColor} font-helvetica text-xs sm:text-lg font-bold uppercase tracking-widest whitespace-nowrap`}
+      >
         {title}
       </span>
 

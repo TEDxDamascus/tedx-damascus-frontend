@@ -2,6 +2,12 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
+export function getImageUrl(id: string | null | undefined): string {
+  if (!id) return '/images/events/event-card.png';
+  if (id.startsWith('http') || id.startsWith('/')) return id;
+  return `${API_BASE_URL}/files/${id}`;
+}
+
 class ApiClient {
   private client: AxiosInstance;
 
@@ -100,10 +106,12 @@ export const speakersApi = {
 };
 
 export const eventsApi = {
-  getAll: (params?: { upcoming?: boolean; limit?: number }) =>
+  getAll: (params?: { status?: string; upcoming?: boolean; limit?: number }) =>
     apiClient.get('/events', { params }),
   getBySlug: (slug: string, locale: string) =>
     apiClient.get(`/events/${slug}?locale=${locale}`),
+  getById: (id: string, locale: string) =>
+    apiClient.get(`/events/${id}?locale=${locale}`),
   create: (data: any) =>
     apiClient.post('/events', data),
   update: (id: string, data: any) =>
@@ -151,6 +159,18 @@ export const newsletterApi = {
 export const wallApi = {
   getCurrent: () =>
     apiClient.get('/wall-cards/current'),
+  getAll: (params?: { limit?: number }) =>
+    apiClient.get('/wall-cards', { params }),
+  getById: (id: string) =>
+    apiClient.get(`/wall-cards/${id}`),
+  getQuestions: (params?: { page?: number; limit?: number }) =>
+    apiClient.get('/wall-cards/questions', { params }),
+  getQuestionById: (id: string) =>
+    apiClient.get(`/wall-cards/history/${id}`),
+  getQuestionAnswers: (questionId: string, params?: { page?: number; limit?: number }) =>
+    apiClient.get(`/wall-cards/history/${questionId}/answers`, { params }),
+  getCurrentAnswers: (params?: { page?: number; limit?: number }) =>
+    apiClient.get('/wall-cards/current/answers', { params }),
   submitAnswer: (answer: string) =>
-    apiClient.post('/wall-cards/current/answers', { answer }),
+    apiClient.post('/wall-cards/current/answers', { text: answer }),
 };

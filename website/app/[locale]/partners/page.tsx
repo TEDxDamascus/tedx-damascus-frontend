@@ -7,6 +7,8 @@ import GoldenPartner from "@/components/partners/GoldenPartner";
 import SilverPartner from "@/components/partners/SilverPartner";
 import BronzePartner from "@/components/partners/BronzePartner";
 import MediaPartner from "@/components/partners/MediaPartner";
+import HealthPartner from "@/components/partners/HealthPartner";
+import BecomePartner from "@/components/partners/BecomePartner";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -30,6 +32,9 @@ export default async function PartnersPage({ params }: Props) {
           <SilverPartner locale={locale} />
           <BronzePartner locale={locale} />
           <MediaPartner locale={locale} />
+          <HealthPartner locale={locale}  />
+         <BecomePartner locale={locale}  />
+
         </div>
       </div>
 

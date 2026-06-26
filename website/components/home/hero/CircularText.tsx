@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useId } from 'react';
 import { motion, useMotionValue, animate, type AnimationPlaybackControls } from 'framer-motion';
 
 type OnHoverBehavior = 'speedUp' | 'slowDown' | 'pause' | 'goBonkers' | null;
@@ -12,21 +12,38 @@ interface CircularTextProps {
   className?: string;
 }
 
+// Circle geometry — badge is 174×174, text sits at radius 74 from center (87,87)
+const R = 74;
+const CX = 87;
+const CY = 87;
+const CIRCUMFERENCE = 2 * Math.PI * R; // ≈ 465 px
+
+// Clockwise circle path starting from the leftmost point
+const CIRCLE_D = `M ${CX},${CY} m -${R},0 a ${R},${R} 0 1,1 ${R * 2},0 a ${R},${R} 0 1,1 -${R * 2},0`;
+
+// Arabic unicode range check
+function containsArabic(str: string): boolean {
+  return /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/.test(str);
+}
+
 export function CircularText({
   text,
   spinDuration = 20,
   onHover = 'speedUp',
   className = '',
 }: CircularTextProps) {
-  const letters = Array.from(text);
+  const rawId = useId();
+  const pathId = `ct${rawId.replace(/:/g, '')}`;
+
   const rotation = useMotionValue(0);
   const ctrlRef = useRef<AnimationPlaybackControls | null>(null);
+
+  const isArabic = containsArabic(text);
 
   const startSpin = (dur: number) => {
     ctrlRef.current?.stop();
     const from = rotation.get();
-    // Animate 200 full rotations — cosmetically infinite without ever resetting to 0
-    ctrlRef.current = animate(rotation, from + 360 * 200, {
+    ctrlRef.current = animate(rotation, from - 360 * 200, {
       duration: dur * 200,
       ease: 'linear',
     });
@@ -58,18 +75,37 @@ export function CircularText({
       onMouseEnter={handleHoverStart}
       onMouseLeave={handleHoverEnd}
     >
-      {letters.map((letter, i) => {
-        const deg = (360 / letters.length) * i;
-        return (
-          <span
-            key={i}
-            className="absolute inset-0 flex items-start justify-center pt-[11px] text-[12px] font-bold select-none text-secondary opacity-[0.8]"
-            style={{ transform: `rotateZ(${deg}deg)`, WebkitTransform: `rotateZ(${deg}deg)` }}
+      {/* SVG textPath renders the full text string in one pass so the font shaper
+          can apply proper contextual forms — including Arabic letter joining.
+          For Arabic: skip textLength/lengthAdjust which adds artificial glyph spacing
+          and breaks connected-letter shaping. The text is pre-repeated in the caller
+          to fill the circumference without forced stretching. */}
+      <svg viewBox="0 0 174 174" className="w-full h-full" aria-hidden>
+        <defs>
+          <path id={pathId} d={CIRCLE_D} />
+        </defs>
+        {/* direction="ltr" forces clockwise flow so Arabic glyphs appear on the
+            outside of the circle. Without it, RTL text flows counterclockwise
+            (into the interior) and becomes invisible. */}
+        <text
+          direction="ltr"
+          fontSize="11.5"
+          fontWeight="bold"
+          fontFamily={isArabic ? 'Cairo, sans-serif' : 'Helvetica Neue, Helvetica, Arial, sans-serif'}
+          fill="white"
+          fillOpacity="0.8"
+        >
+          <textPath
+            href={`#${pathId}`}
+            {...(!isArabic && {
+              textLength: Math.round(CIRCUMFERENCE),
+              lengthAdjust: 'spacing',
+            })}
           >
-            {letter}
-          </span>
-        );
-      })}
+            {text}
+          </textPath>
+        </text>
+      </svg>
     </motion.div>
   );
 }

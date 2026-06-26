@@ -17,18 +17,17 @@ export default function PartnersHero({ locale }: PartnersHeroProps) {
       aria-label="Our Partners Hero"
       dir={isRtl ? "rtl" : "ltr"}
     >
-      {/* 1️⃣ طبقة الـ Pattern بالخلفية - بنفس خصائص About بالضبط */}
       <div
         className="absolute inset-0 pointer-events-none select-none z-0"
         aria-hidden
       >
         <Image
-          src="/images/about/pattern.svg" // استخدام نفس مسار الـ Pattern
+          src="/images/about/pattern.svg" 
           alt=""
           fill
           className="object-cover object-center"
           draggable={false}
-          priority // ميزة Next.js لسرعة تحميل صور الـ Hero
+          priority 
         />
       </div>
 

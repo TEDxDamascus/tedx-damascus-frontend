@@ -14,7 +14,7 @@ export default function GoldenPartner({ locale }: GoldenPartnerProps) {
   const goldPartners = [
     {
       name: "Creative Levant",
-      logoUrl: "/images/partners/GoldPartnerLogo1.png", // 👈 سيقرأها الكارد كـ Image
+      logoUrl: "/images/partners/GoldPartnerLogo1.png", // 
       bgIconUrl: "/images/partners/Border.png",
       websiteUrl: "https://example.com",
       profileUrl: `/${locale}/partners/creative-levant`,
