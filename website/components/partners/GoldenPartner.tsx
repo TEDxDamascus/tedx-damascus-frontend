@@ -3,57 +3,48 @@
 import React from "react";
 import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
+import { PartnerViewData } from "@/lib/api/partners";
 
 interface GoldenPartnerProps {
-  locale: string;
+  locale: "en" | "ar";
+  partners?: PartnerViewData[];
 }
 
-export default function GoldenPartner({ locale }: GoldenPartnerProps) {
+export default function GoldenPartner({
+  locale,
+  partners,
+}: GoldenPartnerProps) {
   const isRtl = locale === "ar";
+  const displayPartners = partners || [];
 
-  const goldPartners = [
-    {
-      name: "Creative Levant",
-      logoUrl: "/images/partners/GoldPartnerLogo1.png", // 
-      bgIconUrl: "/images/partners/Border.png",
-      websiteUrl: "https://example.com",
-      profileUrl: `/${locale}/partners/creative-levant`,
-      description: isRtl
-        ? "مؤسسة إعلامية رائدة متخصصة في سرد القصص التي تكسر الفجوة بين التاريخ القديم والابتكار الحديث في العالم العربي."
-        : "A boutique media powerhouse specializing in storytelling that bridges the gap between ancient history and modern innovation across the Arab world.",
-    },
-    {
-      name: "Urban Visions",
-      logoUrl: "/images/partners/GoldPartnerLogo2.png", 
-      bgIconUrl: "/images/partners/Border.png",
-      websiteUrl: "https://example.com",
-      profileUrl: `/${locale}/partners/urban-visions`,
-      description: isRtl
-        ? "ريادة التطوير العمراني المستدام في سوريا من خلال حلول معمارية مبتكرة ومبادئ تصميم تتميز بالتركيز على المجتمع."
-        : "Pioneering sustainable urban development in Syria through innovative architectural solutions and community-centric design principles.",
-    },
-  ];
+  const safeSlug = (slug: any) =>
+    typeof slug === "string" ? slug : slug?.en || slug?.ar || "";
+
+  if (displayPartners.length === 0) {
+    return null;
+  }
 
   return (
     <section className="w-[90%] max-w-[90vw] mx-auto mb-16 animate-fade-in">
       <PartnerTierHeader
         title={isRtl ? "شريك ذهبي" : "GOLD PARTNERS"}
         titleColor="text-[#EB0028]"
+        locale={locale}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mt-6 w-full">
-        {goldPartners.map((partner, index) => (
+        {displayPartners.map((partner) => (
           <PartnerCard
-            key={index}
+            key={partner._id}
             locale={locale}
             name={partner.name}
-            description={partner.description}
-            logoUrl={partner.logoUrl} 
-            bgIconUrl={partner.bgIconUrl}
-            websiteUrl={partner.websiteUrl}
-            profileUrl={partner.profileUrl}
-            showProfileBtn={true}
-            showWebsiteBtn={true}
+            description={partner.short_description}
+            logoUrl={partner.image}
+            bgIconUrl={isRtl ? "شريك ذهبي" : "Gold Partner"}
+            websiteUrl={partner.social_links?.[0] ?? "#"}
+            profileUrl={`/${locale}/partner/${safeSlug(partner.slug)}`}
+            showProfileBtn
+            showWebsiteBtn
             showBadge={false}
             showWebsiteBtnBorder={false}
             cardLayoutClasses="flex flex-col items-start justify-between"
@@ -61,7 +52,7 @@ export default function GoldenPartner({ locale }: GoldenPartnerProps) {
             cardPadding="p-8 sm:px-20 sm:py-15"
             cardGap="gap-8"
             cardMinHeight="min-h-[300px]"
-            logoContainerSize="w-[160px] h-[160px] sm:w-[150px] sm:h-[150px]"
+            logoContainerSize="w-[100px] h-[100px] sm:w-[150px] sm:h-[150px]"
             logoContainerBg="bg-[#222222]"
             logoImageFit="object-cover"
             contentLayoutClasses="w-full flex flex-col text-start items-start flex-grow"
@@ -72,9 +63,9 @@ export default function GoldenPartner({ locale }: GoldenPartnerProps) {
             websiteBtnBg="bg-transparent text-white border border-neutral-700 hover:border-neutral-500"
             btnTextSize="text-sm sm:text-lg"
             btnPadding="px-2 py-3.5"
-            iconSize="w-20 h-20"
-            iconOpacity="opacity-60"
-            bgIconPosition={`top-6 ${isRtl ? "left-6" : "right-6"}`}
+            iconOpacity="opacity-100"
+            bgIconTextSize="text-[6px] sm:text-[10px]"
+            bgIconPosition={`top-20 ${isRtl ? "left-8" : "right-8"}`}
             websiteBtnText={isRtl ? "زيارة الموقع" : "VISIT SITE"}
           />
         ))}

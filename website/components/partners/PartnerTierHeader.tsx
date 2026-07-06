@@ -1,22 +1,22 @@
 "use client";
-
-import React from "react";
-
 interface PartnerTierHeaderProps {
   title: string;
   titleColor?: string;
-  className?: string; //  لتمرير كلاسات إضافية وقت الحاجة
+  className?: string; 
+  locale?: "en" | "ar"; 
 }
-
 export default function PartnerTierHeader({
   title,
   titleColor = "text-[#EB0028]",
   className = "",
+  locale = "en", 
 }: PartnerTierHeaderProps) {
+  const isRtl = locale === "ar";
+
   return (
     <div
       className={`w-full flex items-center gap-4 pt-16 pb-8 ${className}`}
-      dir="ltr"
+      dir={isRtl ? "rtl" : "ltr"} 
     >
       <span
         className={`${titleColor} font-helvetica text-xs sm:text-lg font-bold uppercase tracking-widest whitespace-nowrap`}

@@ -1,12 +1,8 @@
 "use client";
-
-import React from "react";
 import Image from "next/image";
-
 interface BecomePartnerProps {
   locale: string;
 }
-
 export default function BecomePartner({ locale }: BecomePartnerProps) {
   const isRtl = locale === "ar";
 

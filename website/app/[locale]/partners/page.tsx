@@ -1,45 +1,24 @@
-import React from "react";
-import PartnersHero from "@/components/partners/PartnersHero";
-import PlatinumPartner from "@/components/partners/PlatinumPartner";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import GoldenPartner from "@/components/partners/GoldenPartner";
-import SilverPartner from "@/components/partners/SilverPartner";
-import BronzePartner from "@/components/partners/BronzePartner";
-import MediaPartner from "@/components/partners/MediaPartner";
-import HealthPartner from "@/components/partners/HealthPartner";
-import BecomePartner from "@/components/partners/BecomePartner";
+// app/[locale]/partners/page.tsx
+
+import { routing } from "@/routing";
+import PartnersPageClient from "@/components/partners/PartnersPageClient";
+
+type Locale = "en" | "ar";
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 type Props = {
-  params: Promise<{ locale: string }>;
+  params: Promise<{
+    locale: Locale;
+  }>;
 };
 
 export default async function PartnersPage({ params }: Props) {
   const { locale } = await params;
 
-  return (
-    <main className="min-h-screen bg-[#101010] text-white flex flex-col justify-between">
-      <div>
-        {/* Navbar */}
-        <Navbar locale={locale} />
+  console.log("PAGE locale =", locale);
 
-        {/* Hero Section */}
-        <PartnersHero locale={locale} />
-
-        <div className=" mx-auto px-6 md:px-12 pb-20 w-full">
-          <PlatinumPartner locale={locale} />
-          <GoldenPartner locale={locale} />
-          <SilverPartner locale={locale} />
-          <BronzePartner locale={locale} />
-          <MediaPartner locale={locale} />
-          <HealthPartner locale={locale}  />
-         <BecomePartner locale={locale}  />
-
-        </div>
-      </div>
-
-      {/* Footer */}
-      <Footer locale={locale} />
-    </main>
-  );
+  return <PartnersPageClient locale={locale} />;
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface PartnerCardProps {
   locale: string;
@@ -41,12 +42,12 @@ interface PartnerCardProps {
   websiteBtnBg?: string;
   btnTextSize?: string;
   btnPadding?: string;
-  iconSize?: string;
-  iconOpacity?: string;
-  bgIconTextSize?: string; 
-  bgIconPosition?: string; 
 
-  websiteBtnText?: string; 
+  iconOpacity?: string;
+  bgIconTextSize?: string;
+  bgIconPosition?: string;
+
+  websiteBtnText?: string;
 }
 
 export default function PartnerCard({
@@ -71,7 +72,6 @@ export default function PartnerCard({
   cardBgColor = "bg-[#1A1A1A]",
   cardGap = "gap-8",
 
-  logoLayoutClasses = "",
   logoContainerSize = "w-[160px] h-[160px] sm:w-[200px] sm:h-[200px]",
   logoContainerBg = "bg-[#353535]",
   logoImageFit = "object-contain",
@@ -87,108 +87,105 @@ export default function PartnerCard({
   btnTextSize = "text-sm sm:text-base",
   btnPadding = "px-6 py-3.5",
 
-  iconSize = "w-16 h-16",
   iconOpacity = "opacity-40",
   bgIconTextSize = "text-[11px]",
   bgIconPosition = "",
   websiteBtnText,
 }: PartnerCardProps) {
   const isRtl = locale === "ar";
+  const router = useRouter();
 
-  const getWebsiteBtnStyles = () => {
-    if (!showWebsiteBtnBorder) {
-      return websiteBtnBg
-        .replace(/border-neutral-\d+/g, "border-transparent")
-        .replace(/hover:border-neutral-\d+/g, "")
-        .replace(/border-white\/\d+/g, "border-transparent")
-        .replace(/hover:border-white/g, "")
-        .replace(/border/g, "border-transparent");
+const isWholeCardClickable =
+  !showProfileBtn && profileUrl !== "#";
+
+  const defaultBtnText =
+    websiteBtnText || (isRtl ? "زيارة الموقع" : "Visit Website");
+
+  const handleCardClick = () => {
+    if (isWholeCardClickable) {
+      router.push(profileUrl);
     }
-    return websiteBtnBg;
   };
-
-  const isBgImageUrl = typeof bgIconUrl === "string" && (
-    bgIconUrl.startsWith("/") || 
-    bgIconUrl.startsWith("http") || 
-    /\.(png|jpg|jpeg|svg|webp|gif)$/i.test(bgIconUrl)
-  );
-
-  const defaultPosition = bgIconPosition || `top-6 ${isRtl ? "left-6" : "right-6"}`;
-
-  const defaultBtnText = websiteBtnText || (isRtl ? "زيارة الموقع" : "Visit Website");
 
   return (
     <div
-      className={`relative ${cardWidth} ${cardMinHeight} ${cardBgColor} ${cardPadding} ${cardGap} border border-neutral-900 rounded-sm transition-all duration-300 ${cardLayoutClasses}`}
+      onClick={handleCardClick}
+      className={`relative ${cardWidth} ${cardMinHeight} ${cardBgColor} ${cardPadding} ${cardGap} border border-neutral-900 rounded-sm transition-all duration-300 ${cardLayoutClasses} ${
+        isWholeCardClickable
+          ? "cursor-pointer hover:border-neutral-700 hover:bg-[#1F1F1F]"
+          : ""
+      }`}
       dir={isRtl ? "rtl" : "ltr"}
     >
-      {/* Background Icon / Text */}
+      {/* Background Icon */}
       {bgIconUrl && (
-        <div className={`absolute pointer-events-none z-0 ${iconOpacity} ${defaultPosition}`}>
-          {isBgImageUrl ? (
-            <div className={`${iconSize} relative`}>
-              <Image src={bgIconUrl} alt="" fill className="w-full h-full object-contain" />
-            </div>
-          ) : (
-            <span className={`font-helvetica font-bold uppercase tracking-widest text-neutral-600 whitespace-nowrap block ${bgIconTextSize}`}>
-              {bgIconUrl}
-            </span>
-          )}
+        <div
+          className={`absolute pointer-events-none z-0 ${iconOpacity} ${bgIconPosition}`}
+        >
+          <span
+            className={`font-helvetica font-bold uppercase tracking-widest text-neutral-600 whitespace-nowrap block ${bgIconTextSize}`}
+          >
+            {bgIconUrl}
+          </span>
         </div>
       )}
 
-      {/* Logo Container */}
-      <div className={`relative flex items-center justify-center flex-shrink-0 overflow-hidden rounded-sm z-10 ${logoContainerBg} ${logoContainerSize} ${logoLayoutClasses}`}>
+      {/* Logo */}
+      <div
+        className={`relative flex items-center justify-center overflow-hidden rounded-sm z-10 ${logoContainerBg} ${logoContainerSize}`}
+      >
         <Image
           src={logoUrl}
-          alt={`${name} Logo`}
+          alt={name}
           width={500}
           height={500}
-          unoptimized
-          className={`shadow-md max-w-full max-h-full ${logoImageFit}`}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "https://placehold.co/300x300/222/fff?text=Logo";
-          }}
+          className={`max-w-full max-h-full ${logoImageFit}`}
         />
       </div>
 
-      {/* Content Wrapper */}
-      <div className={`flex-grow h-full justify-center z-10 ${contentLayoutClasses}`}>
+      {/* Content */}
+      <div className={`flex-grow z-10 ${contentLayoutClasses}`}>
         {showBadge && tierBadge && (
           <div className="mb-4">
-            <span className="bg-[#EB0028] text-white font-sans text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs">
+            <span className="bg-[#EB0028] text-white text-[11px] font-bold uppercase px-2.5 py-1">
               {tierBadge}
             </span>
           </div>
         )}
 
-        <h3 className={`${titleColor} ${titleSize} font-helvetica font-medium tracking-tight mb-3 leading-tight`}>
+        <h3 className={`${titleColor} ${titleSize} font-helvetica mb-3`}>
           {name}
         </h3>
 
-        <p className={`font-sans mb-5 opacity-90 w-full leading-relaxed ${descriptionSize} ${descriptionColor}`}>
+        <p className={`${descriptionSize} ${descriptionColor} mb-5`}>
           {description}
         </p>
 
-        <div className="flex flex-wrap gap-6 mt-2 justify-start">
+        <div className="flex flex-wrap gap-6 mt-2">
           {showProfileBtn && (
             <a
               href={profileUrl}
-              className={`inline-flex items-center gap-2 font-helvetica font-bold uppercase tracking-wider transition-colors ${btnTextSize} ${btnPadding} ${profileBtnBg}`}
+              onClick={(e) => e.stopPropagation()}
+              className={`inline-flex items-center gap-2 font-helvetica font-bold uppercase ${btnTextSize} ${btnPadding} ${profileBtnBg}`}
             >
               {isRtl ? "عرض الملف" : "View Profile"}
-              {isRtl ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+              {isRtl ? (
+                <ArrowLeft className="w-5 h-5" />
+              ) : (
+                <ArrowRight className="w-5 h-5" />
+              )}
             </a>
           )}
 
           {showWebsiteBtn && (
             <a
               href={websiteUrl}
-              className={`inline-flex items-center gap-1.5 font-helvetica font-bold uppercase tracking-wider transition-colors ${btnTextSize} ${btnPadding} ${getWebsiteBtnStyles()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className={`inline-flex items-center gap-2 font-helvetica font-bold uppercase ${btnTextSize} ${btnPadding} ${websiteBtnBg}`}
             >
               {defaultBtnText}
-              {isRtl ? <span className="text-xs"></span> : <span className="text-xs"></span>}
             </a>
           )}
         </div>

@@ -3,14 +3,14 @@
 import PartnerContactCard from "./PartnerContactCard";
 import PartnerFollowCard from "./PartnerFollowCard";
 import PartnerServices from "./PartnerServices";
+import { PartnerViewData } from "@/lib/api/partners";
 
-interface PartnerContentDetailsProps {
-  locale: string;
+interface Props {
+  locale: "en" | "ar";
+  partner: PartnerViewData;
 }
 
-export default function PartnerContentDetails({
-  locale,
-}: PartnerContentDetailsProps) {
+export default function PartnerContentDetails({ locale, partner }: Props) {
   const isRtl = locale === "ar";
 
   return (
@@ -18,48 +18,31 @@ export default function PartnerContentDetails({
       className="w-full pb-20 px-4 sm:px-8 xl:px-12"
       dir={isRtl ? "rtl" : "ltr"}
     >
-      <div className="grid grid-cols-1 2xl:grid-cols-[1.3fr_0.7fr] gap-16 2xl:gap-x-32 items-start">
-        <div className="flex flex-col items-start w-full order-1">
-          <div className="w-full">
-            <h2 className="text-[30px] md:text-[35px] font-semibold text-white mb-6 flex items-center gap-4 whitespace-nowrap">
-              Innovation & Impact
-              <span className="hidden 2xl:block h-[1px] bg-[#EB0028] flex-grow opacity-80" />
-            </h2>
+      <div className="flex flex-col 2xl:grid 2xl:grid-cols-[1.3fr_0.7fr] gap-16">
+        
+        <div className="flex flex-col gap-10 w-full max-w-[450px] mx-auto 2xl:mx-0 order-1 2xl:order-2">
+          <PartnerContactCard contact={partner.contact_info} locale={locale} />
 
-            <div className="text-[#a8a8a8] text-base md:text-[25px] leading-relaxed font-light space-y-6 max-w-full">
-              <p>
-                Sham Telecommunications has been at the forefront of the
-                technological renaissance in Damascus. By investing in
-                fiber-optic expansions and supporting local tech incubators,
-                they have transformed the way ideas circulate within the city.
-              </p>
-              <p>
-                Our partnership with Sham Telecommunications extends beyond
-                branding. They provide the high-speed backbone for our live
-                streams, ensuring that the Ideas Worth Spreading from our stage
-                reach a global audience without interruption. Their commitment
-                to social responsibility is reflected in their extensive support
-                for youth educational programs across Syria.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-6 w-full mt-12 2xl:hidden justify-start">
-            <div className="w-full sm:w-auto">
-              <PartnerContactCard />
-            </div>
-            <div className="w-full sm:w-auto">
-              <PartnerFollowCard />
-            </div>
-          </div>
-
-          <PartnerServices />
+          <PartnerFollowCard
+            websiteUrl={partner.social_links?.[0] ?? ""}
+            locale={locale}
+          />
         </div>
 
-        <div className="hidden 2xl:flex order-2 flex-col items-end w-full 2xl:w-[450px] 2xl:min-w-[450px] shrink-0 lg:top-24 space-y-10">
-          <PartnerContactCard />
-          <PartnerFollowCard />
+        <div className="flex flex-col w-full order-2 2xl:order-1">
+          <h2 className="text-[30px] sm:text-[35px] font-semibold text-white mb-6 mt-8 2xl:mt-0">
+            {isRtl ? "الابتكار والتأثير" : "Innovation & Impact"}
+          </h2>
+
+          <div className="text-[#a8a8a8] text-[18px] sm:text-[20px] leading-relaxed space-y-6">
+            {partner.long_description}
+          </div>
+
+          <div className="mt-12">
+            <PartnerServices services={partner.services} locale={locale} />
+          </div>
         </div>
+
       </div>
     </div>
   );
