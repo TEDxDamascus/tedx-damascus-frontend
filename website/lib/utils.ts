@@ -9,7 +9,6 @@ export function formatDate(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
   }).format(new Date(date));
 }
 
@@ -18,6 +17,16 @@ export function getLocalizedContent<T extends { en: string; ar: string }>(
   locale: string
 ): string {
   return locale === 'ar' ? content.ar : content.en;
+}
+
+export function getLocalizedSlug(
+  slug: string | { en: string; ar: string },
+  locale: string
+): string {
+  if (typeof slug === 'string') {
+    return slug;
+  }
+  return locale === 'ar' ? slug.ar : slug.en;
 }
 
 export function slugify(text: string): string {
