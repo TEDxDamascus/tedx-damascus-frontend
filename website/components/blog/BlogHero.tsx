@@ -13,34 +13,30 @@ export function BlogHero({ locale, label, title, meta }: BlogHeroProps) {
   const isRtl = locale === 'ar';
 
   return (
-    <section className="relative overflow-hidden bg-black pb-12 sm:pb-16 lg:pb-20 h-[370px] font-helvetica">
+    <section className="relative overflow-hidden pb-12 sm:pb-16 lg:pb-20 h-[370px] font-helvetica">
            {/* Pattern background */}
            <div
-             className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden bg-black"
+             className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden"
              aria-hidden
            >
-             <div className="relative mx-auto aspect-[1440/398] w-full max-h-[min(398px,52vh)] max-w-[1440px]">
+             <div className="relative mx-auto aspect-[1440/370] w-full h-[370px] max-w-[1440px]">
                {/* eslint-disable-next-line @next/next/no-img-element */}
                <img
                  src="/images/blogs/pattern.svg"
                  alt=""
                  width={1440}
-                 height={398}
+                 height={370}
                  className={[
-                   'absolute inset-0 h-[300px] w-full select-none object-cover object-top',
+                   'absolute inset-0 h-full w-full select-none object-cover object-center',
                    isRtl ? 'scale-x-[-1]' : '',
                  ].join(' ')}
                  draggable={false}
                />
              </div>
-             <div
-               className="pointer-events-none absolute inset-x-0 bottom-0 top-[24%] bg-gradient-to-b from-transparent via-black/55 to-black"
-               aria-hidden
-             />
            </div>
    
            <div
-             className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[min(220px,38vh)] overflow-hidden md:hidden"
+             className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[370px] overflow-hidden md:hidden"
              aria-hidden
            >
                <div className="relative mx-auto h-full max-w-[1440px]">
@@ -49,16 +45,12 @@ export function BlogHero({ locale, label, title, meta }: BlogHeroProps) {
                src="/images/blogs/pattern.svg"
                  alt=""
                  width={1440}
-                 height={398}
+                 height={370}
                  className={[
-                   'absolute inset-x-0 bottom-0 h-[min(320px,55vh)] w-full select-none object-cover object-bottom',
+                   'absolute inset-x-0 bottom-0 h-full w-full select-none object-cover object-center',
                    isRtl ? 'scale-x-[-1]' : '',
                  ].join(' ')}
                  draggable={false}
-               />
-               <div
-                 className="pointer-events-none absolute inset-x-0 top-0 h-[65%] bg-gradient-to-b from-black via-black/70 to-transparent"
-                 aria-hidden
                />
              </div>
            </div>
