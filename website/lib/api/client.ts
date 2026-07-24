@@ -2,10 +2,16 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
-export function getImageUrl(id: string | null | undefined): string {
+export function getImageUrl(id: string | null | undefined | any): string {
   if (!id) return '/images/events/event-card.png';
-  if (id.startsWith('http') || id.startsWith('/')) return id;
-  return `${API_BASE_URL}/files/${id}`;
+  if (typeof id === 'string') {
+    if (id.startsWith('http') || id.startsWith('/')) return id;
+    return `${API_BASE_URL}/files/${id}`;
+  }
+  if (id && typeof id === 'object' && id.url) {
+    return id.url;
+  }
+  return '/images/events/event-card.png';
 }
 
 class ApiClient {
@@ -17,6 +23,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 30000, // 30 second timeout
     });
 
     this.setupInterceptors();
@@ -121,7 +128,7 @@ export const eventsApi = {
 };
 
 export const blogsApi = {
-  getAll: (params?: { featured?: boolean; category?: string; limit?: number }) =>
+  getAll: (params?: any) =>
     apiClient.get('/blogs', { params }),
   getBySlug: (slug: string, locale: string) =>
     apiClient.get(`/blogs/${slug}?locale=${locale}`),
