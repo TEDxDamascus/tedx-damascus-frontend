@@ -22,10 +22,15 @@
   },
   "Speakers": {
     "title": "متحدثونا",
+    "titleWord1": "",
+    "titleWord2": "متحدثونا",
     "featured": "المتحدثون المميزون",
     "all": "جميع المتحدثين",
     "viewProfile": "عرض الملف الشخصي",
-    "watchTalk": "شاهد المحاضرة"
+    "watchTalk": "شاهد المحاضرة",
+    "searchPlaceholder": "ابحث عن متحدث ...",
+    "loadMore": "تحميل المزيد",
+    "noResults": "لا يوجد متحدثون مطابقون لبحثك."
   },
   "Events": {
     "title": "الفعاليات",
