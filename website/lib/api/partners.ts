@@ -1,25 +1,27 @@
 import { CrudService } from "./generic-api-service";
 
-/**
- * Multi language field coming from backend
- */
+export enum CardSizeEnum {
+  SMALL = "small",
+  MEDIUM = "med",
+  LARGE = "large",
+}
+
 export interface MultiLangField {
   en: string;
   ar: string;
 }
+
 export interface PartnerData {
   _id: string;
 
   name: MultiLangField;
   slug: MultiLangField;
-
-  partnership_type: string;
-
+  partner_ship_type: string;
+  custom_card_size?: CardSizeEnum;
+  year?: number;
   short_description: MultiLangField;
   long_description: MultiLangField;
-
   social_links: string[];
-
   contact_info: {
     address: MultiLangField;
     phone: string;
@@ -38,14 +40,13 @@ export interface PartnerViewData {
   _id: string;
   name: string;
   slug: string;
-  partnership_type: string;
-
+  partner_ship_type: string;
+  custom_card_size?: CardSizeEnum;
+  year?: number;
   short_description: string;
   long_description: string;
-
   social_links: string[];
   image: string;
-
   contact_info: {
     address: {
       en: string;
@@ -64,17 +65,6 @@ export interface PartnerViewData {
   }[];
 }
 
-/**
- * =========================
- * API SERVICES
- * =========================
- */
-export const partnersApi = new CrudService<PartnerData>(
-  "/partners",
-  false
-);
+export const partnersApi = new CrudService<PartnerData>("/partners", false);
 
-export const partnersAdminApi = new CrudService<PartnerData>(
-  "/partners",
-  true
-);
+export const partnersAdminApi = new CrudService<PartnerData>("/partners", true);

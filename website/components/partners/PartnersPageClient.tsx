@@ -7,13 +7,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import PartnersHero from "@/components/partners/PartnersHero";
 import BecomePartner from "@/components/partners/BecomePartner";
-
 import DiamondPartner from "./DiamondPartner";
 import GoldenPartner from "./GoldenPartner";
 import SilverPartner from "./SilverPartner";
-import BronzePartner from "./BronzePartner";
-import MediaPartner from "./MediaPartner";
-import HealthPartner from "./HealthPartner";
 import DynamicPartners from "./DynamicPartners";
 
 interface Props {
@@ -43,20 +39,22 @@ const formatPartner = (
 
   const long_description =
     typeof partner.long_description === "object"
-      ? partner.long_description?.[locale] ||
-        partner.long_description?.en ||
-        ""
+      ? partner.long_description?.[locale] || partner.long_description?.en || ""
       : partner.long_description || "";
 
   return {
     _id: partner._id,
     name,
     slug,
-    partnership_type: partner.partnership_type?.trim(),
+    partner_ship_type: partner.partner_ship_type?.trim(),
+    custom_card_size: partner.custom_card_size,
+    year: partner.year,
     short_description,
     long_description,
     social_links: partner.social_links || [],
     image: partner.image,
+    contact_info: partner.contact_info,
+    services: partner.services,
   };
 };
 
@@ -82,17 +80,13 @@ export default function PartnersPageClient({ locale }: Props) {
 
   const getByTier = (tier: string) =>
     allPartners.filter((p) => {
-      const type = p.partnership_type?.toLowerCase().trim();
+      const type = p.partner_ship_type?.toLowerCase().trim();
       return type === tier.toLowerCase().trim();
     });
 
   const diamondPartners = getByTier("diamond");
-
   const goldenPartners = getByTier("gold");
   const silverPartners = getByTier("silver");
-  const bronzePartners = getByTier("bronze");
-  const mediaPartners = getByTier("media");
-  const healthPartners = getByTier("health");
 
   if (loading) {
     return (
@@ -109,15 +103,9 @@ export default function PartnersPageClient({ locale }: Props) {
 
       <div className="mx-auto w-full px-6 md:px-12 pb-20 flex flex-col gap-12">
         <DiamondPartner locale={locale} partners={diamondPartners} />
-
         <GoldenPartner locale={locale} partners={goldenPartners} />
         <SilverPartner locale={locale} partners={silverPartners} />
-        <BronzePartner locale={locale} partners={bronzePartners} />
-        <MediaPartner locale={locale} partners={mediaPartners} />
-        <HealthPartner locale={locale} partners={healthPartners} />
-
-        <DynamicPartners locale={locale} partnersData={allPartners} />
-
+        <DynamicPartners locale={locale} partners={allPartners} />
         <BecomePartner locale={locale} />
       </div>
 

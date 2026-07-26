@@ -2,7 +2,9 @@
 ```
 website
 ├─ .kilo
-│  └─ agent-manager.json
+│  ├─ agent-manager.json
+│  ├─ package-lock.json
+│  └─ package.json
 ├─ app
 │  ├─ about
 │  │  └─ page.tsx
@@ -143,15 +145,14 @@ website
 │  ├─ partners
 │  │  ├─ BecomePartner.tsx
 │  │  ├─ BronzePartner.tsx
+│  │  ├─ DiamondPartner.tsx
 │  │  ├─ DynamicPartners.tsx
 │  │  ├─ GoldenPartner.tsx
-│  │  ├─ HealthPartner.tsx
-│  │  ├─ MediaPartner.tsx
 │  │  ├─ PartnerCard.tsx
 │  │  ├─ PartnersHero.tsx
 │  │  ├─ PartnersPageClient.tsx
 │  │  ├─ PartnerTierHeader.tsx
-│  │  ├─ PlatinumPartner.tsx
+│  │  ├─ PartnerTierRegistry.tsx
 │  │  └─ SilverPartner.tsx
 │  ├─ shared
 │  │  ├─ DatePicker.tsx

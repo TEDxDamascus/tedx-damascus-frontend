@@ -19,7 +19,7 @@ export default function DiamondPartner({
   const cleanPartners = Array.isArray(partners) ? partners : [];
 
   const diamondPartners = cleanPartners.filter((p) => {
-    return p?.partnership_type?.toLowerCase().trim() === "diamond";
+    return p?.partner_ship_type?.toLowerCase().trim() === "diamond";
   });
 
   if (diamondPartners.length === 0) {
@@ -71,7 +71,7 @@ export default function DiamondPartner({
               } md:col-span-2`}
               cardMinHeight="min-h-auto md:min-h-[420px]"
               cardPadding="p-3 sm:p-6 md:p-10"
-              cardGap="gap-4 sm:gap-6 md:gap-10"
+              cardGap="gap-5 sm:gap-6 md:gap-11"
               cardBgColor="bg-[#151515]"
               logoContainerBg="bg-[#222222]"
               logoImageFit="object-contain w-[90%] h-[90%] scale-105"
