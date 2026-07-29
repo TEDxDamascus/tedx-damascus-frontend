@@ -16,20 +16,25 @@ function toSlug(text: string): string {
 const INITIAL_VISIBLE = 12;
 const LOAD_MORE_STEP = 12;
 
+type LocaleString = string | { en?: string; ar?: string };
+
 interface ApiSpeaker {
   _id?: string;
   id?: string | number;
-  slug?: string;
-  name?: string;
+  slug?: LocaleString;
+  name?: LocaleString;
   nameAr?: string;
-  role?: string;
+  role?: LocaleString;
   roleAr?: string;
-  tagline?: string;
+  tagline?: LocaleString;
   taglineAr?: string;
-  title?: string;
+  title?: LocaleString;
   titleAr?: string;
-  bio?: string;
+  bio?: LocaleString;
   bioAr?: string;
+  brief?: LocaleString;
+  experience?: LocaleString;
+  description?: LocaleString;
   speaker_image?: string;
   image?: string;
   imageUrl?: string;
@@ -71,15 +76,24 @@ export function SpeakersPageClient({ locale }: SpeakersPageClientProps) {
       .then((res: unknown) => {
         const raw: ApiSpeaker[] = Array.isArray(res) ? res : ((res as { data?: ApiSpeaker[] })?.data ?? []);
         const normalized: NormalizedSpeaker[] = raw.map((s) => {
+          const loc = (field: LocaleString | undefined, lang: 'en' | 'ar'): string => {
+            if (!field) return '';
+            if (typeof field === 'string') return field;
+            return field[lang] ?? field['en'] ?? '';
+          };
           const eventObj = typeof s.event === 'object' && s.event !== null ? s.event : null;
           const rawId = s._id ?? s.id;
+          const enSlug = toSlug(loc(s.slug, 'en'));
+          const urlSlug = enSlug || String(rawId);
+          const roleEn = loc(s.role ?? s.tagline ?? s.title ?? s.bio, 'en');
+          const roleAr = loc(s.role ?? s.tagline ?? s.title ?? s.bio, 'ar') || (s.roleAr ?? s.taglineAr ?? s.titleAr ?? s.bioAr ?? roleEn);
           return {
             id: rawId ?? '',
-            slug: String(rawId),
-            name: s.name ?? '',
-            nameAr: s.nameAr ?? s.name ?? '',
-            role: s.role ?? s.tagline ?? s.title ?? s.bio ?? '',
-            roleAr: s.roleAr ?? s.taglineAr ?? s.titleAr ?? s.bioAr ?? s.role ?? s.tagline ?? '',
+            slug: urlSlug,
+            name: loc(s.name, 'en') || (s.nameAr ?? ''),
+            nameAr: loc(s.name, 'ar') || (s.nameAr ?? loc(s.name, 'en')),
+            role: roleEn,
+            roleAr,
             eventName:
               s.eventName ??
               (typeof s.event === 'string' ? s.event : '') ??

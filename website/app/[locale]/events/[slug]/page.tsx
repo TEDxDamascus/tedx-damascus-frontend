@@ -13,6 +13,14 @@ function toSlug(text: string): string {
     .replace(/\s+/g, '-');
 }
 
+type LocaleString = string | { en?: string; ar?: string };
+
+function extractEnTitle(value: LocaleString | undefined): string {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value.en ?? value.ar ?? '';
+}
+
 export async function generateStaticParams() {
   let slugs = [...FALLBACK_SLUGS];
   try {
@@ -21,7 +29,11 @@ export async function generateStaticParams() {
       const data = await res.json();
       const events: any[] = Array.isArray(data) ? data : (data?.data ?? []);
       const apiSlugs = events
-        .map((e: any) => e.slug ?? toSlug(e.title ?? e.name ?? ''))
+        .map((e: any) => {
+          if (e.slug && typeof e.slug === 'string') return e.slug;
+          const enTitle = extractEnTitle(e.title ?? e.name);
+          return enTitle ? toSlug(enTitle) : String(e._id ?? e.id ?? '');
+        })
         .filter(Boolean);
       if (apiSlugs.length > 0) {
         slugs = [...new Set([...FALLBACK_SLUGS, ...apiSlugs])];

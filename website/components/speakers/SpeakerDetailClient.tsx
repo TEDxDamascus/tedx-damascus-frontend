@@ -8,26 +8,50 @@ import { SpeakerDetailAbout } from './SpeakerDetailAbout';
 import { SpeakerDetailGallery } from './SpeakerDetailGallery';
 import { SpeakerDetailVideos } from './SpeakerDetailVideos';
 
+type LocaleString = string | { en?: string; ar?: string };
+
+interface ContactInfo {
+  address?: { en?: string; ar?: string } | string;
+  phone?: string;
+  email?: string;
+}
+
 interface ApiSpeakerDetail {
   _id?: string;
-  name?: string;
-  bio?: string;
-  brief?: string;
-  experience?: string;
-  description?: string;
+  name?: LocaleString;
+  bio?: LocaleString;
+  brief?: LocaleString;
+  experience?: LocaleString;
+  description?: LocaleString;
+  slug?: LocaleString;
   speaker_image?: string;
   social_links?: string[];
+  contact_info?: ContactInfo;
   gallery?: string[];
-  video_link?: string[];
+  video_link?: string | string[];
   createdAt?: string;
   updatedAt?: string;
 }
 
-function parseSocialLinks(links: string[] = []): { linkedin?: string; email?: string } {
+function loc(field: LocaleString | undefined, lang: 'en' | 'ar'): string {
+  if (!field) return '';
+  if (typeof field === 'string') return field;
+  return field[lang] ?? field['en'] ?? '';
+}
+
+function toSlug(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+}
+
+function parseSocialLinks(
+  links: string[] = [],
+  contactInfo?: ContactInfo
+): { linkedin?: string; email?: string } {
   const linkedin = links.find((l) => l.toLowerCase().includes('linkedin.com'));
-  const email = links.find(
+  const emailFromLinks = links.find(
     (l) => l.startsWith('mailto:') || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(l)
   );
+  const email = emailFromLinks ?? contactInfo?.email;
   return { linkedin, email };
 }
 
@@ -45,16 +69,28 @@ export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) 
 
   useEffect(() => {
     speakersApi
-      .getBySlug(slug, locale)
+      .getAll()
       .then((res: unknown) => {
-        const raw = (res as { data?: ApiSpeakerDetail })?.data ?? (res as ApiSpeakerDetail);
-        setSpeaker(raw);
+        const list: ApiSpeakerDetail[] = Array.isArray(res)
+          ? res
+          : ((res as { data?: ApiSpeakerDetail[] })?.data ?? []);
+
+        const match = list.find((s) => {
+          const enSlug = toSlug(loc(s.slug, 'en'));
+          return enSlug === slug || String(s._id) === slug;
+        });
+
+        if (match) {
+          setSpeaker(match);
+        } else {
+          setError(true);
+        }
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [slug, locale]);
+  }, [slug]);
 
-  const { linkedin, email } = parseSocialLinks(speaker?.social_links);
+  const { linkedin, email } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
 
   return (
     <>
@@ -77,18 +113,18 @@ export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) 
       {speaker && !loading && (
         <>
           <SpeakerDetailHeader
-            name={speaker.name ?? ''}
-            bio={speaker.bio ?? ''}
-            description={speaker.description ?? ''}
+            name={loc(speaker.name, isRtl ? 'ar' : 'en')}
+            bio={loc(speaker.bio, isRtl ? 'ar' : 'en')}
+            description={loc(speaker.description, isRtl ? 'ar' : 'en')}
             imageUrl={getImageUrl(speaker.speaker_image)}
             linkedinUrl={linkedin}
             emailUrl={email}
             isRtl={isRtl}
           />
           <SpeakerDetailAbout
-            name={speaker.name ?? ''}
-            brief={speaker.brief}
-            experience={speaker.experience}
+            name={loc(speaker.name, isRtl ? 'ar' : 'en')}
+            brief={loc(speaker.brief, isRtl ? 'ar' : 'en') || undefined}
+            experience={loc(speaker.experience, isRtl ? 'ar' : 'en') || undefined}
             isRtl={isRtl}
           />
           <SpeakerDetailGallery
@@ -96,7 +132,7 @@ export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) 
             locale={locale}
           />
           <SpeakerDetailVideos
-            videoLinks={speaker.video_link ?? []}
+            videoLinks={Array.isArray(speaker.video_link) ? speaker.video_link : speaker.video_link ? [speaker.video_link] : []}
             locale={locale}
           />
         </>
