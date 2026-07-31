@@ -30,7 +30,6 @@ const CIRCULAR_TEXT_EN = 'Damascus where the story is told anew ...  ·  ';
 // Arabic text is repeated so it fills the circle without needing textLength (which breaks letter joining)
 const CIRCULAR_TEXT_AR = 'دمشق حيث تُروى الحكاية من جديد ...  ·  دمشق حيث تُروى الحكاية من جديد ...  ·  ';
 
-// Figma animation: columns 1 & 3 slide in from top, 2 & 4 from bottom
 const SLIDE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]; // easeOutQuint
 
 interface HeroSectionProps {
@@ -223,15 +222,23 @@ export function HeroSection({ locale }: HeroSectionProps) {
        */}
       <div
         className="sm:hidden absolute inset-0 z-[10] flex flex-col"
-        style={{
-          paddingTop: 76,
-          background: 'linear-gradient(to bottom, #101010 0%, #1a0005 30%, #101010 65%)',
-        }}
+        style={{ paddingTop: 76, background: '#101010' }}
       >
-        {/* Gradient that darkens the top edge behind the transparent Navbar */}
+        {/* Pattern at the top — matches events/wall page mobile style */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/about/pattern.svg"
+            alt=""
+            className={['block h-[320px] w-full select-none object-cover object-top', isRtl ? 'scale-x-[-1]' : ''].join(' ')}
+            draggable={false}
+          />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#101010] to-transparent" />
+        </div>
+        {/* Gradient behind navbar so text stays readable over the pattern */}
         <div
-          className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
-          style={{ zIndex: 5, background: 'linear-gradient(to bottom, rgba(16,16,16,0.85) 0%, transparent 100%)' }}
+          className="absolute top-0 left-0 right-0 h-28 pointer-events-none"
+          style={{ zIndex: 5, background: 'linear-gradient(to bottom, #101010 0%, transparent 100%)' }}
         />
         {/* Mobile text */}
         <div className="relative px-6 pb-4 shrink-0">
@@ -262,18 +269,6 @@ export function HeroSection({ locale }: HeroSectionProps) {
           className="relative flex flex-1 min-h-0 w-full max-h-[440px]"
           style={{ gap: 6, overflow: 'hidden' }}
         >
-          {/* Pattern background — matches events/wall page mobile style */}
-          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/about/pattern.svg"
-              alt=""
-              className={['absolute inset-0 w-full h-full select-none object-cover object-center', isRtl ? 'scale-x-[-1]' : ''].join(' ')}
-              draggable={false}
-            />
-            <div className="absolute inset-x-0 top-0 h-[55%] bg-gradient-to-b from-[#101010] via-[#101010]/70 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-[35%] bg-gradient-to-t from-[#101010] to-transparent" />
-          </div>
           {/* Top fade — blends strips into text area above */}
           <div className="absolute top-0 left-0 right-0 h-24 z-10 pointer-events-none bg-gradient-to-b from-[#101010] to-transparent" />
           {/* Bottom fade — blends strips into section below */}
@@ -288,9 +283,9 @@ export function HeroSection({ locale }: HeroSectionProps) {
                 initial={{ y: fromTop ? -400 : 400 }}
                 animate={{ y: 0 }}
                 transition={{
-                  duration: 1.6,
+                  duration: 0.9,
                   ease: SLIDE_EASE,
-                  delay: 0.2 + i * 0.1,
+                  delay: 0.05 + i * 0.07,
                 }}
                 style={{ clipPath: 'polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%)' }}
               >

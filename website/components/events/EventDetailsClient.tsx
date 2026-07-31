@@ -263,6 +263,15 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
   useEffect(() => {
     const load = async () => {
       try {
+        const cached = getCachedEvent(slug);
+        const cachedId = String(cached?._id ?? (cached as any)?.id ?? '').trim();
+        const res: any = cachedId
+          ? await eventsApi.getById(cachedId, locale)
+          : await eventsApi.getBySlug(slug, locale);
+        const data = res?.data ?? res;
+        if (data && (data._id || data.id)) {
+          setEvent(data);
+          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(data)); } catch {}
         const res = await eventsApi.getAll({});
         const list: ApiEventDetail[] = Array.isArray(res)
           ? res

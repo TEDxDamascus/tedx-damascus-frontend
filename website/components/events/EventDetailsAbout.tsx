@@ -24,7 +24,7 @@ export function EventDetailsAbout({ locale, event }: EventDetailsAboutProps) {
   // Description from API (split on double newline into paragraphs)
   let paragraphs: string[];
   if (event) {
-    const raw = localizeField(event.description, locale);
+    const raw = localizeField(event.description, locale ?? 'en');
     paragraphs = raw.split(/\n\n+/).filter(Boolean);
     if (!paragraphs.length) paragraphs = [raw];
   } else {

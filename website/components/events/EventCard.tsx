@@ -16,8 +16,8 @@ export type EventCardProps = {
     bio?: string;
 };
 
-export function EventCard({ title, dateLabel, timeLabel, badge, isRtl, href }: EventCardProps) {
-    const inner = (
+export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href }: EventCardProps) {
+    const card = (
         <article
             className="flex w-full flex-col overflow-hidden rounded-2xl  "
             dir={isRtl ? 'rtl' : 'ltr'}
@@ -99,11 +99,11 @@ export function EventCard({ title, dateLabel, timeLabel, badge, isRtl, href }: E
 
     if (href) {
         return (
-            <Link href={href} className="block cursor-pointer">
-                {inner}
+            <Link href={href} className="block transition-opacity hover:opacity-90">
+                {card}
             </Link>
         );
     }
+    return card;
 
-    return inner;
 }
