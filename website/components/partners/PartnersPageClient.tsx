@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 
 import { partnersApi, PartnerData, PartnerViewData } from "@/lib/api/partners";
+import { getLang } from "@/mappers/partner.mapper";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import PartnersHero from "@/components/partners/PartnersHero";
@@ -53,8 +54,15 @@ const formatPartner = (
     long_description,
     social_links: partner.social_links || [],
     image: partner.image,
-    contact_info: partner.contact_info,
-    services: partner.services,
+    contact_info: {
+      address: getLang(partner.contact_info?.address, locale),
+      phone: partner.contact_info?.phone || "",
+      email: partner.contact_info?.email || "",
+    },
+    services: (partner.services || []).map((s) => ({
+      title: s.title,
+      description: getLang(s.description, locale),
+    })),
   };
 };
 

@@ -257,13 +257,15 @@ interface EventDetailsClientProps {
 
 function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
   const [event, setEvent] = useState<ApiEventDetail>(
-    () => getCachedEvent(slug) ?? STATIC_EVENTS[slug] ?? DEFAULT_EVENT
+    () => STATIC_EVENTS[slug] ?? DEFAULT_EVENT
   );
 
   useEffect(() => {
+    const cached = getCachedEvent(slug);
+    if (cached) setEvent(cached);
+
     const load = async () => {
       try {
-        const cached = getCachedEvent(slug);
         const cachedId = String(cached?._id ?? (cached as any)?.id ?? '').trim();
         const res: any = cachedId
           ? await eventsApi.getById(cachedId, locale)
@@ -272,10 +274,13 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
         if (data && (data._id || data.id)) {
           setEvent(data);
           try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(data)); } catch {}
-        const res = await eventsApi.getAll({});
-        const list: ApiEventDetail[] = Array.isArray(res)
-          ? res
-          : ((res as { data?: ApiEventDetail[] })?.data ?? []);
+          return;
+        }
+
+        const allRes = await eventsApi.getAll({});
+        const list: ApiEventDetail[] = Array.isArray(allRes)
+          ? allRes
+          : ((allRes as { data?: ApiEventDetail[] })?.data ?? []);
 
         const match = list.find((e) => eventToSlug(e) === slug || String(e._id) === slug);
         if (match) {
@@ -285,7 +290,7 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
       } catch { /* keep cached/static fallback */ }
     };
     load();
-  }, [slug]);
+  }, [locale, slug]);
 
   const speakers = event.speakers ?? [];
   const gallery = event.gallery ?? [];

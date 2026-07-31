@@ -30,7 +30,7 @@ export default function PartnerInfo({ locale, partner }: PartnerInfoProps) {
 
         <div className="flex flex-col items-center xl:items-start text-center xl:text-left order-2 xl:order-1">
           <span className="bg-[#EB0028] text-white px-4 py-1 text-xs uppercase tracking-wider">
-            {partner.partnership_type}
+            {partner.partner_ship_type}
           </span>
 
           <h1 className="mt-6 text-white text-[36px] sm:text-[48px] xl:text-[60px] font-light whitespace-pre-line leading-tight">

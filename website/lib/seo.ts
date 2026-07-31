@@ -1,8 +1,7 @@
 import { BlogJsonLd } from './api/blogs.types';
 
-export function getJsonLdString(jsonLd: BlogJsonLd, locale: string): string {
-  const data = locale === 'ar' ? jsonLd.ar : jsonLd.en;
-  return JSON.stringify(data);
+export function getJsonLdString(jsonLd: BlogJsonLd): string {
+  return JSON.stringify(jsonLd);
 }
 
 export function getBlogListJsonLdString(blogs: any[], locale: string): string {

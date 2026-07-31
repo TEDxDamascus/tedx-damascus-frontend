@@ -45,7 +45,7 @@ export default function DiamondPartner({
             <PartnerCard
               key={partner._id}
               locale={locale}
-              bgIconUrl="/images/partners/diamond.png"
+              bgIconUrl={isRtl ? "شريك ماسي" : "Diamond Partner"}
               showBadge={true}
               tierBadge={isRtl ? "الفئة الماسية" : "DIAMOND TIER"}
               name={partnerName}
@@ -83,7 +83,7 @@ export default function DiamondPartner({
               descriptionSize="text-xs sm:text-lg md:text-[22px]"
               titleColor="text-white"
               descriptionColor="text-[#E9BCB8]/60"
-              iconSize="hidden sm:block w-16 h-16 md:w-24 md:h-24"
+              bgIconTextSize="hidden sm:block text-base md:text-lg"
               iconOpacity="opacity-15"
               bgIconPosition={`top-4 ${isRtl ? "left-4" : "right-4"}`}
             />
