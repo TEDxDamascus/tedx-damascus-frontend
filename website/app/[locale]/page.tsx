@@ -1,8 +1,7 @@
-import { redirect } from 'next/navigation';
-import { routing } from '@/routing';
+import { redirect } from "next/navigation";
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+export async function generateStaticParams() {
+  return [{ locale: "en" }, { locale: "ar" }];
 }
 
 interface Props {

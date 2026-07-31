@@ -71,8 +71,8 @@ export function AnswersPageClient({ locale }: AnswersPageClientProps) {
 
   useEffect(() => {
     Promise.all([
-      wallApi.getCurrent().catch(() => null),
-      wallApi.getAll().catch(() => null),
+      wallApi.getCurrent().catch(() => null) as Promise<any>,
+      wallApi.getAll().catch(() => null) as Promise<any>,
     ]).then(([currentRaw, allRaw]) => {
       // Response: { success, data: { question: {id,text,...}, answers: [...] } }
       const questionData = currentRaw?.data?.question ?? null;
