@@ -98,6 +98,29 @@
     "title": "About",
     "description": "In the spirit of discovering and spreading ideas, TED has created a program called TEDx. TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. Our event is called TEDxDamascus where x = independently organized TED event. At our TEDxDamascus event, TED Talks video and live speakers will combine to spark deep discussion and connection in a small group. The TED Conference provides general guidance for the TEDx program, but individual TEDx events, including ours, are self-organized."
   },
+  "AboutPage": {
+    "tedxDamascus": {
+      "title": "About TEDx Damascus",
+      "description": "TEDx Damascus is an intellectual and cultural platform, organized locally and independently under an official license from TED. From one of the oldest and most inspiring capitals on Earth, we open a new window to highlight exceptional ideas, pioneering initiatives, and Syrian minds creating solutions for the future. Under our 2026 theme, \"Damascus.. Where the Story is Retold\", we do not merely stand on the ruins of the past; rather, we write a contemporary chapter pulsing with life and hope. Through this event, we strive to create a safe and stimulating space that brings together changemakers to exchange visions that enhance social cohesion, support innovation, and transform challenges into real opportunities. We believe that Damascus holds voices capable of profound impact and ideas that deserve to cross borders to inspire the whole world.",
+      "imageAlt": "TEDx Damascus event"
+    },
+    "ted": {
+      "title": "About TED",
+      "description": "TED is a nonprofit, nonpartisan organization devoted to spreading ideas, usually in the form of short, powerful talks. TED began in 1984 as a conference where Technology, Entertainment and Design converged, and today covers almost all topics — from science to business to global issues — in more than 110 languages. Meanwhile, independently run TEDx events help share ideas in communities around the world.TED's open and free initiatives for spreading ideas include TED.com, where new TED Talk videos are posted daily; TEDx, which licenses thousands of individuals and groups to host local, self-organized TED-style events around the world; the TED Fellows program, which selects innovators from around the globe to amplify the impact of their remarkable projects and activities; The Audacious Project, which surfaces and funds critical ideas that have the potential to impact millions of lives; TED Translators, which crowdsources the subtitling of TED Talks so that big ideas can spread across languages and borders; and the educational initiative TED-Ed.",
+      "imageAlt": "TED conference"
+    },
+    "tedx": {
+      "title": "About TEDx , x = independently organized event",
+      "description": "In the spirit of ideas worth spreading, TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. At a TEDx event, TED Talks video and live speakers combine to spark deep discussion and connection.These local, self-organized events are branded TEDx, where x = independently organized TED event. The TED Conference provides general guidance for the TEDx program, but individual TEDx events are self-organized. (Subject to certain rules and regulations.)",
+      "imageAlt": "TEDx community event"
+    }
+  },
+  "StatsSection": {
+    "volunteers": "Volunteers",
+    "speakers": "Speakers",
+    "events": "Events",
+    "followers": "Followers"
+  },
   "Common": {
     "loading": "Loading...",
     "error": "An error occurred",
