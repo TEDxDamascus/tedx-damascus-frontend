@@ -11,6 +11,9 @@ interface RelatedArticlesProps {
     name?: string;
     bio?: string;
     avatar?: string;
+    image?: string;
+    role?: string;
+    description?: string;
   } | null;
 }
 

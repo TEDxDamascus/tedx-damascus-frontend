@@ -22,10 +22,15 @@
   },
   "Speakers": {
     "title": "Our Speakers",
+    "titleWord1": "Our",
+    "titleWord2": "Speakers",
     "featured": "Featured Speakers",
     "all": "All Speakers",
     "viewProfile": "View Profile",
-    "watchTalk": "Watch Talk"
+    "watchTalk": "Watch Talk",
+    "searchPlaceholder": "Search for a speaker ...",
+    "loadMore": "Load More",
+    "noResults": "No speakers match your search."
   },
   "Events": {
     "title": "Events",

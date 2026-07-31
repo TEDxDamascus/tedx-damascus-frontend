@@ -43,7 +43,7 @@ export const useBlogBySlug = (slug: string, locale: string = 'en') => {
         setIsLoading(true);
         setError(null);
         const response = await blogsService.getBlogBySlug(slug, locale);
-        setData(response);
+        setData(response.data);
       } catch (err) {
         setError(err as Error);
       } finally {

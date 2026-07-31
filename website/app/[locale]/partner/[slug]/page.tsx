@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import PartnerDetails from "@/components/partner/PartnerDetails";
 import { mapPartnerToDetailsView } from "@/mappers/partner.mapper";
 
@@ -27,15 +28,13 @@ export async function generateStaticParams() {
   }
 
   return partners.flatMap((p: any) => [
-    { locale: "en", slug: p.slug?.en },
-    { locale: "ar", slug: p.slug?.ar },
-  ]);
+    { locale: "en", slug: p.slug?.en?.trim() },
+    { locale: "ar", slug: p.slug?.ar?.trim() },
+  ]).filter((entry) => Boolean(entry.slug));
 }
 
 async function getPartner(slug: string) {
-  const res = await fetch(`${BASE_URL}/partners`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`${BASE_URL}/partners`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch partners");
@@ -49,12 +48,12 @@ async function getPartner(slug: string) {
     throw new Error("API did not return array");
   }
 
-  const normalizedSlug = slug?.toLowerCase();
+  const normalizedSlug = slug?.trim().toLowerCase();
 
   const partner = partners.find((p: any) => {
     return (
-      p.slug?.en?.toLowerCase() === normalizedSlug ||
-      p.slug?.ar === slug
+      p.slug?.en?.trim().toLowerCase() === normalizedSlug ||
+      p.slug?.ar?.trim() === slug?.trim()
     );
   });
 
@@ -69,7 +68,7 @@ export default async function PartnerDetailsPage({
   const partner = await getPartner(slug);
 
   if (!partner) {
-    throw new Error("Partner not found");
+    notFound();
   }
 
   const mappedPartner = mapPartnerToDetailsView(partner, locale);

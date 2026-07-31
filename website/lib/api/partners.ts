@@ -48,20 +48,14 @@ export interface PartnerViewData {
   social_links: string[];
   image: string;
   contact_info: {
-    address: {
-      en: string;
-      ar: string;
-    };
+    address: string;
     phone: string;
     email: string;
   };
 
   services: {
     title: string;
-    description: {
-      en: string;
-      ar: string;
-    };
+    description: string;
   }[];
 }
 

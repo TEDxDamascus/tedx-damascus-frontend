@@ -221,6 +221,22 @@ const STATIC_EVENTS: Record<string, ApiEventDetail> = {
 
 const DEFAULT_EVENT = STATIC_EVENTS['from-war-to-big-dreams'];
 
+function toSlugLocal(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+}
+
+function extractEnTitle(value: Localizable | undefined): string {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value.en ?? value.ar ?? '';
+}
+
+function eventToSlug(e: ApiEventDetail): string {
+  if (e.slug) return e.slug;
+  const enTitle = extractEnTitle(e.title);
+  return enTitle ? toSlugLocal(enTitle) : String(e._id);
+}
+
 function getCachedEvent(slug: string): ApiEventDetail | null {
   try {
     const raw = localStorage.getItem(`tedx_event_${slug}`);
@@ -241,13 +257,15 @@ interface EventDetailsClientProps {
 
 function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
   const [event, setEvent] = useState<ApiEventDetail>(
-    () => getCachedEvent(slug) ?? STATIC_EVENTS[slug] ?? DEFAULT_EVENT
+    () => STATIC_EVENTS[slug] ?? DEFAULT_EVENT
   );
 
   useEffect(() => {
+    const cached = getCachedEvent(slug);
+    if (cached) setEvent(cached);
+
     const load = async () => {
       try {
-        const cached = getCachedEvent(slug);
         const cachedId = String(cached?._id ?? (cached as any)?.id ?? '').trim();
         const res: any = cachedId
           ? await eventsApi.getById(cachedId, locale)
@@ -256,11 +274,23 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
         if (data && (data._id || data.id)) {
           setEvent(data);
           try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(data)); } catch {}
+          return;
+        }
+
+        const allRes = await eventsApi.getAll({});
+        const list: ApiEventDetail[] = Array.isArray(allRes)
+          ? allRes
+          : ((allRes as { data?: ApiEventDetail[] })?.data ?? []);
+
+        const match = list.find((e) => eventToSlug(e) === slug || String(e._id) === slug);
+        if (match) {
+          setEvent(match);
+          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(match)); } catch {}
         }
       } catch { /* keep cached/static fallback */ }
     };
     load();
-  }, [slug, locale]);
+  }, [locale, slug]);
 
   const speakers = event.speakers ?? [];
   const gallery = event.gallery ?? [];

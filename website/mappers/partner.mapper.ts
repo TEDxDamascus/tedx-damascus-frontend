@@ -25,7 +25,7 @@ export function mapPartnerToDetailsView(
     name: getLang(partner.name, locale),
     slug: getLang(partner.slug, locale),
 
-    partnership_type: partner.partnership_type,
+    partner_ship_type: partner.partner_ship_type,
 
     short_description: getLang(partner.short_description, locale),
     long_description: getLang(partner.long_description, locale),
