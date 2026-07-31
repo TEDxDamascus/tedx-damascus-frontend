@@ -19,7 +19,6 @@ export default async function AboutPage({ params }: Props) {
   setRequestLocale(locale);
   return (
     <main className="relative">
-      <OurStory locale={locale} />
       <AboutHero locale={locale} />
       <AboutContent locale={locale} />
       <StatsSection locale={locale} />
