@@ -14,6 +14,14 @@ function toSlug(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 }
 
+type LocaleString = string | { en?: string; ar?: string } | undefined;
+
+function loc(field: LocaleString, lang: 'en' | 'ar'): string {
+  if (!field) return '';
+  if (typeof field === 'string') return field;
+  return field[lang] ?? field.en ?? '';
+}
+
 function formatEventDate(dateStr: string | undefined, locale: string): string {
   if (!dateStr) return '';
   try {
@@ -163,16 +171,20 @@ export function LatestEvents({ locale }: LatestEventsProps) {
       .then((res: any) => {
         const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
         if (raw.length === 0) return;
-        const normalized: EventItem[] = raw.map((e) => ({
-          id: e.id,
-          slug: (e.slug ?? toSlug(e.title ?? e.name ?? '')) || String(e.id),
-          title: e.title ?? e.name ?? '',
-          titleAr: e.titleAr ?? e.nameAr ?? e.title ?? e.name ?? '',
-          date: formatEventDate(e.date ?? e.startDate, locale),
-          bio: (e.brief || '') || 'Damascus: where the story is told anew',
-          bioAr: (e.briefAr || e.brief || '') || 'دمشق: حيث تُروى الحكاية من جديد',
-          isPast: e.isPast ?? false,
-        }));
+        const normalized: EventItem[] = raw.map((e) => {
+          const rawId = e._id ?? e.id ?? '';
+          const enTitle = loc(e.title ?? e.name, 'en');
+          return {
+            id: rawId,
+            slug: e.slug || toSlug(enTitle) || String(rawId),
+            title: enTitle,
+            titleAr: loc(e.title ?? e.name, 'ar') || enTitle,
+            date: formatEventDate(e.date ?? e.startDate, locale),
+            bio: loc(e.brief ?? e.description, 'en') || 'Damascus: where the story is told anew',
+            bioAr: loc(e.brief ?? e.description, 'ar') || 'دمشق: حيث تُروى الحكاية من جديد',
+            isPast: e.isPast ?? false,
+          };
+        });
         raw.forEach((e, i) => {
           try { localStorage.setItem(`tedx_event_${normalized[i].slug}`, JSON.stringify(e)); } catch {}
         });

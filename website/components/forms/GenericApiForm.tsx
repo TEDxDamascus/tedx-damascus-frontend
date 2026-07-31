@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { getFormSchema } from '@/lib/api/forms-schema';
-import type { ApiFormData } from '@/types/form-schema';
+import { getFormBySlug } from '@/lib/api/forms-schema';
+import { translateApiError } from '@/lib/forms-error-i18n';
+import type { ApiFormData, ApiQuestion } from '@/types/form-schema';
 import {
   QuestionField,
   DateRangeValue,
@@ -13,6 +13,149 @@ import {
 } from './_form-engine';
 import { ROLE_MAP } from './form-role-map';
 import { FormErrorPopup } from './FormErrorPopup';
+import { FormHero } from './FormHero';
+import { StepIndicator } from './StepIndicator';
+
+// Strip inline black/near-black text colors that rich-text editors sometimes
+// bake in — invisible against this form's dark background otherwise.
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/color\s*:\s*rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)\s*;?/gi, '')
+    .replace(/color\s*:\s*#000(?:000)?\s*;?/gi, '')
+    .replace(/color\s*:\s*black\s*;?/gi, '');
+}
+
+// A form description from the API may be plain text or rich HTML — detect
+// markup so plain text isn't dumped through dangerouslySetInnerHTML unnecessarily.
+function looksLikeHtml(value: string): boolean {
+  return /<[a-z][\s\S]*>/i.test(value);
+}
+
+// ─── Step 1: Description ──────────────────────────────────────────────────────
+
+function DescriptionStep({
+  description,
+  isAr,
+  onNext,
+}: {
+  description?: string;
+  isAr: boolean;
+  onNext: () => void;
+}) {
+  const fallback = isAr
+    ? 'يرجى قراءة التفاصيل ثم المتابعة للإجابة عن الأسئلة.'
+    : 'Please review the details below, then continue to answer the questions.';
+
+  return (
+    <div className="space-y-8">
+      <h2 className="text-2xl font-helvetica text-white font-light">
+        {isAr ? 'نبذة عن النموذج' : 'About this form'}
+      </h2>
+
+      {description && looksLikeHtml(description) ? (
+        <div
+          className="
+            font-helvetica text-base text-[#bebebe] leading-relaxed
+            [&_p]:mb-3 [&_p]:text-[#bebebe] [&_p]:leading-relaxed
+            [&_a]:text-[#eb0028] [&_a]:underline
+            [&_strong]:text-white [&_strong]:font-bold
+            [&_ul]:mt-2 [&_ul]:mb-3 [&_ul]:ps-5 [&_ul]:space-y-1 [&_ul]:list-disc
+            [&_ol]:mt-2 [&_ol]:mb-3 [&_ol]:ps-5 [&_ol]:space-y-1 [&_ol]:list-decimal
+            [&_li]:text-[#bebebe] [&_li]:leading-relaxed
+          "
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+        />
+      ) : (
+        <p className="font-helvetica text-base text-[#bebebe] leading-relaxed">
+          {description || fallback}
+        </p>
+      )}
+
+      <div className="flex justify-end pt-4">
+        <button
+          type="button"
+          onClick={onNext}
+          className="border border-[#eb0028] text-[#eb0028] font-helvetica text-sm uppercase tracking-wider px-8 py-3 hover:bg-[#eb0028]/10 transition-colors"
+        >
+          {isAr ? 'التالي' : 'Next'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 2: Questions ────────────────────────────────────────────────────────
+
+function QuestionsStep({
+  questions,
+  answers,
+  fieldErrors,
+  locale,
+  isAr,
+  submitting,
+  submitError,
+  showErrorPopup,
+  onChange,
+  onBack,
+  onSubmit,
+}: {
+  questions: ApiQuestion[];
+  answers: Record<string, unknown>;
+  fieldErrors: Record<string, string>;
+  locale: string;
+  isAr: boolean;
+  submitting: boolean;
+  submitError: string | null;
+  showErrorPopup: boolean;
+  onChange: (questionId: string, val: unknown) => void;
+  onBack: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="space-y-8">
+      <h2 className="text-2xl font-helvetica text-white font-light">
+        {isAr ? 'الأسئلة' : 'Questions'}
+      </h2>
+
+      <div className="flex flex-col gap-10">
+        {questions.map((q) => (
+          <QuestionField
+            key={q.id}
+            question={q}
+            value={answers[q.id]}
+            onChange={(v) => onChange(q.id, v)}
+            error={fieldErrors[q.id]}
+            locale={locale}
+          />
+        ))}
+      </div>
+
+      {submitError && !showErrorPopup && (
+        <p className="text-sm text-[#eb0028] font-helvetica">{submitError}</p>
+      )}
+
+      <div className="flex justify-between pt-4">
+        <button
+          type="button"
+          onClick={onBack}
+          className="border border-[#eb0028] text-[#eb0028] font-helvetica text-sm uppercase tracking-wider px-8 py-3 hover:bg-[#eb0028]/10 transition-colors"
+        >
+          {isAr ? 'السابق' : 'Previous'}
+        </button>
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={onSubmit}
+          className="border border-[#eb0028] text-[#eb0028] font-helvetica text-sm uppercase tracking-wider px-8 py-3 hover:bg-[#eb0028]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {submitting ? (isAr ? 'جارٍ الإرسال…' : 'Submitting…') : (isAr ? 'إرسال' : 'Submit')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export function GenericApiForm({
   formId,
@@ -21,9 +164,12 @@ export function GenericApiForm({
   formId: string;
   locale: string;
 }) {
+  const isAr = locale === 'ar';
+
   const [schema, setSchema] = useState<ApiFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -32,12 +178,19 @@ export function GenericApiForm({
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const goToStep = (n: number) => {
+    setStep(n);
+    setTimeout(() => {
+      cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
   useEffect(() => {
-    getFormSchema(formId).then((result) => {
+    getFormBySlug(formId).then((result) => {
       if (result.ok) {
         setSchema(result.schema);
       } else {
-        const isAr = locale === 'ar';
         const msg = result.reason === 'not_found'
           ? (isAr ? 'النموذج غير موجود.' : 'Form not found.')
           : (isAr ? 'فشل تحميل النموذج. يرجى المحاولة مرة أخرى.' : 'Failed to load form. Please try again.');
@@ -49,7 +202,7 @@ export function GenericApiForm({
       }
       setLoading(false);
     });
-  }, [formId, locale]);
+  }, [formId, isAr]);
 
   // If the API returns a known targetRole, delegate to the role-specific form
   const RoleForm = schema?.targetRole ? ROLE_MAP[schema.targetRole] : undefined;
@@ -95,12 +248,13 @@ export function GenericApiForm({
     if (result.success) {
       setSubmitted(true);
     } else if (result.isNetworkError) {
-      const msg = locale === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.';
+      const msg = isAr ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.';
       setSubmitError(msg);
       setPopupMessage(msg);
       setShowErrorPopup(true);
     } else {
-      setSubmitError(result.message ?? (locale === 'ar' ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.'));
+      const fallback = isAr ? 'فشل الإرسال. يرجى المحاولة مرة أخرى.' : 'Submission failed. Please try again.';
+      setSubmitError(result.message ? (isAr ? translateApiError(result.message) : result.message) : fallback);
     }
   };
 
@@ -128,7 +282,7 @@ export function GenericApiForm({
         <Navbar locale={locale} />
         <div className="flex items-center justify-center min-h-screen">
           {!showErrorPopup && (
-            <p className="text-[#bebebe] font-helvetica">{fetchError ?? (locale === 'ar' ? 'النموذج غير موجود.' : 'Form not found.')}</p>
+            <p className="text-[#bebebe] font-helvetica">{fetchError ?? (isAr ? 'النموذج غير موجود.' : 'Form not found.')}</p>
           )}
         </div>
         <Footer locale={locale} />
@@ -160,9 +314,13 @@ export function GenericApiForm({
                 <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
             </div>
-            <h2 className="text-3xl font-helvetica text-white font-light">Application Submitted</h2>
+            <h2 className="text-3xl font-helvetica text-white font-light">
+              {isAr ? 'تم إرسال الطلب' : 'Application Submitted'}
+            </h2>
             <p className="text-[#bebebe] font-helvetica leading-relaxed max-w-md">
-              Thank you for submitting your application. We will review it and get back to you soon.
+              {isAr
+                ? 'شكراً لتقديم طلبك. سنقوم بمراجعته والتواصل معك قريباً.'
+                : 'Thank you for submitting your application. We will review it and get back to you soon.'}
             </p>
           </div>
         </div>
@@ -177,64 +335,48 @@ export function GenericApiForm({
     (a, b) => a.orderIndex - b.orderIndex,
   );
 
+  const STEPS = [isAr ? 'الوصف' : 'Description', isAr ? 'الأسئلة' : 'Questions'];
+
+  const title = (
+    <span className="font-helvetica font-light text-[#f1f1f1] text-2xl sm:text-4xl md:text-[52px] lg:text-[60px] leading-tight text-center block">
+      {formName}
+    </span>
+  );
+
   return (
     <div className="relative bg-[#101010] min-h-screen">
-      <Navbar locale={locale} />
+      <FormHero locale={locale} backgroundImage="/images/forms/hero-generic.png" formType="generic" title={title} />
 
-      <div className="pt-20 px-4 sm:px-6 lg:px-10 pb-20">
-        <div className="max-w-[800px] mx-auto flex flex-col gap-6">
+      <div className="flex justify-center px-4 sm:px-6 lg:px-10 pb-20">
+        <div
+          ref={cardRef}
+          className="w-full max-w-[1100px] bg-[#101010] shadow-[0_8px_40px_rgba(0,0,0,0.7)] px-8 sm:px-14 lg:px-20 pt-10 pb-16 mt-[-7rem] relative z-10"
+        >
+          <StepIndicator steps={STEPS} current={step} />
 
-          {/* Description card */}
-          <div className="bg-black px-8 py-10 sm:px-12 sm:py-12">
-            <Image
-              src="/images/icons/tedx-logo.png"
-              alt="TEDx"
-              width={90}
-              height={52}
-              className="object-contain mb-7"
-              style={{ mixBlendMode: 'screen' }}
+          {step === 0 && (
+            <DescriptionStep
+              description={formDescription}
+              isAr={isAr}
+              onNext={() => goToStep(1)}
             />
-            <h1 className="font-helvetica text-3xl sm:text-[40px] text-white font-light leading-tight">
-              {formName}
-            </h1>
-            {formDescription && (
-              <p className="font-helvetica text-base text-[#bebebe] leading-relaxed mt-4">
-                {formDescription}
-              </p>
-            )}
-          </div>
+          )}
 
-          {/* Questions card */}
-          <div className="bg-[#101010] shadow-[0_8px_40px_rgba(0,0,0,0.7)] px-8 py-10 sm:px-12 sm:py-12">
-            <div className="flex flex-col gap-10">
-              {sortedQuestions.map((q) => (
-                <QuestionField
-                  key={q.id}
-                  question={q}
-                  value={answers[q.id]}
-                  onChange={(v) => updateAnswer(q.id, v)}
-                  error={fieldErrors[q.id]}
-                  locale={locale}
-                />
-              ))}
-            </div>
-
-            {submitError && !showErrorPopup && (
-              <p className="mt-8 text-sm text-[#eb0028] font-helvetica">{submitError}</p>
-            )}
-
-            <div className="flex justify-end pt-10">
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={handleSubmit}
-                className="border border-[#eb0028] text-[#eb0028] font-helvetica text-sm uppercase tracking-wider px-10 py-3 hover:bg-[#eb0028]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? 'Submitting…' : 'Submit'}
-              </button>
-            </div>
-          </div>
-
+          {step === 1 && (
+            <QuestionsStep
+              questions={sortedQuestions}
+              answers={answers}
+              fieldErrors={fieldErrors}
+              locale={locale}
+              isAr={isAr}
+              submitting={submitting}
+              submitError={submitError}
+              showErrorPopup={showErrorPopup}
+              onChange={updateAnswer}
+              onBack={() => goToStep(0)}
+              onSubmit={handleSubmit}
+            />
+          )}
         </div>
       </div>
 

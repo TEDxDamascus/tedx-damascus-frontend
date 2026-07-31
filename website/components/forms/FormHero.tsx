@@ -5,7 +5,7 @@ interface FormHeroProps {
   locale: string;
   backgroundImage: string;
   /** Form type drives gradient tint */
-  formType: 'attendee' | 'speaker' | 'volunteer';
+  formType: 'attendee' | 'speaker' | 'volunteer' | 'generic';
   title: React.ReactNode;
 }
 
@@ -13,6 +13,7 @@ const TINTS: Record<FormHeroProps['formType'], string> = {
   attendee:  'from-[#101010] via-[#101010]/70 to-[#101010]/25',
   speaker:   'from-[#101010] via-[#1a0a0a]/70 to-[#1a0a0a]/25',
   volunteer: 'from-[#101010] via-[#0a0a14]/60 to-transparent',
+  generic:   'from-[#101010] via-[#101010]/70 to-[#101010]/25',
 };
 
 export function FormHero({ locale, backgroundImage, formType, title }: FormHeroProps) {

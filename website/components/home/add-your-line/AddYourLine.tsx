@@ -349,7 +349,7 @@ export function AddYourLine({ locale }: AddYourLineProps) {
 
       {/* View All Answers CTA */}
       <Link
-        href={currentWallId ? `/${locale}/wall/questions/${currentWallId}` : `/${locale}/wall/questions`}
+        href={currentWallId ? `/${locale}/wall/questions/detail?id=${currentWallId}` : `/${locale}/wall/questions`}
         className="relative z-10 flex items-center gap-2 mt-8 font-helvetica text-[15px] font-bold text-primary hover:opacity-80 transition-opacity"
       >
         <span>{t('viewAll')}</span>

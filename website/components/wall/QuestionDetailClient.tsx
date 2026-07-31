@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { getISOWeek } from 'date-fns';
 import { Navbar, Footer } from '@/components/layout';
 import { wallApi } from '@/lib/api/client';
@@ -45,11 +46,11 @@ function getCachedQuestion(id: string): any | null {
 
 interface QuestionDetailClientProps {
   locale: string;
-  questionId: string;
 }
 
-export function QuestionDetailClient({ locale, questionId }: QuestionDetailClientProps) {
+export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
   const isRtl = locale === 'ar';
+  const questionId = useSearchParams().get('id') ?? '';
 
   const [question, setQuestion] = useState<any>(null);
 
@@ -348,7 +349,7 @@ export function QuestionDetailClient({ locale, questionId }: QuestionDetailClien
                 return (
                   <Link
                     key={q.id}
-                    href={`/${locale}/wall/questions/${q.id}`}
+                    href={`/${locale}/wall/questions/detail?id=${q.id}`}
                     dir={isRtl ? 'rtl' : 'ltr'}
                     className="flex flex-col gap-2 items-start w-full hover:opacity-80 transition-opacity"
                   >

@@ -159,7 +159,7 @@ function QuestionsListInner({ locale }: { locale: string }) {
 
   function handleHistoryClick(id: string) {
     setSelId(id);
-    router.push(`/${locale}/wall/questions/${id}`);
+    router.push(`/${locale}/wall/questions/detail?id=${id}`);
   }
 
   return (
@@ -291,7 +291,7 @@ function QuestionsListInner({ locale }: { locale: string }) {
               {currentId && (
                 <div className="mt-8 flex justify-center">
                   <Link
-                    href={`/${locale}/wall/questions/${currentId}`}
+                    href={`/${locale}/wall/questions/detail?id=${currentId}`}
                     className={[
                       'inline-flex items-center gap-2 text-primary text-sm font-semibold uppercase tracking-[0.08em]',
                       'hover:opacity-80 transition-opacity',
