@@ -1,0 +1,106 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e5]:
+        - generic [ref=f2e6]:
+          - link "TEDxDamascus Damascus x = independently organized TED event" [ref=f2e8] [cursor=pointer]:
+            - /url: /ar/home/
+            - img "TEDxDamascus" [ref=f2e9]
+            - generic [ref=f2e10]: Damascus
+            - generic [ref=f2e11]: x
+            - generic [ref=f2e12]: = independently organized TED event
+          - navigation "Main navigation" [ref=f2e14]:
+            - link "الرئيسية" [ref=f2e15] [cursor=pointer]:
+              - /url: /ar/home/
+            - link "الفعاليات" [ref=f2e17] [cursor=pointer]:
+              - /url: /ar/events/
+            - link "المتحدثون" [ref=f2e19] [cursor=pointer]:
+              - /url: /ar/speakers/
+            - link "الفريق" [ref=f2e21] [cursor=pointer]:
+              - /url: /ar/team/
+            - link "الشركاء" [ref=f2e24] [cursor=pointer]:
+              - /url: /ar/partners/
+            - link "المدونة" [ref=f2e26] [cursor=pointer]:
+              - /url: /ar/blog/
+            - link "من نحن" [ref=f2e28] [cursor=pointer]:
+              - /url: /ar/about/
+            - link "Switch to English" [ref=f2e30] [cursor=pointer]:
+              - /url: /en/team/maya-kassem/
+              - generic [ref=f2e31]: EN
+        - generic [ref=f2e33]:
+          - img "مايا قاسم" [ref=f2e36]
+          - generic [ref=f2e37]:
+            - generic [ref=f2e38]: اختيار المتحدثين
+            - heading "مايا قاسم" [level=1] [ref=f2e41]
+            - paragraph [ref=f2e42]: أخصائية اختيار المتحدثين
+            - generic [ref=f2e43]:
+              - link "لينكدإن" [ref=f2e44] [cursor=pointer]:
+                - /url: "#"
+              - link "الملف الصحفي" [ref=f2e49] [cursor=pointer]:
+                - /url: "#"
+      - generic [ref=f2e57]:
+        - generic [ref=f2e58]:
+          - generic: ”
+          - heading "المسيرة" [level=2] [ref=f2e59]
+          - generic [ref=f2e60]:
+            - paragraph [ref=f2e61]: تقضي مايا قاسم معظم العام في الاستماع، للباحثين والفنانين والمنظمين في مختلف أنحاء سوريا، بحثاً عن الفكرة التي لم تصعد بعد إلى أي مسرح.
+            - paragraph [ref=f2e62]: وهي محاضرة جامعية سابقة، تدرّب كل متحدث بنفسها خطوة بخطوة، من المسودة الأولى وحتى البروفة الأخيرة.
+        - generic [ref=f2e63]:
+          - heading "المبادرات الحالية" [level=2] [ref=f2e65]
+          - generic [ref=f2e67]:
+            - generic [ref=f2e68]:
+              - heading "البحث عن متحدثين إقليميين" [level=3] [ref=f2e69]
+              - paragraph [ref=f2e70]: توسيع البحث عن المتحدثين ليشمل مدناً سورية أخرى إلى جانب دمشق.
+            - generic [ref=f2e71]:
+              - heading "إطار تدريب المتحدثين" [level=3] [ref=f2e72]
+              - paragraph [ref=f2e73]: عملية بروفة منظمة تساعد المتحدثين الجدد على إيجاد قصتهم.
+    - generic "Site footer" [ref=f2e74]:
+      - generic [ref=f2e76]:
+        - generic [ref=f2e77]:
+          - paragraph [ref=f2e78]: "دمشق: حيث تُروى الحكاية من جديد. اشترك ودع الفصل القادم يجد طريقه إليك."
+          - generic [ref=f2e79]:
+            - generic [ref=f2e80]: عنوان بريدك الإلكتروني
+            - textbox "عنوان بريدك الإلكتروني" [ref=f2e81]
+            - button "اشترك" [ref=f2e82] [cursor=pointer]
+        - generic [ref=f2e84]:
+          - generic [ref=f2e85]:
+            - generic [ref=f2e86]:
+              - generic [ref=f2e87]:
+                - img "TEDx" [ref=f2e88]
+                - img "Damascus" [ref=f2e89]
+              - paragraph [ref=f2e90]: هذا الحدث المستقل TEDx يعمل بموجب ترخيص من TED
+            - generic [ref=f2e91]:
+              - link "Facebook" [ref=f2e92] [cursor=pointer]:
+                - /url: https://www.facebook.com/TEDxDamascus
+              - link "Instagram" [ref=f2e94] [cursor=pointer]:
+                - /url: https://www.instagram.com/TEDxDamascus
+              - link "LinkedIn" [ref=f2e96] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/TEDxDamascus
+          - generic [ref=f2e98]:
+            - navigation "روابط عن" [ref=f2e99]:
+              - list [ref=f2e100]:
+                - listitem [ref=f2e101]:
+                  - link "من نحن" [ref=f2e102] [cursor=pointer]:
+                    - /url: /ar/about/
+                - listitem [ref=f2e103]:
+                  - link "الفريق" [ref=f2e104] [cursor=pointer]:
+                    - /url: /ar/team/
+                - listitem [ref=f2e105]:
+                  - link "الشركاء" [ref=f2e106] [cursor=pointer]:
+                    - /url: /ar/partners/
+            - navigation "روابط استكشاف" [ref=f2e107]:
+              - list [ref=f2e108]:
+                - listitem [ref=f2e109]:
+                  - link "الرئيسية" [ref=f2e110] [cursor=pointer]:
+                    - /url: /ar/home/
+                - listitem [ref=f2e111]:
+                  - link "الفعاليات" [ref=f2e112] [cursor=pointer]:
+                    - /url: /ar/events/
+                - listitem [ref=f2e113]:
+                  - link "المتحدثون" [ref=f2e114] [cursor=pointer]:
+                    - /url: /ar/speakers/
+                - listitem [ref=f2e115]:
+                  - link "المدونة" [ref=f2e116] [cursor=pointer]:
+                    - /url: /ar/blog/
+  - button "Open Next.js Dev Tools" [ref=f2e124] [cursor=pointer]
+  - alert [ref=f2e128]
