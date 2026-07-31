@@ -1,0 +1,136 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - link "TEDxDamascus Damascus x = independently organized TED event" [ref=e8] [cursor=pointer]:
+            - /url: /en/home/
+            - img "TEDxDamascus" [ref=e9]
+            - generic [ref=e10]: Damascus
+            - generic [ref=e11]: x
+            - generic [ref=e12]: = independently organized TED event
+          - navigation "Main navigation" [ref=e14]:
+            - link "Home" [ref=e15] [cursor=pointer]:
+              - /url: /en/home/
+            - link "Events" [ref=e17] [cursor=pointer]:
+              - /url: /en/events/
+            - link "Speakers" [ref=e19] [cursor=pointer]:
+              - /url: /en/speakers/
+            - link "Team" [ref=e21] [cursor=pointer]:
+              - /url: /en/team/
+            - link "Partners" [ref=e24] [cursor=pointer]:
+              - /url: /en/partners/
+            - link "Blog" [ref=e26] [cursor=pointer]:
+              - /url: /en/blog/
+            - link "About us" [ref=e28] [cursor=pointer]:
+              - /url: /en/about/
+            - link "التحويل إلى العربية" [ref=e30] [cursor=pointer]:
+              - /url: /ar/team/
+              - generic [ref=e31]: عربي
+        - heading "The Minds Behind the Magic" [level=1] [ref=e40]
+      - generic [ref=e41]:
+        - heading "Our Team" [level=2] [ref=e42]
+        - generic [ref=e44]:
+          - link "Strategy Team Omar Al-Khatib Lead Organizer" [ref=e45] [cursor=pointer]:
+            - /url: /en/team/omar-al-khatib/
+            - generic [ref=e47]:
+              - generic [ref=e48]: Strategy Team
+              - heading "Omar Al-Khatib" [level=3] [ref=e51]
+              - paragraph [ref=e52]: Lead Organizer
+          - link "Strategy Team Lina Safadi Experience Lead" [ref=e53] [cursor=pointer]:
+            - /url: /en/team/lina-safadi/
+            - generic [ref=e55]:
+              - generic [ref=e56]: Strategy Team
+              - heading "Lina Safadi" [level=3] [ref=e59]
+              - paragraph [ref=e60]: Experience Lead
+          - link "Tech & Web Samer Hamwi Web Developer" [ref=e61] [cursor=pointer]:
+            - /url: /en/team/samer-hamwi/
+            - generic [ref=e63]:
+              - generic [ref=e64]: Tech & Web
+              - heading "Samer Hamwi" [level=3] [ref=e67]
+              - paragraph [ref=e68]: Web Developer
+          - link "Marketing Dina Al-Homsi Content Creator" [ref=e69] [cursor=pointer]:
+            - /url: /en/team/dina-al-homsi/
+            - generic [ref=e71]:
+              - generic [ref=e72]: Marketing
+              - heading "Dina Al-Homsi" [level=3] [ref=e75]
+              - paragraph [ref=e76]: Content Creator
+          - link "Marketing Zaid Murad PR Specialist" [ref=e77] [cursor=pointer]:
+            - /url: /en/team/zaid-murad/
+            - generic [ref=e79]:
+              - generic [ref=e80]: Marketing
+              - heading "Zaid Murad" [level=3] [ref=e83]
+              - paragraph [ref=e84]: PR Specialist
+          - link "Logistics Hani Jaber Operations Lead" [ref=e85] [cursor=pointer]:
+            - /url: /en/team/hani-jaber/
+            - generic [ref=e87]:
+              - generic [ref=e88]: Logistics
+              - heading "Hani Jaber" [level=3] [ref=e91]
+              - paragraph [ref=e92]: Operations Lead
+          - link "Curation Maya Kassem Speaker Curator" [ref=e93] [cursor=pointer]:
+            - /url: /en/team/maya-kassem/
+            - generic [ref=e95]:
+              - generic [ref=e96]: Curation
+              - heading "Maya Kassem" [level=3] [ref=e99]
+              - paragraph [ref=e100]: Speaker Curator
+          - link "Tech & Web Fadi Mansour Backend Architect" [ref=e101] [cursor=pointer]:
+            - /url: /en/team/fadi-mansour/
+            - generic [ref=e103]:
+              - generic [ref=e104]: Tech & Web
+              - heading "Fadi Mansour" [level=3] [ref=e107]
+              - paragraph [ref=e108]: Backend Architect
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - heading "Want to Join the Magic?" [level=3] [ref=e112]
+          - paragraph [ref=e113]: We are always looking for passionate individuals to help us spread ideas worth sharing.
+        - link "Apply Now" [ref=e114] [cursor=pointer]:
+          - /url: /en/volunteer/
+    - generic "Site footer" [ref=e115]:
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: "Damascus: where the story is told anew. Subscribe and let the next chapter find you."
+          - generic [ref=e120]:
+            - generic [ref=e121]: Your email address
+            - textbox "Your email address" [ref=e122]
+            - button "Subscribe" [ref=e123] [cursor=pointer]
+        - generic [ref=e125]:
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - generic [ref=e128]:
+                - img "TEDx" [ref=e129]
+                - img "Damascus" [ref=e130]
+              - paragraph [ref=e131]: This independent TEDx event is operated under license from TED
+            - generic [ref=e132]:
+              - link "Facebook" [ref=e133] [cursor=pointer]:
+                - /url: https://www.facebook.com/TEDxDamascus
+              - link "Instagram" [ref=e135] [cursor=pointer]:
+                - /url: https://www.instagram.com/TEDxDamascus
+              - link "LinkedIn" [ref=e137] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/TEDxDamascus
+          - generic [ref=e139]:
+            - navigation "About links" [ref=e140]:
+              - list [ref=e141]:
+                - listitem [ref=e142]:
+                  - link "About us" [ref=e143] [cursor=pointer]:
+                    - /url: /en/about/
+                - listitem [ref=e144]:
+                  - link "Team" [ref=e145] [cursor=pointer]:
+                    - /url: /en/team/
+                - listitem [ref=e146]:
+                  - link "Partners" [ref=e147] [cursor=pointer]:
+                    - /url: /en/partners/
+            - navigation "Explore links" [ref=e148]:
+              - list [ref=e149]:
+                - listitem [ref=e150]:
+                  - link "Home" [ref=e151] [cursor=pointer]:
+                    - /url: /en/home/
+                - listitem [ref=e152]:
+                  - link "Events" [ref=e153] [cursor=pointer]:
+                    - /url: /en/events/
+                - listitem [ref=e154]:
+                  - link "Speakers" [ref=e155] [cursor=pointer]:
+                    - /url: /en/speakers/
+                - listitem [ref=e156]:
+                  - link "Blog" [ref=e157] [cursor=pointer]:
+                    - /url: /en/blog/
+  - button "Open Next.js Dev Tools" [ref=e165] [cursor=pointer]

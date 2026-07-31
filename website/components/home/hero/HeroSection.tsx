@@ -30,7 +30,6 @@ const CIRCULAR_TEXT_EN = 'Damascus where the story is told anew ...  ·  ';
 // Arabic text is repeated so it fills the circle without needing textLength (which breaks letter joining)
 const CIRCULAR_TEXT_AR = 'دمشق حيث تُروى الحكاية من جديد ...  ·  دمشق حيث تُروى الحكاية من جديد ...  ·  ';
 
-// Figma animation: columns 1 & 3 slide in from top, 2 & 4 from bottom
 const SLIDE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]; // easeOutQuint
 
 interface HeroSectionProps {

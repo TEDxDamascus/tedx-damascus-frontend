@@ -11,9 +11,9 @@ export type EventCardProps = {
     dateLabel: string;
     timeLabel: string;
     badge: string;
-    bio?: string;
     isRtl: boolean;
     href?: string;
+    bio?: string;
 };
 
 export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href }: EventCardProps) {
@@ -105,4 +105,5 @@ export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href
         );
     }
     return card;
+
 }

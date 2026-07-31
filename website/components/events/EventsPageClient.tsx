@@ -28,25 +28,37 @@ function formatEventDate(dateStr: string | undefined, locale: string): string {
 const INITIAL_VISIBLE = 9;
 const LOAD_MORE_STEP = 3;
 
+type LocaleString = string | { en?: string; ar?: string };
+
+function loc(field: LocaleString | undefined, lang: 'en' | 'ar'): string {
+  if (!field) return '';
+  if (typeof field === 'string') return field;
+  return field[lang] ?? field['en'] ?? '';
+}
+
 interface ApiEvent {
-  id: string | number;
+  _id?: string;
+  id?: string | number;
   slug?: string;
-  title?: string;
-  name?: string;
+  title?: LocaleString;
+  name?: LocaleString;
   titleAr?: string;
   nameAr?: string;
   date?: string;
   startDate?: string;
+  start_time?: string;
   startTime?: string;
   time?: string;
+  event_type?: string;
   category?: string;
   badge?: string;
-  bio?: string;
+  bio?: LocaleString;
   bioAr?: string;
-  tagline?: string;
+  tagline?: LocaleString;
   taglineAr?: string;
-  shortDescription?: string;
-  description?: string;
+  shortDescription?: LocaleString;
+  description?: LocaleString;
+  event_image?: string;
   image?: string;
   imageUrl?: string;
 }
@@ -80,19 +92,24 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
   useEffect(() => {
     eventsApi
       .getAll({ status: 'published' })
-      .then((res: any) => {
-        const raw: ApiEvent[] = Array.isArray(res) ? res : (res?.data ?? []);
-        const normalized: NormalizedEvent[] = raw.map((e) => ({
-          id: e.id,
-          slug: (e.slug ?? toSlug(e.title ?? e.name ?? '')) || String(e.id),
-          title: e.title ?? e.name ?? t('cardTitle'),
-          titleAr: e.titleAr ?? e.nameAr ?? e.title ?? e.name ?? t('cardTitle'),
-          dateLabel: formatEventDate(e.date ?? e.startDate, locale) || t('cardDate'),
-          timeLabel: e.time ?? e.startTime ?? t('cardTime'),
-          badge: e.category ?? e.badge ?? t('cardBadge'),
-          bio: e.bio ?? e.tagline ?? e.shortDescription ?? '',
-          bioAr: e.bioAr ?? e.taglineAr ?? e.bio ?? e.tagline ?? e.shortDescription ?? '',
-        }));
+      .then((res: unknown) => {
+        const raw: ApiEvent[] = Array.isArray(res) ? res : ((res as { data?: ApiEvent[] })?.data ?? []);
+        const normalized: NormalizedEvent[] = raw.map((e) => {
+          const rawId = e._id ?? e.id;
+          const enTitle = loc(e.title ?? e.name, 'en');
+          const slug = e.slug || toSlug(enTitle) || String(rawId);
+          return {
+            id: rawId ?? '',
+            slug,
+            title: loc(e.title ?? e.name, 'en') || (e.titleAr ?? t('cardTitle')),
+            titleAr: loc(e.title ?? e.name, 'ar') || (e.titleAr ?? loc(e.title ?? e.name, 'en')),
+            dateLabel: formatEventDate(e.date ?? e.startDate, locale) || t('cardDate'),
+            timeLabel: e.time ?? e.start_time ?? e.startTime ?? t('cardTime'),
+            badge: e.event_type ?? e.category ?? e.badge ?? t('cardBadge'),
+            bio: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'en'),
+            bioAr: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'ar'),
+          };
+        });
         raw.forEach((e, i) => {
           try { localStorage.setItem(`tedx_event_${normalized[i].slug}`, JSON.stringify(e)); } catch {}
         });

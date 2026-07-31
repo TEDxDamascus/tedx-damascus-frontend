@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Footer } from '@/components/layout/Footer';
 import { FormHero } from './FormHero';
 import { getFormSchema } from '@/lib/api/forms-schema';
+import { translateApiError } from '@/lib/forms-error-i18n';
 import type { ApiFormData } from '@/types/form-schema';
 import {
   QuestionField,
@@ -129,17 +130,6 @@ export function SpeakerForm({ locale }: { locale: string }) {
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
-  };
-
-  const translateApiError = (msg: string): string => {
-    const l = msg.toLowerCase();
-    if (l.includes('phone')) return 'رقم الهاتف غير صالح. يرجى إدخال رقم سوري صحيح (9 أو 10 أرقام بعد +963)';
-    if (l.includes('email') && (l.includes('already') || l.includes('exist') || l.includes('duplicate'))) return 'البريد الإلكتروني مُستخدم بالفعل';
-    if (l.includes('email')) return 'البريد الإلكتروني غير صالح';
-    if (l.includes('required')) return 'يرجى تعبئة جميع الحقول المطلوبة';
-    if (l.includes('network') || l.includes('fetch') || l.includes('connect')) return 'خطأ في الاتصال. يرجى المحاولة مجدداً';
-    if (l.includes('already') || l.includes('exist') || l.includes('duplicate')) return 'هذه البيانات مسجّلة بالفعل';
-    return 'حدث خطأ أثناء الإرسال. يرجى المحاولة مجدداً';
   };
 
   const handleSubmit = async () => {
