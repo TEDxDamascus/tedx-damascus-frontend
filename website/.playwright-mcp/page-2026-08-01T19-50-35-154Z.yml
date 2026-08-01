@@ -1,0 +1,154 @@
+- generic [active] [ref=f3e1]:
+  - main [ref=f3e2]:
+    - region "TEDxDamascus" [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - link "TEDxDamascus Damascus x = independently organized TED event" [ref=f3e6] [cursor=pointer]:
+          - /url: /en/home/
+          - img "TEDxDamascus" [ref=f3e7]
+          - generic [ref=f3e8]: Damascus
+          - generic [ref=f3e9]: x
+          - generic [ref=f3e10]: = independently organized TED event
+        - navigation "Main navigation" [ref=f3e12]:
+          - link "Home" [ref=f3e13] [cursor=pointer]:
+            - /url: /en/home/
+          - link "Events" [ref=f3e16] [cursor=pointer]:
+            - /url: /en/events/
+          - button "Speakers" [ref=f3e19] [cursor=pointer]
+          - button "Team" [ref=f3e24] [cursor=pointer]
+          - button "Partners" [ref=f3e29] [cursor=pointer]
+          - link "Blog" [ref=f3e33] [cursor=pointer]:
+            - /url: /en/blog/
+          - button "About us" [ref=f3e36] [cursor=pointer]
+          - link "التحويل إلى العربية" [ref=f3e40] [cursor=pointer]:
+            - /url: /ar/home/
+            - generic [ref=f3e41]: عربي
+      - generic [ref=f3e61]:
+        - heading "WE ARE" [level=1] [ref=f3e62]
+        - img "TEDx" [ref=f3e65]
+        - generic [ref=f3e66]: Damascus
+      - img [ref=f3e70]:
+        - generic [ref=f3e71]: Damascus where the story is told anew ... ·
+    - generic [ref=f3e76]:
+      - generic [ref=f3e77]:
+        - heading "Events" [level=2] [ref=f3e78]
+        - paragraph [ref=f3e79]: Discover TEDx Damascus events and be part of conversations that inspire change.
+      - generic [ref=f3e82]:
+        - img "TEDx Damascus 2026" [ref=f3e84]
+        - generic [ref=f3e85]:
+          - generic [ref=f3e86]: TEDx Damascus 2026
+          - generic [ref=f3e87]: Sep 2026
+        - paragraph [ref=f3e88]: "Damascus: where the story is told anew"
+        - link "view details" [ref=f3e89] [cursor=pointer]:
+          - /url: /en/events/tedx-damascus-2026/
+      - link "See all events" [ref=f3e93] [cursor=pointer]:
+        - /url: /en/events/
+    - generic [ref=f3e96]:
+      - paragraph [ref=f3e98]:
+        - generic [ref=f3e99]: Call
+        - generic [ref=f3e100]: for
+        - generic [ref=f3e101]: voices
+      - generic [ref=f3e102]:
+        - generic [ref=f3e106]:
+          - paragraph [ref=f3e107]: Know someone forour stage?
+          - link "NOMINATE A SPEAKER" [ref=f3e109] [cursor=pointer]:
+            - /url: https://forms.gle/bQhuvrwVWSp1k72AA
+        - generic [ref=f3e115]:
+          - paragraph [ref=f3e116]: Interested in beinga speaker?
+          - link "APPLY AS A SPEAKER" [ref=f3e118] [cursor=pointer]:
+            - /url: https://forms.gle/bQhuvrwVWSp1k72AA
+    - region "Ideas grow through the people who believe in them" [ref=f3e121]:
+      - generic [ref=f3e122]:
+        - generic [ref=f3e124]:
+          - generic [ref=f3e125]:
+            - generic [ref=f3e126]: Ideas
+            - generic [ref=f3e127]: grow
+          - paragraph [ref=f3e128]: through the people who believe in them
+        - generic [ref=f3e129]:
+          - button "Team" [ref=f3e130] [cursor=pointer]:
+            - paragraph [ref=f3e132]: Team
+          - button "Organizers" [ref=f3e133] [cursor=pointer]:
+            - paragraph [ref=f3e135]: Organizers
+          - button "Speakers" [ref=f3e136] [cursor=pointer]:
+            - paragraph [ref=f3e138]: Speakers
+          - button "Partners" [ref=f3e139] [cursor=pointer]:
+            - paragraph [ref=f3e141]: Partners
+    - generic [ref=f3e142]:
+      - generic [ref=f3e144]:
+        - generic:
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+          - generic: "?"
+        - heading "What idea rising from Damascus should reach the world ?" [level=2] [ref=f3e145]
+        - generic [ref=f3e146]:
+          - textbox "Share your idea..." [ref=f3e148]
+          - button "Submit" [ref=f3e149] [cursor=pointer]
+      - link "View All Answers" [ref=f3e150] [cursor=pointer]:
+        - /url: /en/wall/questions/
+    - region [ref=f3e154]:
+      - generic [ref=f3e155]:
+        - generic [ref=f3e156]:
+          - heading "About" [level=2] [ref=f3e158]
+          - img "TEDx" [ref=f3e161]
+        - paragraph [ref=f3e163]: In the spirit of discovering and spreading ideas, TED has created a program called TEDx. TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. Our event is called TEDxDamascus where x = independently organized TED event. At our TEDxDamascus event, TED Talks video and live speakers will combine to spark deep discussion and connection in a small group. The TED Conference provides general guidance for the TEDx program, but individual TEDx events, including ours, are self-organized.
+    - generic "Site footer" [ref=f3e164]:
+      - generic [ref=f3e166]:
+        - generic [ref=f3e167]:
+          - paragraph [ref=f3e168]: "Damascus: where the story is told anew. Subscribe and let the next chapter find you."
+          - generic [ref=f3e169]:
+            - generic [ref=f3e170]: Your email address
+            - textbox "Your email address" [ref=f3e171]
+            - button "Subscribe" [ref=f3e172] [cursor=pointer]
+        - generic [ref=f3e174]:
+          - generic [ref=f3e175]:
+            - generic [ref=f3e176]:
+              - generic [ref=f3e177]:
+                - img "TEDx" [ref=f3e178]
+                - img "Damascus" [ref=f3e179]
+              - paragraph [ref=f3e180]: This independent TEDx event is operated under license from TED
+            - generic [ref=f3e181]:
+              - link "Facebook" [ref=f3e182] [cursor=pointer]:
+                - /url: https://www.facebook.com/TEDxDamascus
+              - link "Instagram" [ref=f3e184] [cursor=pointer]:
+                - /url: https://www.instagram.com/TEDxDamascus
+              - link "LinkedIn" [ref=f3e186] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/TEDxDamascus
+          - generic [ref=f3e188]:
+            - navigation "About links" [ref=f3e189]:
+              - list [ref=f3e190]:
+                - listitem [ref=f3e191]:
+                  - link "About us" [ref=f3e192] [cursor=pointer]:
+                    - /url: /en/about/
+                - listitem [ref=f3e193]:
+                  - link "Team" [ref=f3e194] [cursor=pointer]:
+                    - /url: /en/team/
+                - listitem [ref=f3e195]:
+                  - link "Partners" [ref=f3e196] [cursor=pointer]:
+                    - /url: /en/partners/
+            - navigation "Explore links" [ref=f3e197]:
+              - list [ref=f3e198]:
+                - listitem [ref=f3e199]:
+                  - link "Home" [ref=f3e200] [cursor=pointer]:
+                    - /url: /en/home/
+                - listitem [ref=f3e201]:
+                  - link "Events" [ref=f3e202] [cursor=pointer]:
+                    - /url: /en/events/
+                - listitem [ref=f3e203]:
+                  - link "Speakers" [ref=f3e204] [cursor=pointer]:
+                    - /url: /en/speakers/
+                - listitem [ref=f3e205]:
+                  - link "Blog" [ref=f3e206] [cursor=pointer]:
+                    - /url: /en/blog/
+  - button "Open Next.js Dev Tools" [ref=f3e214] [cursor=pointer]

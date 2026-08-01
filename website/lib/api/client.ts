@@ -140,6 +140,21 @@ export const blogsApi = {
     apiClient.delete(`/blogs/${id}`),
 };
 
+export interface TeamMemberApiData {
+  _id: string;
+  name: { en: string; ar: string };
+  image?: { url: string } | string;
+  year?: number;
+  social_link?: string[];
+  bio?: { en: string; ar: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const teamApi = {
+  getAll: () => apiClient.get<{ success: boolean; data: TeamMemberApiData[] }>('/team'),
+};
+
 export const formsApi = {
   getForm: (type: 'volunteer' | 'speaker') =>
     apiClient.get(`/forms/${type}`),

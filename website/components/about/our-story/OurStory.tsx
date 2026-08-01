@@ -13,29 +13,32 @@ interface Milestone {
   year: string;
   frontImage: string;
   middleImage: string;
-  backImage: string;
+  backImage?: string;
 }
 
-const MILESTONE_IMAGES: Array<{ front: string; middle: string; back: string }> = [
+const MILESTONE_IMAGES: Array<{ front: string; middle: string; back?: string }> = [
   {
-    front: '/images/about/our-story/trail-07-laptop-ted-email.png',
-    middle: '/images/about/our-story/trail-02-team-selfie.png',
-    back: '/images/about/our-story/trail-03-abstract-blur.png',
+    // The TED welcome email that licensed TEDx AlQassaa, with the two founders peeking behind it.
+    front: '/images/about/our-story/m1-ted-welcome-email.png',
+    middle: '/images/about/our-story/m1-founder-portrait-woman.png',
+    back: '/images/about/our-story/m1-founder-portrait-man.png',
   },
   {
-    front: '/images/about/our-story/trail-01-tedx-meaning.png',
-    middle: '/images/about/our-story/trail-05-speaker-cards-grid.png',
-    back: '/images/about/our-story/trail-08-abstract-blur-2.png',
+    // The social-media launch teaser card, with the volunteer-certificate photo and a "Coming soon 2024" teaser peeking behind.
+    front: '/images/about/our-story/m2-tedx-alqassaa-teaser.png',
+    middle: '/images/about/our-story/m2-m3-volunteer-certificates-trio.png',
+    back: '/images/about/our-story/m2-coming-soon-2024.jpg',
   },
   {
-    front: '/images/about/our-story/trail-12-volunteers-certificates-a.png',
-    middle: '/images/about/our-story/trail-13-volunteers-certificates-b.png',
-    back: '/images/about/our-story/trail-06-portrait-blur.png',
+    // The volunteer-certificate photo takes center stage here, backed by the full team-card grid and a second certificate photo.
+    front: '/images/about/our-story/m2-m3-volunteer-certificates-trio.png',
+    middle: '/images/about/our-story/m3-team-cards-grid.png',
+    back: '/images/about/our-story/m3-volunteer-certificates-quartet.png',
   },
   {
-    front: '/images/about/our-story/trail-04-tedx-teaser-card.png',
-    middle: '/images/about/our-story/trail-10-audience-coming-soon.png',
-    back: '/images/about/our-story/trail-14-portrait-blur-2.png',
+    // Only two source photos for this milestone — the pottery-hands graphic explaining "Al-Qassaa", backed by the team group photo.
+    front: '/images/about/our-story/m4-pottery-meaning.png',
+    middle: '/images/about/our-story/m4-team-group-selfie.png',
   },
 ];
 
@@ -43,7 +46,7 @@ interface OurStoryProps {
   locale: string;
 }
 
-/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. */
+/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. */
 function MilestoneImageStack({
   front,
   middle,
@@ -52,20 +55,22 @@ function MilestoneImageStack({
 }: {
   front: string;
   middle: string;
-  back: string;
+  back?: string;
   flip: boolean;
 }) {
   return (
     <div className="relative mx-auto h-[190px] w-[240px] lg:h-[220px] lg:w-[280px]">
-      <div
-        className={[
-          'absolute inset-x-8 -top-6 h-full overflow-hidden rounded-2xl',
-          flip ? 'rotate-[8deg]' : '-rotate-[8deg]',
-        ].join(' ')}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={back} alt="" className="h-full w-full object-cover" draggable={false} />
-      </div>
+      {back && (
+        <div
+          className={[
+            'absolute inset-x-8 -top-6 h-full overflow-hidden rounded-2xl',
+            flip ? 'rotate-[8deg]' : '-rotate-[8deg]',
+          ].join(' ')}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={back} alt="" className="h-full w-full object-cover" draggable={false} />
+        </div>
+      )}
 
       <div
         className={[
@@ -150,7 +155,11 @@ export function OurStory({ locale }: OurStoryProps) {
                     draggable={false}
                   />
 
-                  <MotionReveal x={textX} className={imageOnStart ? 'col-start-2' : 'col-start-1'}>
+                  {/* Milestones 1 and 3 (imageOnStart) sit a little lower so the text stacks against the year graphic and image, per design. */}
+                  <MotionReveal
+                    x={textX}
+                    className={imageOnStart ? 'col-start-2 mt-6 lg:mt-10' : 'col-start-1'}
+                  >
                     <span className="inline-block rounded-full bg-white/10 px-3 py-1 font-helvetica text-[11px] tracking-[0.15px] text-white/70">
                       {m.date}
                     </span>

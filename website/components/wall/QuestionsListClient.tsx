@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { getISOWeek } from 'date-fns';
 import { Navbar, Footer } from '@/components/layout';
 import { wallApi } from '@/lib/api/client';
+import { pickLocaleText } from '@/lib/utils';
 
 const PATTERN_SRC = '/images/about/pattern.svg';
 const COMMENTS_SRC = '/images/add-your-line/Comments.svg';
@@ -28,8 +29,8 @@ function normalizeQuestions(raw: any[]): QRow[] {
     const d = new Date(q.publishedAt ?? q.createdAt ?? '');
     return {
       id: String(q.id),
-      q: q.text ?? q.question ?? q.questionEn ?? '',
-      qAr: q.textAr ?? q.questionAr ?? q.text ?? '',
+      q: pickLocaleText(q.text ?? q.question ?? q.questionEn, 'en'),
+      qAr: pickLocaleText(q.textAr ?? q.questionAr ?? q.text, 'ar'),
       week: q.weekNumber ?? (!Number.isNaN(d.getTime()) ? getISOWeek(d) : null),
       count: q.responsesCount ?? q.answersCount ?? (q.featuredAnswerIds?.length ?? 0),
       publishedAt: q.publishedAt ?? q.createdAt ?? '',
@@ -69,12 +70,12 @@ function QuestionsListInner({ locale }: { locale: string }) {
       if (rawAnswers.length > 0) {
         setAnswers(rawAnswers.map((a: any) => ({
           id: String(a.id),
-          text: a.text ?? '',
+          text: pickLocaleText(a.text, locale),
         })));
         setTotalA(rawAnswers.length);
       }
     }).catch(() => {});
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (!currentId) return;
@@ -84,7 +85,7 @@ function QuestionsListInner({ locale }: { locale: string }) {
         const raw: any[] = res?.data?.items ?? (Array.isArray(res?.data) ? res.data : res?.answers ?? (Array.isArray(res) ? res : []));
         const rows: ARow[] = raw.map((a: any) => ({
           id: String(a.id),
-          text: (isRtl ? (a.textAr ?? a.text) : a.text) ?? '',
+          text: pickLocaleText(isRtl ? (a.textAr ?? a.text) : a.text, locale),
         }));
         if (aBatch === 1) {
           setAnswers(rows);
@@ -151,7 +152,7 @@ function QuestionsListInner({ locale }: { locale: string }) {
     if (!wall) return '';
     const q = wall.question;
     if (!q) return '';
-    if (typeof q === 'object') return (isRtl ? (q.textAr ?? q.text) : q.text) ?? '';
+    if (typeof q === 'object') return pickLocaleText(isRtl ? (q.textAr ?? q.text) : q.text, locale);
     if (typeof q === 'string') return q;
     return '';
   }

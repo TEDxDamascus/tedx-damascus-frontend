@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "TEDxDamascus Damascus x = independently organized TED event" [ref=e7] [cursor=pointer]:
+          - /url: /en/home/
+          - img "TEDxDamascus" [ref=e8]
+          - generic [ref=e9]: Damascus
+          - generic [ref=e10]: x
+          - generic [ref=e11]: = independently organized TED event
+        - navigation "Main navigation" [ref=e13]:
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /en/home/
+          - link "Events" [ref=e18]:
+            - /url: /en/events/
+          - link "Speakers" [ref=e21]:
+            - /url: /en/speakers/
+          - link "Team" [ref=e24]:
+            - /url: /en/team/
+          - link "Partners" [ref=e27] [cursor=pointer]:
+            - /url: /en/partners/
+          - link "Blog" [ref=e30]:
+            - /url: /en/blog/
+          - link "About us" [ref=e33]:
+            - /url: /en/about/
+          - link "التحويل إلى العربية" [ref=e36] [cursor=pointer]:
+            - /url: /ar/about/our-story/
+            - generic [ref=e37]: عربي
+      - heading "Our Story" [level=1] [ref=e46]:
+        - generic [ref=e47]: Our
+        - text: Story
+    - region "Our Story" [ref=e48]:
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - generic: "2021"
+          - generic [ref=e54]:
+            - generic [ref=e55]: 15.11.2021
+            - heading "First TED Email" [level=3] [ref=e56]:
+              - generic [ref=e57]: First
+              - text: TED
+              - generic [ref=e58]: Email
+        - generic [ref=e64]:
+          - generic: "2023"
+          - generic [ref=e65]:
+            - generic [ref=e66]: 13.03.2023
+            - heading "TEDx AlQassaa launches on social media" [level=3] [ref=e67]:
+              - text: TEDx AlQassaa
+              - generic [ref=e68]: launches on social media
+        - generic [ref=e74]:
+          - generic: "2023"
+          - generic [ref=e75]:
+            - generic [ref=e76]: 14.03.2023
+            - heading "Volunteer Team" [level=3] [ref=e77]:
+              - text: Volunteer
+              - generic [ref=e78]: Team
+            - paragraph [ref=e79]: Open the volunteer application form to create the TEDx AlQassaa volunteer team
+        - generic [ref=e85]:
+          - generic: "2023"
+          - generic [ref=e86]:
+            - generic [ref=e87]: 28.03.2023
+            - heading "Choosing the name \"Al-Qassaa\"" [level=3] [ref=e88]:
+              - generic [ref=e89]: Choosing the name
+              - text: "\"Al-Qassaa\""
+            - paragraph [ref=e90]: "Explanation of the reason for choosing the name \"Al-Qassaa\" and its meaning: In Arabic, \"Al-Qassaa\" refers to a pottery maker."
+    - generic "Site footer" [ref=e96]:
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - paragraph [ref=e100]: "Damascus: where the story is told anew. Subscribe and let the next chapter find you."
+          - generic [ref=e101]:
+            - generic [ref=e102]: Your email address
+            - textbox "Your email address" [ref=e103]
+            - button "Subscribe" [ref=e104] [cursor=pointer]
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - generic [ref=e109]:
+                - img "TEDx" [ref=e110]
+                - img "Damascus" [ref=e111]
+              - paragraph [ref=e112]: This independent TEDx event is operated under license from TED
+            - generic [ref=e113]:
+              - link "Facebook" [ref=e114] [cursor=pointer]:
+                - /url: https://www.facebook.com/TEDxDamascus
+              - link "Instagram" [ref=e116] [cursor=pointer]:
+                - /url: https://www.instagram.com/TEDxDamascus
+              - link "LinkedIn" [ref=e118] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/TEDxDamascus
+          - generic [ref=e120]:
+            - navigation "About links" [ref=e121]:
+              - list [ref=e122]:
+                - listitem [ref=e123]:
+                  - link "About us" [ref=e124] [cursor=pointer]:
+                    - /url: /en/about/
+                - listitem [ref=e125]:
+                  - link "Team" [ref=e126] [cursor=pointer]:
+                    - /url: /en/team/
+                - listitem [ref=e127]:
+                  - link "Partners" [ref=e128] [cursor=pointer]:
+                    - /url: /en/partners/
+            - navigation "Explore links" [ref=e129]:
+              - list [ref=e130]:
+                - listitem [ref=e131]:
+                  - link "Home" [ref=e132] [cursor=pointer]:
+                    - /url: /en/home/
+                - listitem [ref=e133]:
+                  - link "Events" [ref=e134] [cursor=pointer]:
+                    - /url: /en/events/
+                - listitem [ref=e135]:
+                  - link "Speakers" [ref=e136] [cursor=pointer]:
+                    - /url: /en/speakers/
+                - listitem [ref=e137]:
+                  - link "Blog" [ref=e138] [cursor=pointer]:
+                    - /url: /en/blog/
+  - button "Open Next.js Dev Tools" [ref=e146] [cursor=pointer]
+  - alert [ref=e150]

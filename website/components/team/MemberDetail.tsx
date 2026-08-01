@@ -1,31 +1,64 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Linkedin, Share2 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
-import { TEAM_MEMBERS } from './data';
+import { teamApi, getImageUrl, type TeamMemberApiData } from '@/lib/api/client';
+import { pickLocaleText } from '@/lib/utils';
 
 interface MemberDetailProps {
   locale: string;
-  /** 1-based member index, matching the m{n}* translation keys. */
+  /** 1-based member index — position in the live /team list, matching the grid's static routing slots. */
   index: number;
 }
 
 export function MemberDetail({ locale, index }: MemberDetailProps) {
-  const tTeam = useTranslations('Team');
   const tMember = useTranslations('TeamMember');
   const isRtl = locale === 'ar';
-  const n = index;
 
-  const photo = TEAM_MEMBERS[index - 1].photo;
-  const name = tTeam(`m${n}Name`);
-  const role = tTeam(`m${n}Role`);
-  const category = tTeam(`m${n}Category`);
+  const [live, setLive] = useState<TeamMemberApiData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const initiatives = [
-    { title: tMember(`m${n}Initiative1Title`), desc: tMember(`m${n}Initiative1Desc`) },
-    { title: tMember(`m${n}Initiative2Title`), desc: tMember(`m${n}Initiative2Desc`) },
-  ];
+  useEffect(() => {
+    teamApi
+      .getAll()
+      .then((res: any) => {
+        const raw: TeamMemberApiData[] = Array.isArray(res) ? res : (res?.data ?? []);
+        setLive(raw[index - 1] ?? null);
+      })
+      .catch(() => setLive(null))
+      .finally(() => setLoading(false));
+  }, [index]);
+
+  if (loading) {
+    return (
+      <div className="relative bg-page-bg" dir={isRtl ? 'rtl' : 'ltr'}>
+        <Navbar locale={locale} />
+        <div className="flex justify-center py-32">
+          <span className="animate-pulse font-helvetica text-white/40">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!live) {
+    return (
+      <div className="relative bg-page-bg" dir={isRtl ? 'rtl' : 'ltr'}>
+        <Navbar locale={locale} />
+        <div className="flex justify-center py-32">
+          <p className={['font-helvetica text-[#a8a8a8]', isRtl ? 'font-arabic' : ''].join(' ')}>
+            {tMember('noData')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const photo = getImageUrl(live.image);
+  const name = pickLocaleText(live.name, locale);
+  const category = `TEDx Damascus ${live.year ?? ''}`.trim();
+  const bio = pickLocaleText(live.bio, locale);
 
   return (
     <div className="relative bg-page-bg" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -93,8 +126,6 @@ export function MemberDetail({ locale, index }: MemberDetailProps) {
                   {name}
                 </h1>
 
-                <p className={['font-helvetica text-[18px] text-[#a8a8a8]', isRtl ? 'font-arabic' : ''].join(' ')}>{role}</p>
-
                 <div className="flex flex-wrap items-center gap-6 pt-2">
                   <a
                     href="#"
@@ -117,53 +148,29 @@ export function MemberDetail({ locale, index }: MemberDetailProps) {
         </div>
       </section>
 
-      {/* ── Content: journey + initiatives ── */}
-      <section className="relative z-10 px-6 pb-24">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-6">
-          {/* Biography card */}
-          <div className="relative overflow-hidden bg-card-bg p-8 lg:p-10">
-            <span
-              className="pointer-events-none absolute -top-4 select-none font-helvetica text-[140px] font-black leading-none text-white/5 lg:text-[160px]"
-              style={isRtl ? { left: 24 } : { right: 24 }}
-              aria-hidden
-            >
-              &rdquo;
-            </span>
-            <h2 className="font-sans text-[12px] font-bold uppercase tracking-[1.5px] text-primary">{tMember('journeyLabel')}</h2>
-            <div className="relative mt-6 flex flex-col gap-4">
-              <p className={['max-w-3xl font-helvetica text-[16px] leading-[1.6] text-[#d7d7d7]', isRtl ? 'font-arabic' : ''].join(' ')}>
-                {tMember(`m${n}Bio1`)}
-              </p>
-              <p className={['max-w-3xl font-helvetica text-[16px] leading-[1.6] text-[#d7d7d7]', isRtl ? 'font-arabic' : ''].join(' ')}>
-                {tMember(`m${n}Bio2`)}
-              </p>
+      {/* ── Content: journey ── */}
+      {bio && (
+        <section className="relative z-10 px-6 pb-24">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-6">
+            {/* Biography card */}
+            <div className="relative overflow-hidden bg-card-bg p-8 lg:p-10">
+              <span
+                className="pointer-events-none absolute -top-4 select-none font-helvetica text-[140px] font-black leading-none text-white/5 lg:text-[160px]"
+                style={isRtl ? { left: 24 } : { right: 24 }}
+                aria-hidden
+              >
+                &rdquo;
+              </span>
+              <h2 className="font-sans text-[12px] font-bold uppercase tracking-[1.5px] text-primary">{tMember('journeyLabel')}</h2>
+              <div className="relative mt-6 flex flex-col gap-4">
+                <p className={['max-w-3xl font-helvetica text-[16px] leading-[1.6] text-[#d7d7d7]', isRtl ? 'font-arabic' : ''].join(' ')}>
+                  {bio}
+                </p>
+              </div>
             </div>
           </div>
-
-          {/* Initiatives card */}
-          <div className="bg-card-bg p-8 lg:p-10">
-            <div className={['flex items-center gap-6', isRtl ? 'flex-row-reverse' : ''].join(' ')}>
-              <h2 className="shrink-0 font-sans text-[12px] font-bold uppercase tracking-[1.5px] text-primary">
-                {tMember('initiativesLabel')}
-              </h2>
-              <span className="h-px w-full bg-white/10" aria-hidden />
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
-              {initiatives.map((item) => (
-                <div key={item.title} className="flex flex-col gap-2">
-                  <h3 className={['font-helvetica text-[18px] font-bold text-white', isRtl ? 'font-arabic' : ''].join(' ')}>
-                    {item.title}
-                  </h3>
-                  <p className={['font-helvetica text-[14px] leading-[1.5] text-[#a8a8a8]', isRtl ? 'font-arabic' : ''].join(' ')}>
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

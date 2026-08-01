@@ -1,0 +1,108 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e5]:
+        - generic [ref=f2e6]:
+          - link "TEDxDamascus Damascus x = independently organized TED event" [ref=f2e8] [cursor=pointer]:
+            - /url: /en/home/
+            - img "TEDxDamascus" [ref=f2e9]
+            - generic [ref=f2e10]: Damascus
+            - generic [ref=f2e11]: x
+            - generic [ref=f2e12]: = independently organized TED event
+          - navigation "Main navigation" [ref=f2e14]:
+            - link "Home" [ref=f2e16] [cursor=pointer]:
+              - /url: /en/home/
+            - link "Events" [ref=f2e19]:
+              - /url: /en/events/
+            - link "Speakers" [ref=f2e22]:
+              - /url: /en/speakers/
+            - link "Team" [ref=f2e25]:
+              - /url: /en/team/
+            - link "Partners" [ref=f2e29] [cursor=pointer]:
+              - /url: /en/partners/
+            - link "Blog" [ref=f2e32]:
+              - /url: /en/blog/
+            - link "About us" [ref=f2e35]:
+              - /url: /en/about/
+            - link "Our Story" [ref=f2e38] [cursor=pointer]:
+              - /url: /en/about/our-story/
+            - link "التحويل إلى العربية" [ref=f2e40] [cursor=pointer]:
+              - /url: /ar/team/omar-al-khatib/
+              - generic [ref=f2e41]: عربي
+        - generic [ref=f2e50]:
+          - img "Omar Al-Khatib" [ref=f2e53]
+          - generic [ref=f2e54]:
+            - generic [ref=f2e55]: Strategy Team
+            - heading "Omar Al-Khatib" [level=1] [ref=f2e58]
+            - paragraph [ref=f2e59]: Lead Organizer
+            - generic [ref=f2e60]:
+              - link "LINKEDIN" [ref=f2e61] [cursor=pointer]:
+                - /url: "#"
+              - link "Press Kit" [ref=f2e66] [cursor=pointer]:
+                - /url: "#"
+      - generic [ref=f2e74]:
+        - generic [ref=f2e75]:
+          - generic: ”
+          - heading "THE JOURNEY" [level=2] [ref=f2e76]
+          - generic [ref=f2e77]:
+            - paragraph [ref=f2e78]: Omar Al-Khatib has dedicated the last decade to transforming the narrative of the Middle East through the TEDx platform. As the lead organizer and operations director for TEDx Damascus, he bridges the gap between local innovation and global audiences.
+            - paragraph [ref=f2e79]: "With a background in architectural engineering and cultural preservation, Omar views event curation as a structural challenge: how to build a stage that can support the weight of transformative ideas without collapsing into noise."
+        - generic [ref=f2e80]:
+          - heading "CURRENT INITIATIVES" [level=2] [ref=f2e82]
+          - generic [ref=f2e84]:
+            - generic [ref=f2e85]:
+              - heading "Mentorship Program" [level=3] [ref=f2e86]
+              - paragraph [ref=f2e87]: Guiding the next generation of regional curators to maintain the TED quality standards.
+            - generic [ref=f2e88]:
+              - heading "Digital Archives" [level=3] [ref=f2e89]
+              - paragraph [ref=f2e90]: Digitizing historical Damascus oral histories for future talk inspiration.
+    - generic "Site footer" [ref=f2e91]:
+      - generic [ref=f2e93]:
+        - generic [ref=f2e94]:
+          - paragraph [ref=f2e95]: "Damascus: where the story is told anew. Subscribe and let the next chapter find you."
+          - generic [ref=f2e96]:
+            - generic [ref=f2e97]: Your email address
+            - textbox "Your email address" [ref=f2e98]
+            - button "Subscribe" [ref=f2e99] [cursor=pointer]
+        - generic [ref=f2e101]:
+          - generic [ref=f2e102]:
+            - generic [ref=f2e103]:
+              - generic [ref=f2e104]:
+                - img "TEDx" [ref=f2e105]
+                - img "Damascus" [ref=f2e106]
+              - paragraph [ref=f2e107]: This independent TEDx event is operated under license from TED
+            - generic [ref=f2e108]:
+              - link "Facebook" [ref=f2e109] [cursor=pointer]:
+                - /url: https://www.facebook.com/TEDxDamascus
+              - link "Instagram" [ref=f2e111] [cursor=pointer]:
+                - /url: https://www.instagram.com/TEDxDamascus
+              - link "LinkedIn" [ref=f2e113] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/TEDxDamascus
+          - generic [ref=f2e115]:
+            - navigation "About links" [ref=f2e116]:
+              - list [ref=f2e117]:
+                - listitem [ref=f2e118]:
+                  - link "About us" [ref=f2e119] [cursor=pointer]:
+                    - /url: /en/about/
+                - listitem [ref=f2e120]:
+                  - link "Team" [ref=f2e121] [cursor=pointer]:
+                    - /url: /en/team/
+                - listitem [ref=f2e122]:
+                  - link "Partners" [ref=f2e123] [cursor=pointer]:
+                    - /url: /en/partners/
+            - navigation "Explore links" [ref=f2e124]:
+              - list [ref=f2e125]:
+                - listitem [ref=f2e126]:
+                  - link "Home" [ref=f2e127] [cursor=pointer]:
+                    - /url: /en/home/
+                - listitem [ref=f2e128]:
+                  - link "Events" [ref=f2e129] [cursor=pointer]:
+                    - /url: /en/events/
+                - listitem [ref=f2e130]:
+                  - link "Speakers" [ref=f2e131] [cursor=pointer]:
+                    - /url: /en/speakers/
+                - listitem [ref=f2e132]:
+                  - link "Blog" [ref=f2e133] [cursor=pointer]:
+                    - /url: /en/blog/
+  - button "Open Next.js Dev Tools" [ref=f2e141] [cursor=pointer]
+  - alert [ref=f2e145]

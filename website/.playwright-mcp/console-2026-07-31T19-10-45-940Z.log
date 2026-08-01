@@ -1,0 +1,84 @@
+[ 3554032ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3559164ms] [LOG] [Fast Refresh] done in 4890ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3559281ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3559509ms] [LOG] [Fast Refresh] done in 334ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3559874ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3560923ms] [ERROR] ./components/about/StatsSection.tsx:4:1
+Module not found: Can't resolve 'react-countup'
+  2 |
+  3 | import React from 'react';
+> 4 | import CountUp from 'react-countup';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { useTranslations } from 'next-intl';
+  6 | import { motion } from 'framer-motion';
+  7 |
+
+Import trace:
+  Server Component:
+    ./components/about/StatsSection.tsx
+    ./app/[locale]/about/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[ 3561025ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3561422ms] [ERROR] ./components/about/StatsSection.tsx:4:1
+Module not found: Can't resolve 'react-countup'
+  2 |
+  3 | import React from 'react';
+> 4 | import CountUp from 'react-countup';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { useTranslations } from 'next-intl';
+  6 | import { motion } from 'framer-motion';
+  7 |
+
+Import trace:
+  Server Component:
+    ./components/about/StatsSection.tsx
+    ./app/[locale]/about/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[ 3561513ms] [ERROR] ./components/about/StatsSection.tsx:4:1
+Module not found: Can't resolve 'react-countup'
+  2 |
+  3 | import React from 'react';
+> 4 | import CountUp from 'react-countup';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { useTranslations } from 'next-intl';
+  6 | import { motion } from 'framer-motion';
+  7 |
+
+Import trace:
+  Server Component:
+    ./components/about/StatsSection.tsx
+    ./app/[locale]/about/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[ 3561567ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3562153ms] [ERROR] ./components/about/StatsSection.tsx:4:1
+Module not found: Can't resolve 'react-countup'
+  2 |
+  3 | import React from 'react';
+> 4 | import CountUp from 'react-countup';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { useTranslations } from 'next-intl';
+  6 | import { motion } from 'framer-motion';
+  7 |
+
+Import trace:
+  Server Component:
+    ./components/about/StatsSection.tsx
+    ./app/[locale]/about/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:3127
+[ 3562212ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_f3530cac._.js:2297
+[ 3573845ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3577191ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3580558ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3583912ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3587282ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3594652ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3602031ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3609402ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3616780ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3624150ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3631542ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886
+[ 3638972ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=V2Pq_AHKHz-EIAcizZb9F' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_17643121._.js:10886

@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { getISOWeek } from 'date-fns';
 import { Navbar, Footer } from '@/components/layout';
 import { wallApi } from '@/lib/api/client';
+import { pickLocaleText } from '@/lib/utils';
 
 const PATTERN_SRC = '/images/about/pattern.svg';
 const COMMENTS_SRC = '/images/add-your-line/Comments.svg';
@@ -27,8 +28,8 @@ function normalizeQuestions(raw: any[]): QRow[] {
     const d = new Date(q.publishedAt ?? q.createdAt ?? '');
     return {
       id: String(q.id),
-      q: q.text ?? q.question ?? q.questionEn ?? '',
-      qAr: q.textAr ?? q.questionAr ?? q.text ?? '',
+      q: pickLocaleText(q.text ?? q.question ?? q.questionEn, 'en'),
+      qAr: pickLocaleText(q.textAr ?? q.questionAr ?? q.text, 'ar'),
       week: q.weekNumber ?? (!Number.isNaN(d.getTime()) ? getISOWeek(d) : null),
       count: q.responsesCount ?? q.answersCount ?? (q.featuredAnswerIds?.length ?? 0),
     };
@@ -88,7 +89,7 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
         const publicRaw = raw.filter((a: any) => !a.status || a.status === 'public');
         const rows: ARow[] = publicRaw.map((a: any) => ({
           id: String(a.id),
-          text: (isRtl ? (a.textAr ?? a.text) : a.text) ?? '',
+          text: pickLocaleText(isRtl ? (a.textAr ?? a.text) : a.text, locale),
         }));
         setAnswers((p) => (aBatch === 1 ? rows : [...p, ...rows]));
         setTotalA(res?.data?.total ?? res?.total ?? res?.totalCount ?? raw.length);
@@ -96,7 +97,7 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
       })
       .catch(() => {})
       .finally(() => setLoadA(false));
-  }, [questionId, aBatch, isRtl]);
+  }, [questionId, aBatch, isRtl, locale]);
 
   // Trigger history load when section scrolls into view (lazy — not on mount)
   useEffect(() => {
@@ -151,10 +152,12 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
   }
 
   const questionText = question
-    ? (isRtl
-        ? (question.textAr ?? question.text ?? question.questionAr ?? question.question)
-        : (question.text ?? question.question)
-      ) ?? null
+    ? pickLocaleText(
+        isRtl
+          ? (question.textAr ?? question.text ?? question.questionAr ?? question.question)
+          : (question.text ?? question.question),
+        locale,
+      ) || null
     : null;
 
   const hDots = Math.min(4, Math.max(1, hTotalP));
