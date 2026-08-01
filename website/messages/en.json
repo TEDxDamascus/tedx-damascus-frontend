@@ -16,6 +16,7 @@
     "partners": "Partners",
     "blog": "Blog",
     "about": "About us",
+    "ourStory": "Our Story",
     "volunteer": "Volunteer",
     "contact": "Contact",
     "comingSoon": "Coming Soon"
@@ -237,7 +238,8 @@
     "m4Before": "Choosing the name",
     "m4Highlight": "\"Al-Qassaa\"",
     "m4After": "",
-    "m4Desc": "Explanation of the reason for choosing the name \"Al-Qassaa\" and its meaning: In Arabic, \"Al-Qassaa\" refers to a pottery maker."
+    "m4Desc": "Explanation of the reason for choosing the name \"Al-Qassaa\" and its meaning: In Arabic, \"Al-Qassaa\" refers to a pottery maker.",
+    "shareTitle": "Share QR of this Page or Copy to Social Media!"
   },
   "Team": {
     "heroTitleBefore": "The Minds Behind",

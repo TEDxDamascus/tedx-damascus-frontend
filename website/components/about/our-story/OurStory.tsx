@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Navbar } from '@/components/layout/Navbar';
 import { MotionReveal } from './MotionReveal';
+import { ShareCommunityBar } from './ShareCommunityBar';
 
 interface Milestone {
   date: string;
@@ -108,40 +108,12 @@ export function OurStory({ locale }: OurStoryProps) {
     <section
       className="relative overflow-hidden bg-page-bg"
       dir={isRtl ? 'rtl' : 'ltr'}
-      aria-labelledby="our-story-heading"
+      aria-label={`${t('titlePrefix')} ${t('titleHighlight')}`.trim()}
     >
-      {/* Decorative background pattern, sitting behind all section content — same z-0/z-10 layering as the Events page */}
-      <div className="pointer-events-none absolute inset-0 z-0 select-none opacity-60" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/about/pattern.svg"
-          alt=""
-          className="h-full w-full object-cover object-center"
-          draggable={false}
-          loading="lazy"
-        />
-      </div>
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-1/3 bg-[linear-gradient(to_bottom,#101010_0%,rgba(16,16,16,0.6)_55%,transparent_100%)]"
-        aria-hidden
-      />
-
       <div className="relative z-10">
-        <Navbar locale={locale} />
+        <div className="mx-auto max-w-[1100px] px-6 pb-24 pt-16 lg:pt-20">
 
-        <div className="mx-auto max-w-[1100px] px-6 pb-24 pt-20 lg:pt-28">
-        <h2
-          id="our-story-heading"
-          className={[
-            'text-center font-helvetica text-[40px] font-normal leading-[1.2] text-white lg:text-[56px]',
-            isRtl ? 'font-arabic' : '',
-          ].join(' ')}
-        >
-          {t('titlePrefix') && <span>{t('titlePrefix')} </span>}
-          <span className="text-primary">{t('titleHighlight')}</span>
-        </h2>
-
-        <div className="relative mt-20 lg:mt-28">
+        <div className="relative">
           {/* Center timeline line */}
           <div
             className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/15"
@@ -216,6 +188,13 @@ export function OurStory({ locale }: OurStoryProps) {
               );
             })}
           </div>
+        </div>
+
+        <div className="mt-16 lg:mt-20">
+          <ShareCommunityBar
+            locale={locale}
+            url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://tedxdamascus.com'}/${locale}/about/our-story`}
+          />
         </div>
         </div>
       </div>

@@ -7,9 +7,13 @@ interface AboutHeroProps {
   label?: string;
   title?: string;
   meta?: string;
+  /** Word before the highlighted word, e.g. "Our" in "Our Story". Takes precedence over `title`. */
+  titlePrefix?: string;
+  /** Word rendered in primary red, e.g. "Story" in "Our Story" or "Us" in "About Us". */
+  titleHighlight?: string;
 }
 
-export function AboutHero({ locale, label, title, meta }: AboutHeroProps) {
+export function AboutHero({ locale, label, title, meta, titlePrefix, titleHighlight }: AboutHeroProps) {
   const isRtl = locale === 'ar';
 
   return (
@@ -69,7 +73,12 @@ export function AboutHero({ locale, label, title, meta }: AboutHeroProps) {
                    isRtl ? 'font-arabic' : '',
                  ].join(' ')}
                >
-                {title ? (
+                {titleHighlight ? (
+                  <>
+                    {titlePrefix ? <span>{titlePrefix} </span> : null}
+                    <span className="text-[#eb0028]">{titleHighlight}</span>
+                  </>
+                ) : title ? (
                   title.split(' ').map((word: string, index: number) =>
                     word.toUpperCase() === 'US' ? (
                       <span key={index} className="text-[#eb0028]">{word} </span>

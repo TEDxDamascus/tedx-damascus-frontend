@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { key: "partners", href: "/partners" },
   { key: "blog", href: "/blog" },
   { key: "about", href: "/about" },
+  { key: "ourStory", href: "/about/our-story" },
 ] as const;
 
 type NavKey = (typeof NAV_ITEMS)[number]["key"];
@@ -196,7 +197,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                 isPartnersActive ||
                 pathname === fullHref ||
                 pathWithoutLocale === href ||
-                pathWithoutLocale.startsWith(href + "/") ||
+                (key !== "about" && pathWithoutLocale.startsWith(href + "/")) ||
                 (key === "home" &&
                   (pathname === `/${locale}` ||
                     pathWithoutLocale === "/" ||

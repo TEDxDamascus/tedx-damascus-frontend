@@ -1,6 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/routing';
-import { OurStory } from '@/components/about/our-story';
 import { Footer } from '@/components/layout/Footer';
 import { AboutHero } from '@/components/about/AboutHero';
 import { AboutContent } from '@/components/about/AboutContent';
