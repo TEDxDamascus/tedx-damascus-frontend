@@ -24,7 +24,7 @@ const MILESTONE_IMAGES: Array<{ front: string; middle: string; back?: string }> 
     back: '/images/about/our-story/m1-founder-portrait-man.png',
   },
   {
-    // The social-media launch teaser card, with the volunteer-certificate photo and a "Coming soon 2024" teaser peeking behind.
+    // The social-media teaser card up front, with the volunteer-certificate photo and a "Coming soon 2024" teaser peeking behind.
     front: '/images/about/our-story/m2-tedx-alqassaa-teaser.png',
     middle: '/images/about/our-story/m2-m3-volunteer-certificates-trio.png',
     back: '/images/about/our-story/m2-coming-soon-2024.jpg',
@@ -155,10 +155,9 @@ export function OurStory({ locale }: OurStoryProps) {
                     draggable={false}
                   />
 
-                  {/* Milestones 1 and 3 (imageOnStart) sit a little lower so the text stacks against the year graphic and image, per design. */}
                   <MotionReveal
                     x={textX}
-                    className={imageOnStart ? 'col-start-2 mt-6 lg:mt-10' : 'col-start-1'}
+                    className={imageOnStart ? 'col-start-2' : 'col-start-1'}
                   >
                     <span className="inline-block rounded-full bg-white/10 px-3 py-1 font-helvetica text-[11px] tracking-[0.15px] text-white/70">
                       {m.date}
