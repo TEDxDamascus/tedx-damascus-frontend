@@ -54,9 +54,11 @@ export function TeamCard({ href, photo, name, role, category, isRtl }: TeamCardP
         >
           {name}
         </h3>
-        <p className={['font-helvetica text-[14px] leading-[1.3] text-[#a8a8a8]', isRtl ? 'font-arabic' : ''].join(' ')}>
-          {role}
-        </p>
+        {role && (
+          <p className={['font-helvetica text-[14px] leading-[1.3] text-[#a8a8a8]', isRtl ? 'font-arabic' : ''].join(' ')}>
+            {role}
+          </p>
+        )}
       </div>
     </Link>
   );

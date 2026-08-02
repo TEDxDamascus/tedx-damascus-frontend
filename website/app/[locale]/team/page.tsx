@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/routing';
 import { TeamPage } from '@/components/team/TeamPage';
@@ -16,7 +17,9 @@ export default async function Team({ params }: Props) {
   setRequestLocale(locale);
   return (
     <main className="relative">
-      <TeamPage locale={locale} />
+      <Suspense fallback={null}>
+        <TeamPage locale={locale} />
+      </Suspense>
       <Footer locale={locale} />
     </main>
   );

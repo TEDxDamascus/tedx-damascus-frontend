@@ -29,6 +29,24 @@ export function getLocalizedSlug(
   return locale === 'ar' ? slug.ar : slug.en;
 }
 
+/**
+ * Resolves an API field that should be a plain string but may arrive as a
+ * `{ en, ar }` localized object — or, when a backend response is inconsistent,
+ * as a localized object nested one level deeper. Always returns a string, so
+ * it's safe to render directly without risking "object as React child" crashes.
+ */
+export function pickLocaleText(value: unknown, locale: string): string {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    const preferred = obj[locale] ?? obj.en ?? obj.ar;
+    if (typeof preferred === 'string') return preferred;
+    if (preferred != null && typeof preferred === 'object') return pickLocaleText(preferred, locale);
+  }
+  return '';
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { wallApi } from '@/lib/api/client';
+import { pickLocaleText } from '@/lib/utils';
 
 interface AddYourLineProps {
   locale: string;
@@ -163,15 +164,13 @@ export function AddYourLine({ locale }: AddYourLineProps) {
         const rawData = data?.data ?? data;
         if (rawData?.question?.id) setCurrentWallId(String(rawData.question.id));
         const q = rawData?.question;
-        const text = typeof q === 'object'
-          ? (q.text ?? q[locale] ?? q.en ?? q.ar)
-          : (typeof q === 'string' ? q : null);
+        const text = pickLocaleText(typeof q === 'object' ? (q.text ?? q) : q, locale);
         if (text) setApiQuestion(text);
         const answers = rawData?.answers;
         if (Array.isArray(answers)) {
           const texts = answers
             .filter((a: any) => a.status === 'public')
-            .map((a: any) => a.text)
+            .map((a: any) => pickLocaleText(a.text, locale))
             .filter(Boolean);
           setApiAnswers(texts);
         }

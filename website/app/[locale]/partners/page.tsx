@@ -1,5 +1,6 @@
 // app/[locale]/partners/page.tsx
 
+import { Suspense } from "react";
 import { routing } from "@/routing";
 import PartnersPageClient from "@/components/partners/PartnersPageClient";
 
@@ -18,7 +19,9 @@ type Props = {
 export default async function PartnersPage({ params }: Props) {
   const { locale } = await params;
 
-  console.log("PAGE locale =", locale);
-
-  return <PartnersPageClient locale={locale} />;
+  return (
+    <Suspense fallback={null}>
+      <PartnersPageClient locale={locale} />
+    </Suspense>
+  );
 }

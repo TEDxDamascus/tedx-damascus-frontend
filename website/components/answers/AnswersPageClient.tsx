@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Footer } from '@/components/layout';
 import { wallApi } from '@/lib/api/client';
+import { pickLocaleText } from '@/lib/utils';
 import { AnswersHero } from './AnswersHero';
 import { AnswersPaginationList } from './AnswersPaginationList';
 import { QuestionHistory } from './QuestionHistory';
@@ -121,8 +122,9 @@ export function AnswersPageClient({ locale }: AnswersPageClientProps) {
   // Current question text
   const currentQuestionText = useMemo(() => {
     if (!currentWall) return null;
-    return (isRtl ? (currentWall.questionAr ?? currentWall.question) : currentWall.question) ?? null;
-  }, [currentWall, isRtl]);
+    const raw = isRtl ? (currentWall.questionAr ?? currentWall.question) : currentWall.question;
+    return pickLocaleText(raw, locale) || null;
+  }, [currentWall, isRtl, locale]);
 
   // Answers for the active view (current or history selection)
   const allAnswers: AnswerItem[] = useMemo(() => {
@@ -132,21 +134,21 @@ export function AnswersPageClient({ locale }: AnswersPageClientProps) {
     if (raw.length === 0) return fallbackAnswers;
     return raw.map((a: any) => ({
       id: String(a.id),
-      text: (isRtl ? (a.textAr ?? a.text) : a.text) ?? '',
+      text: pickLocaleText(isRtl ? (a.textAr ?? a.text) : a.text, locale),
     }));
-  }, [currentWall, selectedWall, isRtl, fallbackAnswers]);
+  }, [currentWall, selectedWall, isRtl, locale, fallbackAnswers]);
 
   // History entries for the sidebar
   const historyEntries: WallHistoryListEntry[] = useMemo(() => {
     if (historyWalls.length === 0) return fallbackHistory;
     return historyWalls.map((w: any, i: number) => ({
       id: String(w.id),
-      questionText: (isRtl ? (w.questionAr ?? w.question) : w.question) ?? t(`pastQ${i + 1}`) ?? '',
+      questionText: pickLocaleText(isRtl ? (w.questionAr ?? w.question) : w.question, locale) || t(`pastQ${i + 1}`) || '',
       responses: w.responsesCount ?? w.answers?.length ?? 0,
       publishedAt: w.publishedAt ?? w.createdAt ?? HISTORY_DATES[i] ?? '',
       bucket: historyBucketFromPublishedAt(w.publishedAt ?? w.createdAt ?? ''),
     }));
-  }, [historyWalls, isRtl, t, fallbackHistory]);
+  }, [historyWalls, isRtl, locale, t, fallbackHistory]);
 
   const currentPages = useMemo(() => chunkAnswers(allAnswers, ANSWERS_PAGE_SIZE), [allAnswers]);
 

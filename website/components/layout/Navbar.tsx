@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import { eventsApi } from "@/lib/api/client";
 
 interface NavbarProps {
   locale: string;
@@ -24,13 +26,13 @@ const NAV_ITEMS = [
 
 type NavKey = (typeof NAV_ITEMS)[number]["key"];
 
-const COMING_SOON = new Set<NavKey>([
-  "events",
-  "speakers",
-  "team",
-  "blog",
-  "about",
-]);
+/** These nav items open a dropdown of TEDx edition years instead of linking directly. */
+const YEAR_DROPDOWN_KEYS = new Set<NavKey>(["team", "speakers", "partners"]);
+
+interface DropdownChild {
+  label: string;
+  href: string;
+}
 
 function SyrianFlag() {
   return (
@@ -99,18 +101,75 @@ export function Navbar({ locale, navRef }: NavbarProps) {
     `/${altLocale}${pathname.replace(/^\/(en|ar)/, "")}` || `/${altLocale}`;
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopSoon, setDesktopSoon] = useState<NavKey | null>(null);
-  const [mobileSoon, setMobileSoon] = useState<NavKey | null>(null);
+  const [openKey, setOpenKey] = useState<NavKey | null>(null);
+  const [mobileExpandedKey, setMobileExpandedKey] = useState<NavKey | null>(null);
+  const [years, setYears] = useState<number[]>([]);
+  const dropdownRefs = useRef<Partial<Record<NavKey, HTMLDivElement | null>>>({});
 
   useEffect(() => {
     setMobileOpen(false);
+    setMobileExpandedKey(null);
+    setOpenKey(null);
   }, [pathname]);
+
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  // Distinct TEDx edition years, derived from the events calendar, used to
+  // populate the Team/Speakers/Partners year dropdowns.
+  useEffect(() => {
+    eventsApi
+      .getAll()
+      .then((res: any) => {
+        const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
+        const ys = Array.from(
+          new Set(
+            raw
+              .map((e) => {
+                const d = new Date(e.date ?? e.startDate ?? "");
+                return Number.isNaN(d.getTime()) ? null : d.getFullYear();
+              })
+              .filter((y): y is number => y !== null)
+          )
+        ).sort((a, b) => b - a);
+        setYears(ys);
+      })
+      .catch(() => setYears([]));
+  }, []);
+
+  useEffect(() => {
+    if (!openKey) return;
+    function handlePointerDown(e: MouseEvent) {
+      const el = dropdownRefs.current[openKey!];
+      if (el && !el.contains(e.target as Node)) setOpenKey(null);
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenKey(null);
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [openKey]);
+
+  function childrenFor(key: NavKey, href: string): DropdownChild[] {
+    if (key === "about") {
+      return [
+        { label: t("about"), href: "/about" },
+        { label: t("ourStory"), href: "/about/our-story" },
+      ];
+    }
+    return [
+      { label: t("allYears"), href },
+      ...years.map((y) => ({ label: String(y), href: `${href}?year=${y}` })),
+    ];
+  }
 
   const langContent = isRtl ? (
     <span className="font-helvetica text-base font-normal text-[#F1F1F1] leading-6 tracking-[0.15px]">
@@ -192,29 +251,33 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                   pathname.includes(`/${locale}/partner/`) ||
                   pathWithoutLocale.startsWith("/partner/"));
 
+              const isAboutActive =
+                key === "about" &&
+                (pathWithoutLocale === "/about" ||
+                  pathWithoutLocale.startsWith("/about/"));
+
               const isActive =
                 isPartnersActive ||
+                isAboutActive ||
                 pathname === fullHref ||
                 pathWithoutLocale === href ||
-                pathWithoutLocale.startsWith(href + "/") ||
+                (key !== "about" && pathWithoutLocale.startsWith(href + "/")) ||
                 (key === "home" &&
                   (pathname === `/${locale}` ||
                     pathWithoutLocale === "/" ||
                     pathWithoutLocale === ""));
-              const isSoon = COMING_SOON.has(key);
-              const showing = desktopSoon === key;
 
-              return (
-                <div key={key} className="relative">
+              const hasDropdown = key === "about" || YEAR_DROPDOWN_KEYS.has(key);
+
+              if (!hasDropdown) {
+                return (
                   <Link
+                    key={key}
                     href={fullHref}
                     dir="ltr"
                     className={[
-                      "flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200",
-                      isActive
-                        ? "text-primary"
-                        : "text-[#F1F1F1] hover:opacity-80",
-                      isSoon ? "cursor-default" : "",
+                      "flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200 cursor-pointer",
+                      isActive ? "text-primary" : "text-[#F1F1F1] hover:opacity-80",
                     ].join(" ")}
                   >
                     {isActive && (
@@ -226,22 +289,79 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                         aria-hidden
                       />
                     )}
-                    <span dir={isRtl ? "rtl" : "ltr"}>{t(key as NavKey)}</span>
+                    <span dir={isRtl ? "rtl" : "ltr"}>{t(key)}</span>
                   </Link>
+                );
+              }
 
-                  {/* Coming-soon chip */}
+              const isOpen = openKey === key;
+              const children = childrenFor(key, href);
+
+              return (
+                <div
+                  key={key}
+                  className="relative"
+                  ref={(el) => {
+                    dropdownRefs.current[key] = el;
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenKey((k) => (k === key ? null : key))}
+                    aria-expanded={isOpen}
+                    aria-haspopup="menu"
+                    dir="ltr"
+                    className={[
+                      "flex items-center gap-1 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200 cursor-pointer",
+                      isActive ? "text-primary" : "text-[#F1F1F1] hover:opacity-80",
+                    ].join(" ")}
+                  >
+                    {isActive && (
+                      <Image
+                        src="/images/hero/indicator.png"
+                        alt=""
+                        width={28}
+                        height={28}
+                        aria-hidden
+                      />
+                    )}
+                    <span dir={isRtl ? "rtl" : "ltr"}>{t(key)}</span>
+                    <ChevronDown
+                      size={14}
+                      className={[
+                        "transition-transform duration-200",
+                        isOpen ? "rotate-180" : "",
+                      ].join(" ")}
+                      aria-hidden
+                    />
+                  </button>
+
                   <AnimatePresence>
-                    {showing && (
-                      <motion.span
-                        key="soon"
-                        initial={{ opacity: 0, y: -4 }}
+                    {isOpen && (
+                      <motion.div
+                        key="dropdown"
+                        initial={{ opacity: 0, y: -6 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-10 text-[10px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5 whitespace-nowrap pointer-events-none"
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.16 }}
+                        role="menu"
+                        className={[
+                          "absolute top-full mt-3 z-20 min-w-[160px] border border-white/10 bg-[#151515] py-2 shadow-xl",
+                          isRtl ? "right-0" : "left-0",
+                        ].join(" ")}
                       >
-                        {t("comingSoon")}
-                      </motion.span>
+                        {children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={`/${locale}${child.href}`}
+                            role="menuitem"
+                            onClick={() => setOpenKey(null)}
+                            className="block px-4 py-2 font-sans text-sm text-[#F1F1F1] transition-colors hover:bg-white/5 hover:text-primary whitespace-nowrap"
+                          >
+                            <span dir={isRtl ? "rtl" : "ltr"}>{child.label}</span>
+                          </Link>
+                        ))}
+                      </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
@@ -276,12 +396,12 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: isRtl ? -30 : 30 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 bg-[#101010] flex flex-col"
+            className="fixed inset-0 z-40 bg-[#101010] flex flex-col overflow-y-auto"
             dir={isRtl ? "rtl" : "ltr"}
           >
-            <div className="h-1 w-full bg-[#EB0028]" />
+            <div className="h-1 w-full bg-[#EB0028] shrink-0" />
             <nav
-              className="flex flex-col flex-1 justify-center px-8 gap-5"
+              className="flex flex-col flex-1 justify-center px-8 py-10 gap-5"
               aria-label="Mobile navigation"
             >
               {NAV_ITEMS.map(({ key, href }, i) => {
@@ -294,8 +414,14 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     pathname.includes(`/${locale}/partner/`) ||
                     pathWithoutLocale.startsWith("/partner/"));
 
+                const isAboutActive =
+                  key === "about" &&
+                  (pathWithoutLocale === "/about" ||
+                    pathWithoutLocale.startsWith("/about/"));
+
                 const isActive =
                   isPartnersActive ||
+                  isAboutActive ||
                   pathname === fullHref ||
                   pathWithoutLocale === href ||
                   pathWithoutLocale.startsWith(href + "/") ||
@@ -303,57 +429,93 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     (pathname === `/${locale}` ||
                       pathWithoutLocale === "/" ||
                       pathWithoutLocale === ""));
-                const isSoon = COMING_SOON.has(key);
-                const showing = mobileSoon === key;
+
+                const hasDropdown = key === "about" || YEAR_DROPDOWN_KEYS.has(key);
+
+                if (!hasDropdown) {
+                  return (
+                    <motion.div
+                      key={key}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 + 0.05, duration: 0.22 }}
+                    >
+                      <Link
+                        href={fullHref}
+                        onClick={() => setMobileOpen(false)}
+                        className={[
+                          "font-helvetica text-3xl font-light block py-0.5 transition-colors",
+                          isActive
+                            ? "text-[#EB0028]"
+                            : "text-[#F1F1F1] hover:text-[#EB0028]",
+                        ].join(" ")}
+                      >
+                        <span dir={isRtl ? "rtl" : "ltr"}>{t(key)}</span>
+                      </Link>
+                    </motion.div>
+                  );
+                }
+
+                const isExpanded = mobileExpandedKey === key;
+                const children = childrenFor(key, href);
 
                 return (
                   <motion.div
                     key={key}
-                    className="flex items-center gap-3"
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 + 0.05, duration: 0.22 }}
                   >
-                    <Link
-                      href={fullHref}
-                      onClick={() => setMobileOpen(false)}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMobileExpandedKey((k) => (k === key ? null : key))
+                      }
+                      aria-expanded={isExpanded}
                       className={[
-                        "font-helvetica text-3xl font-light block py-0.5 transition-colors",
+                        "flex w-full items-center justify-between gap-2 font-helvetica text-3xl font-light py-0.5 transition-colors",
                         isActive
                           ? "text-[#EB0028]"
                           : "text-[#F1F1F1] hover:text-[#EB0028]",
                       ].join(" ")}
                     >
-                      <span dir={isRtl ? "rtl" : "ltr"}>
-                        {t(key as NavKey)}
-                      </span>
-                    </Link>
+                      <span dir={isRtl ? "rtl" : "ltr"}>{t(key)}</span>
+                      <ChevronDown
+                        size={22}
+                        className={[
+                          "transition-transform duration-200 shrink-0",
+                          isExpanded ? "rotate-180" : "",
+                        ].join(" ")}
+                        aria-hidden
+                      />
+                    </button>
 
-                    {isSoon && (
-                      <AnimatePresence mode="wait">
-                        {showing ? (
-                          <motion.span
-                            key="chip-active"
-                            initial={{ opacity: 0, scale: 0.85 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.85 }}
-                            className="text-[10px] font-helvetica font-bold uppercase tracking-widest bg-[#EB0028] text-white px-2 py-0.5"
-                          >
-                            {t("comingSoon")}
-                          </motion.span>
-                        ) : (
-                          <motion.span
-                            key="chip-idle"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="text-[10px] font-helvetica font-bold uppercase tracking-widest border border-[#EB0028]/50 text-[#EB0028]/70 px-2 py-0.5"
-                          >
-                            Soon
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    )}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          key="mobile-dropdown"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className={[
+                            "flex flex-col gap-3 mt-3 overflow-hidden",
+                            isRtl ? "border-e border-white/10 pe-4" : "border-s border-white/10 ps-4",
+                          ].join(" ")}
+                        >
+                          {children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={`/${locale}${child.href}`}
+                              onClick={() => setMobileOpen(false)}
+                              className="font-helvetica text-lg text-white/70 transition-colors hover:text-primary"
+                            >
+                              <span dir={isRtl ? "rtl" : "ltr"}>{child.label}</span>
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 );
               })}

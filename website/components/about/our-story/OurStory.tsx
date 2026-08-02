@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Navbar } from '@/components/layout/Navbar';
 import { MotionReveal } from './MotionReveal';
+import { ShareCommunityBar } from './ShareCommunityBar';
 
 interface Milestone {
   date: string;
@@ -13,29 +13,32 @@ interface Milestone {
   year: string;
   frontImage: string;
   middleImage: string;
-  backImage: string;
+  backImage?: string;
 }
 
-const MILESTONE_IMAGES: Array<{ front: string; middle: string; back: string }> = [
+const MILESTONE_IMAGES: Array<{ front: string; middle: string; back?: string }> = [
   {
-    front: '/images/about/our-story/trail-07-laptop-ted-email.png',
-    middle: '/images/about/our-story/trail-02-team-selfie.png',
-    back: '/images/about/our-story/trail-03-abstract-blur.png',
+    // The TED welcome email that licensed TEDx AlQassaa, with the two founders peeking behind it.
+    front: '/images/about/our-story/m1-ted-welcome-email.png',
+    middle: '/images/about/our-story/m1-founder-portrait-woman.png',
+    back: '/images/about/our-story/m1-founder-portrait-man.png',
   },
   {
-    front: '/images/about/our-story/trail-01-tedx-meaning.png',
-    middle: '/images/about/our-story/trail-05-speaker-cards-grid.png',
-    back: '/images/about/our-story/trail-08-abstract-blur-2.png',
+    // The social-media teaser card up front, with the volunteer-certificate photo and a "Coming soon 2024" teaser peeking behind.
+    front: '/images/about/our-story/m2-tedx-alqassaa-teaser.png',
+    middle: '/images/about/our-story/m2-m3-volunteer-certificates-trio.png',
+    back: '/images/about/our-story/m2-coming-soon-2024.jpg',
   },
   {
-    front: '/images/about/our-story/trail-12-volunteers-certificates-a.png',
-    middle: '/images/about/our-story/trail-13-volunteers-certificates-b.png',
-    back: '/images/about/our-story/trail-06-portrait-blur.png',
+    // The volunteer-certificate photo takes center stage here, backed by the full team-card grid and a second certificate photo.
+    front: '/images/about/our-story/m2-m3-volunteer-certificates-trio.png',
+    middle: '/images/about/our-story/m3-team-cards-grid.png',
+    back: '/images/about/our-story/m3-volunteer-certificates-quartet.png',
   },
   {
-    front: '/images/about/our-story/trail-04-tedx-teaser-card.png',
-    middle: '/images/about/our-story/trail-10-audience-coming-soon.png',
-    back: '/images/about/our-story/trail-14-portrait-blur-2.png',
+    // Only two source photos for this milestone — the pottery-hands graphic explaining "Al-Qassaa", backed by the team group photo.
+    front: '/images/about/our-story/m4-pottery-meaning.png',
+    middle: '/images/about/our-story/m4-team-group-selfie.png',
   },
 ];
 
@@ -43,7 +46,7 @@ interface OurStoryProps {
   locale: string;
 }
 
-/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. */
+/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. */
 function MilestoneImageStack({
   front,
   middle,
@@ -52,20 +55,22 @@ function MilestoneImageStack({
 }: {
   front: string;
   middle: string;
-  back: string;
+  back?: string;
   flip: boolean;
 }) {
   return (
     <div className="relative mx-auto h-[190px] w-[240px] lg:h-[220px] lg:w-[280px]">
-      <div
-        className={[
-          'absolute inset-x-8 -top-6 h-full overflow-hidden rounded-2xl',
-          flip ? 'rotate-[8deg]' : '-rotate-[8deg]',
-        ].join(' ')}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={back} alt="" className="h-full w-full object-cover" draggable={false} />
-      </div>
+      {back && (
+        <div
+          className={[
+            'absolute inset-x-8 -top-6 h-full overflow-hidden rounded-2xl',
+            flip ? 'rotate-[8deg]' : '-rotate-[8deg]',
+          ].join(' ')}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={back} alt="" className="h-full w-full object-cover" draggable={false} />
+        </div>
+      )}
 
       <div
         className={[
@@ -108,40 +113,12 @@ export function OurStory({ locale }: OurStoryProps) {
     <section
       className="relative overflow-hidden bg-page-bg"
       dir={isRtl ? 'rtl' : 'ltr'}
-      aria-labelledby="our-story-heading"
+      aria-label={`${t('titlePrefix')} ${t('titleHighlight')}`.trim()}
     >
-      {/* Decorative background pattern, sitting behind all section content — same z-0/z-10 layering as the Events page */}
-      <div className="pointer-events-none absolute inset-0 z-0 select-none opacity-60" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/about/pattern.svg"
-          alt=""
-          className="h-full w-full object-cover object-center"
-          draggable={false}
-          loading="lazy"
-        />
-      </div>
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-1/3 bg-[linear-gradient(to_bottom,#101010_0%,rgba(16,16,16,0.6)_55%,transparent_100%)]"
-        aria-hidden
-      />
-
       <div className="relative z-10">
-        <Navbar locale={locale} />
+        <div className="mx-auto max-w-[1100px] px-6 pb-24 pt-16 lg:pt-20">
 
-        <div className="mx-auto max-w-[1100px] px-6 pb-24 pt-20 lg:pt-28">
-        <h2
-          id="our-story-heading"
-          className={[
-            'text-center font-helvetica text-[40px] font-normal leading-[1.2] text-white lg:text-[56px]',
-            isRtl ? 'font-arabic' : '',
-          ].join(' ')}
-        >
-          {t('titlePrefix') && <span>{t('titlePrefix')} </span>}
-          <span className="text-primary">{t('titleHighlight')}</span>
-        </h2>
-
-        <div className="relative mt-20 lg:mt-28">
+        <div className="relative">
           {/* Center timeline line */}
           <div
             className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/15"
@@ -178,7 +155,10 @@ export function OurStory({ locale }: OurStoryProps) {
                     draggable={false}
                   />
 
-                  <MotionReveal x={textX} className={imageOnStart ? 'col-start-2' : 'col-start-1'}>
+                  <MotionReveal
+                    x={textX}
+                    className={imageOnStart ? 'col-start-2' : 'col-start-1'}
+                  >
                     <span className="inline-block rounded-full bg-white/10 px-3 py-1 font-helvetica text-[11px] tracking-[0.15px] text-white/70">
                       {m.date}
                     </span>
@@ -216,6 +196,13 @@ export function OurStory({ locale }: OurStoryProps) {
               );
             })}
           </div>
+        </div>
+
+        <div className="mt-16 lg:mt-20">
+          <ShareCommunityBar
+            locale={locale}
+            url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://tedxdamascus.com'}/${locale}/about/our-story`}
+          />
         </div>
         </div>
       </div>

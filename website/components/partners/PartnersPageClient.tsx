@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { partnersApi, PartnerData, PartnerViewData } from "@/lib/api/partners";
 import { getLang } from "@/mappers/partner.mapper";
@@ -67,6 +68,7 @@ const formatPartner = (
 };
 
 export default function PartnersPageClient({ locale }: Props) {
+  const yearParam = useSearchParams().get("year");
   const [allPartners, setAllPartners] = useState<PartnerViewData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -86,8 +88,13 @@ export default function PartnersPageClient({ locale }: Props) {
       .finally(() => setLoading(false));
   }, [locale]);
 
+  // Nav's year dropdown links here with `?year=` to scope the page to one edition.
+  const yearFiltered = yearParam
+    ? allPartners.filter((p) => String(p.year ?? "") === yearParam)
+    : allPartners;
+
   const getByTier = (tier: string) =>
-    allPartners.filter((p) => {
+    yearFiltered.filter((p) => {
       const type = p.partner_ship_type?.toLowerCase().trim();
       return type === tier.toLowerCase().trim();
     });
@@ -113,7 +120,7 @@ export default function PartnersPageClient({ locale }: Props) {
         <DiamondPartner locale={locale} partners={diamondPartners} />
         <GoldenPartner locale={locale} partners={goldenPartners} />
         <SilverPartner locale={locale} partners={silverPartners} />
-        <DynamicPartners locale={locale} partners={allPartners} />
+        <DynamicPartners locale={locale} partners={yearFiltered} />
         <BecomePartner locale={locale} />
       </div>
 
