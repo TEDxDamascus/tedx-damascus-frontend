@@ -2,14 +2,20 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
+/** The backend's object storage serves plain http:// with no TLS on that port, so the browser blocks it as mixed content on our https:// pages. Route it through weserv's HTTPS image proxy until the storage itself is served over TLS. */
+function toSecureImageUrl(url: string): string {
+  if (!url.startsWith('http://')) return url;
+  return `https://images.weserv.nl/?url=${encodeURIComponent(url.slice('http://'.length))}`;
+}
+
 export function getImageUrl(id: string | null | undefined | any): string {
   if (!id) return '/images/events/event-card.png';
   if (typeof id === 'string') {
-    if (id.startsWith('http') || id.startsWith('/')) return id;
+    if (id.startsWith('http') || id.startsWith('/')) return toSecureImageUrl(id);
     return `${API_BASE_URL}/files/${id}`;
   }
   if (id && typeof id === 'object' && id.url) {
-    return id.url;
+    return toSecureImageUrl(id.url);
   }
   return '/images/events/event-card.png';
 }
