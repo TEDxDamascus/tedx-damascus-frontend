@@ -5,6 +5,61 @@ website
 │  ├─ agent-manager.json
 │  ├─ package-lock.json
 │  └─ package.json
+├─ .playwright-mcp
+│  ├─ console-2026-07-25T04-18-43-606Z.log
+│  ├─ console-2026-07-25T04-39-21-185Z.log
+│  ├─ console-2026-07-25T04-57-19-422Z.log
+│  ├─ console-2026-07-25T05-18-59-752Z.log
+│  ├─ console-2026-07-25T19-31-06-294Z.log
+│  ├─ console-2026-07-25T19-31-26-892Z.log
+│  ├─ console-2026-07-25T19-31-47-733Z.log
+│  ├─ console-2026-07-25T19-32-05-104Z.log
+│  ├─ console-2026-07-25T19-32-41-244Z.log
+│  ├─ console-2026-07-31T19-10-45-940Z.log
+│  ├─ console-2026-07-31T20-00-11-057Z.log
+│  ├─ console-2026-08-01T08-55-02-320Z.log
+│  ├─ console-2026-08-01T09-28-08-911Z.log
+│  ├─ console-2026-08-01T09-29-38-602Z.log
+│  ├─ console-2026-08-01T09-30-13-969Z.log
+│  ├─ console-2026-08-01T09-49-07-533Z.log
+│  ├─ console-2026-08-01T19-07-37-073Z.log
+│  ├─ console-2026-08-01T19-24-25-674Z.log
+│  ├─ console-2026-08-01T19-24-42-283Z.log
+│  ├─ console-2026-08-01T19-50-33-634Z.log
+│  ├─ console-2026-08-01T21-45-48-532Z.log
+│  ├─ console-2026-08-02T05-14-58-705Z.log
+│  ├─ console-2026-08-02T05-15-05-431Z.log
+│  ├─ console-2026-08-02T05-16-02-760Z.log
+│  ├─ figma-our-story.png
+│  ├─ member-bio.png
+│  ├─ page-2026-07-25T04-18-46-126Z.yml
+│  ├─ page-2026-07-25T04-39-21-835Z.yml
+│  ├─ page-2026-07-25T04-57-20-019Z.yml
+│  ├─ page-2026-07-25T05-19-01-442Z.yml
+│  ├─ page-2026-07-25T19-31-07-975Z.yml
+│  ├─ page-2026-07-25T19-31-28-330Z.yml
+│  ├─ page-2026-07-25T19-31-48-116Z.yml
+│  ├─ page-2026-07-25T19-32-05-556Z.yml
+│  ├─ page-2026-07-25T19-32-41-610Z.yml
+│  ├─ page-2026-08-01T08-55-05-101Z.yml
+│  ├─ page-2026-08-01T09-28-11-383Z.yml
+│  ├─ page-2026-08-01T09-29-39-242Z.yml
+│  ├─ page-2026-08-01T09-30-14-302Z.yml
+│  ├─ page-2026-08-01T09-49-09-316Z.yml
+│  ├─ page-2026-08-01T19-07-39-467Z.yml
+│  ├─ page-2026-08-01T19-24-26-527Z.yml
+│  ├─ page-2026-08-01T19-24-36-260Z.png
+│  ├─ page-2026-08-01T19-24-44-668Z.yml
+│  ├─ page-2026-08-01T19-24-49-202Z.png
+│  ├─ page-2026-08-01T19-37-15-699Z.png
+│  ├─ page-2026-08-01T19-37-34-874Z.png
+│  ├─ page-2026-08-01T19-50-35-154Z.yml
+│  ├─ page-2026-08-01T19-50-43-298Z.png
+│  ├─ page-2026-08-01T21-45-49-171Z.yml
+│  ├─ page-2026-08-02T05-14-59-523Z.yml
+│  ├─ page-2026-08-02T05-15-05-822Z.yml
+│  ├─ page-2026-08-02T05-16-03-407Z.yml
+│  └─ page-2026-08-02T05-17-41-084Z.yml
 ├─ app
 │  ├─ about
 │  │  └─ page.tsx
@@ -22,7 +77,12 @@ website
 │  ├─ events
 │  │  └─ page.tsx
 │  ├─ forms
-│  │  └─ page.tsx
+│  │  ├─ page.tsx
+│  │  └─ [slug]
+│  │     ├─ page.tsx
+│  │     └─ [year]
+│  │        └─ [formSlug]
+│  │           └─ page.tsx
 │  ├─ home
 │  │  └─ page.tsx
 │  ├─ icon.jpg
@@ -36,9 +96,14 @@ website
 │  │  └─ page.tsx
 │  └─ [locale]
 │     ├─ about
+│     │  ├─ our-story
+│     │  │  └─ page.tsx
 │     │  └─ page.tsx
 │     ├─ answers
 │     │  └─ page.tsx
+│     ├─ articles
+│     │  └─ [slug]
+│     │     └─ page.tsx
 │     ├─ attendee
 │     │  └─ page.tsx
 │     ├─ blog
@@ -53,12 +118,17 @@ website
 │     │     └─ page.tsx
 │     ├─ forms
 │     │  └─ [slug]
-│     │     └─ page.tsx
+│     │     ├─ page.tsx
+│     │     └─ [year]
+│     │        └─ [formSlug]
+│     │           └─ page.tsx
 │     ├─ home
 │     │  └─ page.tsx
 │     ├─ layout.tsx
 │     ├─ loading.tsx
 │     ├─ not-found.tsx
+│     ├─ organizers
+│     │  └─ page.tsx
 │     ├─ page.tsx
 │     ├─ partner
 │     │  └─ [slug]
@@ -68,23 +138,52 @@ website
 │     ├─ speaker
 │     │  └─ page.tsx
 │     ├─ speakers
-│     │  └─ page.tsx
+│     │  ├─ page.tsx
+│     │  └─ [slug]
+│     │     └─ page.tsx
 │     ├─ team
-│     │  └─ page.tsx
+│     │  ├─ page.tsx
+│     │  └─ [slug]
+│     │     └─ page.tsx
 │     ├─ volunteer
 │     │  └─ page.tsx
 │     └─ wall
 │        └─ questions
-│           ├─ page.tsx
-│           └─ [id]
-│              └─ page.tsx
+│           ├─ detail
+│           │  └─ page.tsx
+│           └─ page.tsx
 ├─ components
+│  ├─ about
+│  │  ├─ AboutContent.tsx
+│  │  ├─ AboutHero.tsx
+│  │  ├─ our-story
+│  │  │  ├─ ImageTrail.tsx
+│  │  │  ├─ index.ts
+│  │  │  ├─ MotionReveal.tsx
+│  │  │  ├─ OurStory.tsx
+│  │  │  └─ ShareCommunityBar.tsx
+│  │  └─ StatsSection.tsx
 │  ├─ answers
 │  │  ├─ AnswersHero.tsx
 │  │  ├─ AnswersPageClient.tsx
 │  │  ├─ AnswersPaginationList.tsx
 │  │  ├─ index.ts
 │  │  └─ QuestionHistory.tsx
+│  ├─ articles
+│  │  ├─ ArticleContent.tsx
+│  │  ├─ ReferencesGrid.tsx
+│  │  ├─ RelatedArticles.tsx
+│  │  ├─ RelatedBlogCards.tsx
+│  │  ├─ ShareBar.tsx
+│  │  └─ types.ts
+│  ├─ blog
+│  │  ├─ BlogCard.tsx
+│  │  ├─ BlogFilters.tsx
+│  │  ├─ BlogGrid.tsx
+│  │  ├─ BlogHero.tsx
+│  │  ├─ BlogSection.tsx
+│  │  ├─ CustomSelect.tsx
+│  │  └─ types.ts
 │  ├─ events
 │  │  ├─ CallForVoicesSection.tsx
 │  │  ├─ EventCard.tsx
@@ -134,6 +233,14 @@ website
 │  │  ├─ Footer.tsx
 │  │  ├─ index.ts
 │  │  └─ Navbar.tsx
+│  ├─ organizer
+│  │  ├─ OrganizerBio.jsx
+│  │  ├─ OrganizerProfileHero.jsx
+│  │  └─ OrganizerSpotlight.jsx
+│  ├─ organizers
+│  │  ├─ OrganizerCard.jsx
+│  │  ├─ OrganizersGrid.jsx
+│  │  └─ OrganizersHero.jsx
 │  ├─ partner
 │  │  ├─ PartnerContactCard.tsx
 │  │  ├─ PartnerContentDetails.tsx
@@ -144,7 +251,7 @@ website
 │  │  └─ PartnerServices.tsx
 │  ├─ partners
 │  │  ├─ BecomePartner.tsx
-│  │  ├─ BronzePartner.tsx
+│  │  ├─ CustomPartnerSection.tsx
 │  │  ├─ DiamondPartner.tsx
 │  │  ├─ DynamicPartners.tsx
 │  │  ├─ GoldenPartner.tsx
@@ -162,6 +269,19 @@ website
 │  │  ├─ Select.tsx
 │  │  ├─ StarRating.tsx
 │  │  └─ TextInput.tsx
+│  ├─ speakers
+│  │  ├─ SpeakerCard.tsx
+│  │  ├─ SpeakerDetailAbout.tsx
+│  │  ├─ SpeakerDetailClient.tsx
+│  │  ├─ SpeakerDetailGallery.tsx
+│  │  ├─ SpeakerDetailHeader.tsx
+│  │  ├─ SpeakerDetailVideos.tsx
+│  │  └─ SpeakersPageClient.tsx
+│  ├─ team
+│  │  ├─ index.ts
+│  │  ├─ MemberDetail.tsx
+│  │  ├─ TeamCard.tsx
+│  │  └─ TeamPage.tsx
 │  └─ wall
 │     ├─ QuestionDetailClient.tsx
 │     └─ QuestionsListClient.tsx
@@ -169,9 +289,14 @@ website
 ├─ i18n.ts
 ├─ lib
 │  ├─ api
+│  │  ├─ blog-references.service.ts
+│  │  ├─ blog-references.types.ts
+│  │  ├─ blogs.service.ts
+│  │  ├─ blogs.types.ts
 │  │  ├─ client.ts
 │  │  ├─ forms-schema.ts
 │  │  ├─ generic-api-service.ts
+│  │  ├─ organizers.ts
 │  │  ├─ partners.ts
 │  │  ├─ speakers-service.ts
 │  │  └─ wall-cards.ts
@@ -183,6 +308,11 @@ website
 │  │     ├─ index.ts
 │  │     ├─ SocialIcons.tsx
 │  │     └─ TypewriterText.tsx
+│  ├─ forms-error-i18n.ts
+│  ├─ forms-routes.ts
+│  ├─ hooks
+│  │  └─ useBlogs.ts
+│  ├─ seo.ts
 │  └─ utils.ts
 ├─ mappers
 │  └─ partner.mapper.ts
@@ -190,6 +320,8 @@ website
 │  ├─ ar.json
 │  └─ en.json
 ├─ next.config.ts
+├─ our-story-en-v2.png
+├─ our-story-en-v3.png
 ├─ package-lock.json
 ├─ package.json
 ├─ postcss.config.mjs
@@ -197,6 +329,36 @@ website
 │  ├─ favicon.ico
 │  └─ images
 │     ├─ about
+│     │  ├─ About TED.png
+│     │  ├─ About TEDx.png
+│     │  ├─ About TEDxDamascus.png
+│     │  ├─ our-story
+│     │  │  ├─ m1-founder-portrait-man.png
+│     │  │  ├─ m1-founder-portrait-woman.png
+│     │  │  ├─ m1-ted-welcome-email.png
+│     │  │  ├─ m2-coming-soon-2024.jpg
+│     │  │  ├─ m2-m3-volunteer-certificates-trio.png
+│     │  │  ├─ m2-tedx-alqassaa-teaser.png
+│     │  │  ├─ m3-team-cards-grid.png
+│     │  │  ├─ m3-volunteer-certificates-quartet.png
+│     │  │  ├─ m4-pottery-meaning.png
+│     │  │  ├─ m4-team-group-selfie.png
+│     │  │  ├─ share-qr.png
+│     │  │  ├─ timeline-ellipse.svg
+│     │  │  ├─ trail-01-tedx-meaning.png
+│     │  │  ├─ trail-02-team-selfie.png
+│     │  │  ├─ trail-03-abstract-blur.png
+│     │  │  ├─ trail-04-tedx-teaser-card.png
+│     │  │  ├─ trail-05-speaker-cards-grid.png
+│     │  │  ├─ trail-06-portrait-blur.png
+│     │  │  ├─ trail-07-laptop-ted-email.png
+│     │  │  ├─ trail-08-abstract-blur-2.png
+│     │  │  ├─ trail-09-portrait-office.png
+│     │  │  ├─ trail-10-audience-coming-soon.png
+│     │  │  ├─ trail-11-portrait-outdoor.png
+│     │  │  ├─ trail-12-volunteers-certificates-a.png
+│     │  │  ├─ trail-13-volunteers-certificates-b.png
+│     │  │  └─ trail-14-portrait-blur-2.png
 │     │  └─ pattern.svg
 │     ├─ add-your-line
 │     │  ├─ arrow-left.svg
@@ -206,6 +368,13 @@ website
 │     │  ├─ double-quotes.svg
 │     │  ├─ rectangle.svg
 │     │  └─ triangle.svg
+│     ├─ blogs
+│     │  ├─ article img.png
+│     │  ├─ article.png
+│     │  ├─ contentArticle.png
+│     │  ├─ Group 2.svg
+│     │  ├─ pattern.svg
+│     │  └─ person.png
 │     ├─ call-for-voices
 │     │  ├─ arrow-right.png
 │     │  ├─ group-left.png
@@ -256,6 +425,7 @@ website
 │     │  ├─ deco-line.png
 │     │  ├─ group-icon.png
 │     │  ├─ hero-attendee.png
+│     │  ├─ hero-generic.png
 │     │  ├─ hero-speaker.jpg
 │     │  └─ hero-volunteer.png
 │     ├─ gallery
@@ -302,6 +472,21 @@ website
 │     │  ├─ pattern.svg
 │     │  ├─ PlatinumPartnerLogo.png
 │     │  └─ socialmedia.png
+│     ├─ speakers
+│     │  ├─ Background.png
+│     │  ├─ email.svg
+│     │  └─ linked-in.svg
+│     ├─ team
+│     │  ├─ border-bottom-left.png
+│     │  ├─ border-top-right.png
+│     │  ├─ dina-al-homsi.jpg
+│     │  ├─ fadi-mansour.jpg
+│     │  ├─ hani-jaber.jpg
+│     │  ├─ lina-safadi.jpg
+│     │  ├─ maya-kassem.jpg
+│     │  ├─ omar-al-khatib.jpg
+│     │  ├─ samer-hamwi.jpg
+│     │  └─ zaid-murad.jpg
 │     └─ teams-partners
 │        ├─ Group.png
 │        ├─ organizers-card.png
@@ -323,6 +508,9 @@ website
 ├─ types
 │  ├─ form-schema.ts
 │  └─ index.ts
-└─ vercel.json
+├─ vercel.json
+├─ verify2.png
+├─ verify3.png
+└─ verify4.png
 
 ```

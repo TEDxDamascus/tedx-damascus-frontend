@@ -1,13 +1,15 @@
 // lib/api/client.ts
 // Generic API Client with Axios
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export interface PaginationParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
+  lang?: string;
+  search?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -39,7 +41,7 @@ class ApiClient {
     this.client = axios.create({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       timeout: 30000,
     });
@@ -56,7 +58,7 @@ class ApiClient {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     this.client.interceptors.response.use(
@@ -67,27 +69,28 @@ class ApiClient {
           this.handleUnauthorized();
         }
         return Promise.reject(this.formatError(error));
-      }
+      },
     );
   }
 
   private getToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
     }
     return null;
   }
 
   private handleUnauthorized(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
   }
 
   private formatError(error: any): ApiError {
     return {
-      message: error.response?.data?.message || error.message || 'An error occurred',
+      message:
+        error.response?.data?.message || error.message || "An error occurred",
       statusCode: error.response?.status || 500,
       error: error.response?.data?.error,
     };
@@ -98,18 +101,38 @@ class ApiClient {
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.post(url, data, config);
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.post(
+      url,
+      data,
+      config,
+    );
     return response.data;
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     const response: AxiosResponse<T> = await this.client.put(url, data, config);
     return response.data;
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response: AxiosResponse<T> = await this.client.patch(url, data, config);
+  async patch<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.patch(
+      url,
+      data,
+      config,
+    );
     return response.data;
   }
 
@@ -118,13 +141,17 @@ class ApiClient {
     return response.data;
   }
 
-  async uploadFile<T>(url: string, file: File, fieldName: string = 'file'): Promise<T> {
+  async uploadFile<T>(
+    url: string,
+    file: File,
+    fieldName: string = "file",
+  ): Promise<T> {
     const formData = new FormData();
     formData.append(fieldName, file);
 
     const response: AxiosResponse<T> = await this.client.post(url, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
@@ -137,15 +164,14 @@ export class CrudService<T> {
 
   constructor(endpoint: string, isAuthenticated: boolean = false) {
     this.endpoint = endpoint;
-    this.client = new ApiClient(
-      'https://api.tedxdamascus.sy',
-      isAuthenticated
-    );
+    this.client = new ApiClient("https://api.tedxdamascus.sy", isAuthenticated);
   }
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<T>> {
-    const queryString = params ? this.buildQueryString(params) : '';
-    return this.client.get<PaginatedResponse<T>>(`${this.endpoint}${queryString}`);
+    const queryString = params ? this.buildQueryString(params) : "";
+    return this.client.get<PaginatedResponse<T>>(
+      `${this.endpoint}${queryString}`,
+    );
   }
 
   async getById(id: string | number): Promise<T> {
@@ -176,13 +202,22 @@ export class CrudService<T> {
     return this.client.post<void>(`${this.endpoint}/bulk-delete`, { ids });
   }
 
-  async search(query: string, params?: PaginationParams): Promise<PaginatedResponse<T>> {
+  async search(
+    query: string,
+    params?: PaginationParams,
+  ): Promise<PaginatedResponse<T>> {
     const queryString = this.buildQueryString({ ...params, search: query });
-    return this.client.get<PaginatedResponse<T>>(`${this.endpoint}${queryString}`);
+    return this.client.get<PaginatedResponse<T>>(
+      `${this.endpoint}${queryString}`,
+    );
   }
 
   async uploadImage(id: string | number, file: File): Promise<T> {
-    return this.client.uploadFile<T>(`${this.endpoint}/${id}/image`, file, 'image');
+    return this.client.uploadFile<T>(
+      `${this.endpoint}/${id}/image`,
+      file,
+      "image",
+    );
   }
 
   private buildQueryString(params: any): string {
@@ -193,18 +228,18 @@ export class CrudService<T> {
       }
     });
     const queryString = query.toString();
-    return queryString ? `?${queryString}` : '';
+    return queryString ? `?${queryString}` : "";
   }
 }
 
 export const publicApiClient = new ApiClient(
-  'https://api.tedxdamascus.sy',
-  false
+  "https://api.tedxdamascus.sy",
+  false,
 );
 
 export const adminApiClient = new ApiClient(
-  'https://api.tedxdamascus.sy',
-  true
+  "https://api.tedxdamascus.sy",
+  true,
 );
 
 export default ApiClient;
