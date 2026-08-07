@@ -1,4 +1,5 @@
 'use client';
+
 import Image from 'next/image';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
 import { RelatedArticleCardProps } from './types';
@@ -7,6 +8,8 @@ import { getImageUrl } from '@/lib/api/client';
 interface RelatedArticlesProps {
   articles: RelatedArticleCardProps[];
   locale?: string;
+  shareUrl?: string;
+  shareTitle?: string;
   author?: {
     name?: string;
     bio?: string;
@@ -17,10 +20,31 @@ interface RelatedArticlesProps {
   } | null;
 }
 
-export function RelatedArticles({ articles, locale, author }: RelatedArticlesProps) {
+function buildShareLinks(url: string, title: string) {
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  return {
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}`,
+    // Instagram has no web share URL for posts — open org profile as fallback
+    instagram: 'https://www.instagram.com/TEDxDamascus',
+  };
+}
+
+export function RelatedArticles({
+  articles,
+  locale,
+  author,
+  shareUrl = '',
+  shareTitle,
+}: RelatedArticlesProps) {
   const featuredArticle = articles[0];
   const imageUrl = featuredArticle?.image ? getImageUrl(featuredArticle.image) : '/images/blogs/article img.png';
   const isRtl = locale === 'ar';
+
+  const title = shareTitle || featuredArticle?.title || 'TEDx Damascus';
+  const shareLinks = buildShareLinks(shareUrl, title);
+  const shareCaption = isRtl ? 'شارك مع مجتمعك!' : 'Share with your community!';
 
   return (
     <div className="w-full bg-black text-white font-helvetica">
@@ -107,21 +131,39 @@ export function RelatedArticles({ articles, locale, author }: RelatedArticlesPro
 
 
     <div className="relative z-10">
-      <h3 className="text-[16px] font-bold text-[#101010]">
-        Share with your community!
+      <h3 className={['text-[16px] font-bold text-[#101010]', isRtl ? 'font-arabic' : ''].join(' ')}>
+        {shareCaption}
       </h3>
     </div>
 
     <div className="relative h-[24px] max-w-[88px] z-10 flex gap-5">
-      <a href="#" aria-label="Facebook">
+      <a
+        href={shareLinks.facebook}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on Facebook"
+        className="transition-opacity hover:opacity-70"
+      >
         <Facebook className="w-6 h-6 fill-current stroke-none text-[#101010]" />
       </a>
 
-      <a href="#" aria-label="Instagram">
+      <a
+        href={shareLinks.instagram}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="TEDx Damascus on Instagram"
+        className="transition-opacity hover:opacity-70"
+      >
         <Instagram className="w-6 h-6 text-[#101010] stroke-[2.5]" />
       </a>
 
-      <a href="#" aria-label="LinkedIn">
+      <a
+        href={shareLinks.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on LinkedIn"
+        className="transition-opacity hover:opacity-70"
+      >
         <Linkedin className="w-6 h-6 fill-current stroke-none text-[#101010]" />
       </a>
     </div>
