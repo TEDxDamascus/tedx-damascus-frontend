@@ -27,10 +27,12 @@ export async function generateStaticParams() {
     throw new Error("API did not return array");
   }
 
-  return partners.flatMap((p: any) => [
-    { locale: "en", slug: p.slug?.en?.trim() },
-    { locale: "ar", slug: p.slug?.ar?.trim() },
-  ]).filter((entry) => Boolean(entry.slug));
+  return partners
+    .flatMap((p: any) => [
+      { locale: "en", slug: p.slug?.en?.trim() },
+      { locale: "ar", slug: p.slug?.ar?.trim() },
+    ])
+    .filter((entry) => Boolean(entry.slug));
 }
 
 async function getPartner(slug: string) {
@@ -60,10 +62,8 @@ async function getPartner(slug: string) {
   return partner;
 }
 
-export default async function PartnerDetailsPage({
-  params,
-}: PageProps) {
-  const { locale, slug } = await params; // ✅ FIX أهم سطر
+export default async function PartnerDetailsPage({ params }: PageProps) {
+  const { locale, slug } = await params;
 
   const partner = await getPartner(slug);
 
@@ -73,11 +73,5 @@ export default async function PartnerDetailsPage({
 
   const mappedPartner = mapPartnerToDetailsView(partner, locale);
 
-  return (
-    <PartnerDetails
-      locale={locale}
-      slug={slug}
-      partner={mappedPartner}
-    />
-  );
+  return <PartnerDetails locale={locale} slug={slug} partner={mappedPartner} />;
 }
