@@ -90,7 +90,7 @@ export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) 
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const { linkedin, email } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
+  const { linkedin } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
 
   return (
     <>
@@ -118,7 +118,6 @@ export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) 
             description={loc(speaker.description, isRtl ? 'ar' : 'en')}
             imageUrl={getImageUrl(speaker.speaker_image)}
             linkedinUrl={linkedin}
-            emailUrl={email}
             isRtl={isRtl}
           />
           <SpeakerDetailAbout

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -12,8 +13,23 @@ export interface SpeakerDetailHeaderProps {
   description: string;
   imageUrl?: string;
   linkedinUrl?: string;
-  emailUrl?: string;
   isRtl: boolean;
+}
+
+function normalizeExternalUrl(url: string): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `https://${url}`;
+}
+
+function buildShareLinks(url: string, text: string) {
+  const encodedUrl = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(text);
+  return {
+    whatsapp: `https://wa.me/?text=${encodedText}%20${encodedUrl}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+  };
 }
 
 export function SpeakerDetailHeader({
@@ -22,9 +38,81 @@ export function SpeakerDetailHeader({
   description,
   imageUrl,
   linkedinUrl,
-  emailUrl,
   isRtl,
 }: SpeakerDetailHeaderProps) {
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const shareMessage = isRtl
+    ? `تعرّف على ${name} في TEDx Damascus`
+    : `Check out ${name} at TEDx Damascus`;
+
+  const labels = {
+    linkedin: isRtl ? 'لينكد إن' : 'LINKEDIN',
+    share: isRtl ? 'مشاركة' : 'PRESS KIT',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    copyLink: isRtl ? 'نسخ الرابط' : 'Copy Link',
+    copied: isRtl ? 'تم النسخ!' : 'Copied!',
+    shareVia: isRtl ? 'مشاركة عبر' : 'Share via',
+  };
+
+  useEffect(() => {
+    if (!showSharePopup) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowSharePopup(false);
+    }
+
+    function onPointerDown(e: MouseEvent) {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setShowSharePopup(false);
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onPointerDown);
+    };
+  }, [showSharePopup]);
+
+  async function handleShare() {
+    const url = window.location.href;
+    const title = document.title || name;
+
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title, text: shareMessage, url });
+        return;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+      }
+    }
+
+    setShowSharePopup(true);
+  }
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard access denied — no-op
+    }
+  }
+
+  const normalizedLinkedin = linkedinUrl ? normalizeExternalUrl(linkedinUrl) : undefined;
+
+  const actionClass = [
+    'flex items-center gap-2.5 font-sans text-[13px] font-bold uppercase tracking-[1px]',
+    'text-[#A8A8A8] transition-colors hover:text-white',
+    isRtl ? 'font-arabic normal-case tracking-normal' : '',
+  ].join(' ');
+
   return (
     <section
       className="relative overflow-hidden bg-black"
@@ -35,7 +123,6 @@ export function SpeakerDetailHeader({
         className="pointer-events-none absolute inset-0 z-0"
         aria-hidden
       >
-        {/* Pattern tile — subtle opacity */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={PATTERN_SRC}
@@ -46,7 +133,6 @@ export function SpeakerDetailHeader({
           ].join(' ')}
           draggable={false}
         />
-        {/* Left-side gradient: hides pattern behind photo area */}
         <div
           className={[
             'absolute inset-y-0 w-[65%] to-transparent',
@@ -55,7 +141,6 @@ export function SpeakerDetailHeader({
               : 'left-0 bg-gradient-to-r from-black via-black/95',
           ].join(' ')}
         />
-        {/* Bottom fade */}
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black to-transparent" />
       </div>
 
@@ -67,11 +152,8 @@ export function SpeakerDetailHeader({
             'sm:flex-row sm:items-center sm:gap-12 lg:gap-16',
           ].join(' ')}
         >
-
-          {/* ── Photo with decorative SVG shapes behind it ── */}
+          {/* ── Photo ── */}
           <div className="relative shrink-0 w-[240px] sm:w-[280px] lg:w-[340px]">
-
-            {/* Triangle — top-right, behind the photo */}
             <div
               aria-hidden
               className={[
@@ -85,7 +167,6 @@ export function SpeakerDetailHeader({
               <img src="/images/add-your-line/triangle.svg" alt="" className="w-full h-full" draggable={false} />
             </div>
 
-            {/* Rectangle — bottom-left, behind the photo */}
             <div
               aria-hidden
               className={[
@@ -99,7 +180,6 @@ export function SpeakerDetailHeader({
               <img src="/images/add-your-line/rectangle.svg" alt="" className="w-full h-full" draggable={false} />
             </div>
 
-            {/* Photo — z-[1] so it sits on top of the shapes */}
             <div className="relative z-[1] aspect-[3/4] w-full overflow-hidden">
               <Image
                 src={imageUrl || SPEAKER_PLACEHOLDER}
@@ -119,7 +199,6 @@ export function SpeakerDetailHeader({
               isRtl ? 'items-end text-end gap-4' : 'items-start text-start gap-4',
             ].join(' ')}
           >
-            {/* Name — large, red, Figma style */}
             <h1
               className={[
                 'text-primary font-bold leading-tight',
@@ -130,7 +209,6 @@ export function SpeakerDetailHeader({
               {name}
             </h1>
 
-            {/* Bio / roles — bold, white */}
             {bio && (
               <p
                 className={[
@@ -142,7 +220,6 @@ export function SpeakerDetailHeader({
               </p>
             )}
 
-            {/* Description / quote — muted white with red quotes */}
             {description && (
               <p
                 className={[
@@ -150,71 +227,119 @@ export function SpeakerDetailHeader({
                   isRtl ? 'font-arabic' : 'font-sans',
                 ].join(' ')}
               >
-                <span className="text-primary font-bold">"</span>
+                <span className="text-primary font-bold">&quot;</span>
                 {description.replace(/^[""]|[""]$/g, '')}
-                <span className="text-primary font-bold">"</span>
+                <span className="text-primary font-bold">&quot;</span>
               </p>
             )}
 
-            {/* Social links */}
-            {(emailUrl || linkedinUrl) && (
-              <div
-                className={[
-                  'flex flex-col gap-2.5 mt-2',
-                  isRtl ? 'items-end' : 'items-start',
-                ].join(' ')}
+            {/* LinkedIn + Share */}
+            <div
+              className={[
+                'relative mt-10 sm:mt-12 flex flex-wrap items-center gap-10 sm:gap-12',
+                isRtl ? 'justify-end' : 'justify-start',
+              ].join(' ')}
+            >
+              {normalizedLinkedin && (
+                <Link
+                  href={normalizedLinkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={actionClass}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/speakers/linked-in.svg"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="shrink-0"
+                    draggable={false}
+                  />
+                  <span>{labels.linkedin}</span>
+                </Link>
+              )}
+
+              <button
+                type="button"
+                onClick={handleShare}
+                className={actionClass}
               >
-                {emailUrl && (
-                  <Link
-                    href={emailUrl.startsWith('mailto:') ? emailUrl : `mailto:${emailUrl}`}
-                    className={[
-                      'flex items-center gap-2.5 text-white/60 text-sm hover:text-white transition-colors',
-                      isRtl ? 'flex-row-reverse' : '',
-                    ].join(' ')}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/images/speakers/email.svg"
-                      alt=""
-                      width={15}
-                      height={12}
-                      className="shrink-0"
-                      draggable={false}
-                    />
-                    <span className={isRtl ? 'font-arabic' : 'font-sans'}>
-                      {emailUrl.replace('mailto:', '')}
-                    </span>
-                  </Link>
-                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/speakers/share-button.svg"
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="shrink-0"
+                  draggable={false}
+                />
+                <span>{labels.share}</span>
+              </button>
 
-                {linkedinUrl && (
-                  <Link
-                    href={linkedinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              {/* Fallback share popup */}
+              {showSharePopup && (
+                <div
+                  ref={popupRef}
+                  role="dialog"
+                  aria-label={labels.shareVia}
+                  className={[
+                    'absolute z-20 top-full mt-3 min-w-[220px] rounded-lg border border-white/10 bg-[#1a1a1a] p-3 shadow-xl',
+                    isRtl ? 'end-0' : 'start-0',
+                  ].join(' ')}
+                >
+                  <p
                     className={[
-                      'flex items-center gap-2.5 text-white/60 text-sm hover:text-white transition-colors',
-                      isRtl ? 'flex-row-reverse' : '',
+                      'mb-2 px-2 text-xs font-bold uppercase tracking-wider text-white/40',
+                      isRtl ? 'font-arabic normal-case tracking-normal text-end' : 'font-sans',
                     ].join(' ')}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/images/speakers/linked-in.svg"
-                      alt=""
-                      width={15}
-                      height={10}
-                      className="shrink-0"
-                      draggable={false}
-                    />
-                    <span className={isRtl ? 'font-arabic' : 'font-sans'}>
-                      {linkedinUrl.replace(/^https?:\/\/(www\.)?/, '')}
-                    </span>
-                  </Link>
-                )}
-              </div>
-            )}
+                    {labels.shareVia}
+                  </p>
+                  <div className="flex flex-col gap-0.5">
+                    <a
+                      href={buildShareLinks(window.location.href, shareMessage).whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                      onClick={() => setShowSharePopup(false)}
+                    >
+                      {labels.whatsapp}
+                    </a>
+                    <a
+                      href={buildShareLinks(window.location.href, shareMessage).linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                      onClick={() => setShowSharePopup(false)}
+                    >
+                      LinkedIn
+                    </a>
+                    <a
+                      href={buildShareLinks(window.location.href, shareMessage).facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                      onClick={() => setShowSharePopup(false)}
+                    >
+                      {labels.facebook}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className={[
+                        'rounded-md px-3 py-2.5 text-start text-sm transition-colors hover:bg-white/5',
+                        copied ? 'text-primary' : 'text-white/80 hover:text-white',
+                        isRtl ? 'text-end' : '',
+                      ].join(' ')}
+                    >
+                      {copied ? labels.copied : labels.copyLink}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-
         </div>
       </div>
     </section>
