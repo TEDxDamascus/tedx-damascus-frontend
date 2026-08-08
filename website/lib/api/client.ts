@@ -195,7 +195,7 @@ export const wallApi = {
     apiClient.get('/wall-cards/questions', { params }),
   getQuestionById: (id: string) =>
     apiClient.get(`/wall-cards/history/${id}`),
-  getQuestionAnswers: (questionId: string, params?: { page?: number; limit?: number }) =>
+  getQuestionAnswers: (questionId: string, params?: { page?: number; limit?: number; status?: string }) =>
     apiClient.get(`/wall-cards/history/${questionId}/answers`, { params }),
   getCurrentAnswers: (params?: { page?: number; limit?: number }) =>
     apiClient.get('/wall-cards/current/answers', { params }),

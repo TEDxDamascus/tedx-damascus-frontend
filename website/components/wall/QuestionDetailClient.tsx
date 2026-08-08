@@ -13,6 +13,8 @@ const COMMENTS_SRC = '/images/add-your-line/Comments.svg';
 const ANSWERS_BATCH = 12;
 const ANSWERS_VIEW = 3;
 const H_PER_PAGE = 4;
+// Disabled for now: the "all wall questions" endpoint isn't ready yet.
+const WALL_HISTORY_ENABLED = false;
 
 interface ARow { id: string; text: string }
 interface QRow {
@@ -75,7 +77,7 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
   useEffect(() => {
     setLoadA(true);
     wallApi
-      .getQuestionAnswers(questionId, { page: aBatch, limit: ANSWERS_BATCH })
+      .getQuestionAnswers(questionId, { page: aBatch, limit: ANSWERS_BATCH, status: 'approved' })
       .then((res: any) => {
         // Question is embedded in the answers response — extract it on first load
         if (aBatch === 1) {
@@ -86,8 +88,7 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
           }
         }
         const raw: any[] = res?.data?.items ?? (Array.isArray(res?.data) ? res.data : res?.answers ?? (Array.isArray(res) ? res : []));
-        const publicRaw = raw.filter((a: any) => !a.status || a.status === 'public');
-        const rows: ARow[] = publicRaw.map((a: any) => ({
+        const rows: ARow[] = raw.map((a: any) => ({
           id: String(a.id),
           text: pickLocaleText(isRtl ? (a.textAr ?? a.text) : a.text, locale),
         }));
@@ -113,7 +114,7 @@ export function QuestionDetailClient({ locale }: QuestionDetailClientProps) {
 
   // Fetch history page only when hPage > 0
   useEffect(() => {
-    if (hPage === 0) return;
+    if (!WALL_HISTORY_ENABLED || hPage === 0) return;
     setLoadH(true);
     wallApi
       .getQuestions({ page: hPage, limit: H_PER_PAGE })

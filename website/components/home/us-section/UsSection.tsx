@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 interface UsSectionProps {
   locale: string;
@@ -11,24 +12,28 @@ interface UsSectionProps {
 const CARDS = [
   {
     key: 'team',
+    href: '/team',
     collapsedImg: '/images/teams-partners/team-card.png',
     expandedImg:  '/images/teams-partners/team-color.jpg',
     objectPos:    'object-center',
   },
   {
     key: 'organizers',
+    href: '/organizers',
     collapsedImg: '/images/teams-partners/organizers-card.png',
     expandedImg:  '/images/teams-partners/organizers-color.jpg',
     objectPos:    'object-center',
   },
   {
     key: 'speakers',
+    href: '/speakers',
     collapsedImg: '/images/teams-partners/speakers-card.png',
     expandedImg:  '/images/teams-partners/speakers-color.jpg',
     objectPos:    'object-center',
   },
   {
     key: 'partners',
+    href: '/partners',
     collapsedImg: '/images/teams-partners/partners-card.png',
     expandedImg:  '/images/teams-partners/partners-color.jpg',
     objectPos:    'object-center',
@@ -36,6 +41,7 @@ const CARDS = [
 ] as const;
 
 const VIEWPORT = { once: true, margin: '-60px' as const };
+const MotionLink = motion(Link);
 
 export function UsSection({ locale }: UsSectionProps) {
   const t     = useTranslations('UsSection');
@@ -109,12 +115,13 @@ export function UsSection({ locale }: UsSectionProps) {
             const isActive = active === card.key;
 
             return (
-              <motion.div
+              <MotionLink
                 key={card.key}
+                href={`/${locale}${card.href}`}
                 animate={{ height: isActive ? 310 : 115 }}
                 transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
                 initial={{ height: 115 }}
-                className="relative overflow-hidden cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                className="relative block overflow-hidden cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                 onMouseEnter={() => {
                   if (typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches) {
                     setActive(card.key);
@@ -125,18 +132,8 @@ export function UsSection({ locale }: UsSectionProps) {
                     setActive(null);
                   }
                 }}
-                onClick={() => setActive(prev => prev === card.key ? null : card.key)}
-                role="button"
-                tabIndex={0}
-                aria-expanded={isActive}
                 aria-label={t(card.key)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setActive(isActive ? null : card.key);
-                  }
-                }}
-              >                
+              >
               {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={card.collapsedImg}
@@ -182,7 +179,7 @@ export function UsSection({ locale }: UsSectionProps) {
                     </motion.div>
                   )}
                 </div>
-              </motion.div>
+              </MotionLink>
             );
           })}
         </motion.div>

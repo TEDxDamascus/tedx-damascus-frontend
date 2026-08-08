@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { MotionReveal } from './MotionReveal';
 import { ShareCommunityBar } from './ShareCommunityBar';
+import { ImageLightbox } from './ImageLightbox';
 
 interface Milestone {
   date: string;
@@ -46,17 +48,34 @@ interface OurStoryProps {
   locale: string;
 }
 
-/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. */
+/** Flat, click-through order of every milestone photo, plus each milestone's index into that flat list — powers the full-screen carousel lightbox. */
+const ALL_IMAGES: string[] = MILESTONE_IMAGES.flatMap((m) =>
+  [m.front, m.middle, m.back].filter((src): src is string => Boolean(src)),
+);
+const IMAGE_INDICES: Array<{ front: number; middle: number; back?: number }> = (() => {
+  let cursor = 0;
+  return MILESTONE_IMAGES.map((m) => {
+    const entry: { front: number; middle: number; back?: number } = { front: cursor++, middle: cursor++ };
+    if (m.back) entry.back = cursor++;
+    return entry;
+  });
+})();
+
+/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. Each photo opens the full-screen carousel lightbox on click. */
 function MilestoneImageStack({
   front,
   middle,
   back,
   flip,
+  indices,
+  onImageClick,
 }: {
   front: string;
   middle: string;
   back?: string;
   flip: boolean;
+  indices: { front: number; middle: number; back?: number };
+  onImageClick: (index: number) => void;
 }) {
   return (
     <div className="relative mx-auto h-[190px] w-[240px] lg:h-[220px] lg:w-[280px]">
@@ -68,7 +87,13 @@ function MilestoneImageStack({
           ].join(' ')}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={back} alt="" className="h-full w-full object-cover" draggable={false} />
+          <img
+            src={back}
+            alt=""
+            className="h-full w-full cursor-pointer object-cover"
+            draggable={false}
+            onClick={() => onImageClick(indices.back!)}
+          />
         </div>
       )}
 
@@ -79,7 +104,13 @@ function MilestoneImageStack({
         ].join(' ')}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={middle} alt="" className="h-full w-full object-cover" draggable={false} />
+        <img
+          src={middle}
+          alt=""
+          className="h-full w-full cursor-pointer object-cover"
+          draggable={false}
+          onClick={() => onImageClick(indices.middle)}
+        />
       </div>
 
       {/* Soft fade blending the peeking photos into the page background — top only, not wrapped around the front card */}
@@ -87,7 +118,13 @@ function MilestoneImageStack({
 
       <div className="absolute inset-0 z-[2] overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={front} alt="" className="h-full w-full object-cover" draggable={false} />
+        <img
+          src={front}
+          alt=""
+          className="h-full w-full cursor-pointer object-cover"
+          draggable={false}
+          onClick={() => onImageClick(indices.front)}
+        />
       </div>
     </div>
   );
@@ -96,6 +133,7 @@ function MilestoneImageStack({
 export function OurStory({ locale }: OurStoryProps) {
   const t = useTranslations('OurStory');
   const isRtl = locale === 'ar';
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const milestones: Milestone[] = [1, 2, 3, 4].map((n, i) => ({
     date: t(`m${n}Date`),
@@ -190,6 +228,8 @@ export function OurStory({ locale }: OurStoryProps) {
                       middle={m.middleImage}
                       back={m.backImage}
                       flip={!imageOnStart}
+                      indices={IMAGE_INDICES[i]}
+                      onImageClick={setLightboxIndex}
                     />
                   </MotionReveal>
                 </div>
@@ -206,6 +246,13 @@ export function OurStory({ locale }: OurStoryProps) {
         </div>
         </div>
       </div>
+
+      <ImageLightbox
+        images={ALL_IMAGES}
+        initialIndex={lightboxIndex ?? 0}
+        open={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
+      />
     </section>
   );
 }

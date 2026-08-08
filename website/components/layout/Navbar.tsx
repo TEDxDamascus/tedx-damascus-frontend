@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { eventsApi } from "@/lib/api/client";
 
 interface NavbarProps {
   locale: string;
@@ -106,7 +105,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const [mobileExpandedKey, setMobileExpandedKey] = useState<NavKey | null>(
     null,
   );
-  const [years, setYears] = useState<number[]>([]);
+  // Team/Speakers/Partners editions only exist for the current TEDx year — no
+  // past-year data is published yet, so the dropdown offers just this year.
+  const [years] = useState<number[]>([new Date().getFullYear()]);
   const dropdownRefs = useRef<Partial<Record<NavKey, HTMLDivElement | null>>>(
     {},
   );
@@ -123,28 +124,6 @@ export function Navbar({ locale, navRef }: NavbarProps) {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
-
-  // Distinct TEDx edition years, derived from the events calendar, used to
-  // populate the Team/Speakers/Partners year dropdowns.
-  useEffect(() => {
-    eventsApi
-      .getAll()
-      .then((res: any) => {
-        const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
-        const ys = Array.from(
-          new Set(
-            raw
-              .map((e) => {
-                const d = new Date(e.date ?? e.startDate ?? "");
-                return Number.isNaN(d.getTime()) ? null : d.getFullYear();
-              })
-              .filter((y): y is number => y !== null),
-          ),
-        ).sort((a, b) => b - a);
-        setYears(ys);
-      })
-      .catch(() => setYears([]));
-  }, []);
 
   useEffect(() => {
     if (!openKey) return;
