@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { eventsApi } from "@/lib/api/client";
 
 interface NavbarProps {
   locale: string;
@@ -22,6 +21,7 @@ const NAV_ITEMS = [
   { key: "partners", href: "/partners" },
   { key: "blog", href: "/blog" },
   { key: "about", href: "/about" },
+  { key: "organizers", href: "/organizers" },
 ] as const;
 
 type NavKey = (typeof NAV_ITEMS)[number]["key"];
@@ -102,9 +102,15 @@ export function Navbar({ locale, navRef }: NavbarProps) {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openKey, setOpenKey] = useState<NavKey | null>(null);
-  const [mobileExpandedKey, setMobileExpandedKey] = useState<NavKey | null>(null);
-  const [years, setYears] = useState<number[]>([]);
-  const dropdownRefs = useRef<Partial<Record<NavKey, HTMLDivElement | null>>>({});
+  const [mobileExpandedKey, setMobileExpandedKey] = useState<NavKey | null>(
+    null,
+  );
+  // Team/Speakers/Partners editions only exist for the current TEDx year — no
+  // past-year data is published yet, so the dropdown offers just this year.
+  const [years] = useState<number[]>([new Date().getFullYear()]);
+  const dropdownRefs = useRef<Partial<Record<NavKey, HTMLDivElement | null>>>(
+    {},
+  );
 
   useEffect(() => {
     setMobileOpen(false);
@@ -118,28 +124,6 @@ export function Navbar({ locale, navRef }: NavbarProps) {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
-
-  // Distinct TEDx edition years, derived from the events calendar, used to
-  // populate the Team/Speakers/Partners year dropdowns.
-  useEffect(() => {
-    eventsApi
-      .getAll()
-      .then((res: any) => {
-        const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
-        const ys = Array.from(
-          new Set(
-            raw
-              .map((e) => {
-                const d = new Date(e.date ?? e.startDate ?? "");
-                return Number.isNaN(d.getTime()) ? null : d.getFullYear();
-              })
-              .filter((y): y is number => y !== null)
-          )
-        ).sort((a, b) => b - a);
-        setYears(ys);
-      })
-      .catch(() => setYears([]));
-  }, []);
 
   useEffect(() => {
     if (!openKey) return;
@@ -267,7 +251,8 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     pathWithoutLocale === "/" ||
                     pathWithoutLocale === ""));
 
-              const hasDropdown = key === "about" || YEAR_DROPDOWN_KEYS.has(key);
+              const hasDropdown =
+                key === "about" || YEAR_DROPDOWN_KEYS.has(key);
 
               if (!hasDropdown) {
                 return (
@@ -277,7 +262,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     dir="ltr"
                     className={[
                       "flex items-center gap-0.5 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200 cursor-pointer",
-                      isActive ? "text-primary" : "text-[#F1F1F1] hover:opacity-80",
+                      isActive
+                        ? "text-primary"
+                        : "text-[#F1F1F1] hover:opacity-80",
                     ].join(" ")}
                   >
                     {isActive && (
@@ -313,7 +300,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     dir="ltr"
                     className={[
                       "flex items-center gap-1 font-sans text-base font-normal tracking-[0.15px] transition-colors duration-200 cursor-pointer",
-                      isActive ? "text-primary" : "text-[#F1F1F1] hover:opacity-80",
+                      isActive
+                        ? "text-primary"
+                        : "text-[#F1F1F1] hover:opacity-80",
                     ].join(" ")}
                   >
                     {isActive && (
@@ -358,7 +347,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                             onClick={() => setOpenKey(null)}
                             className="block px-4 py-2 font-sans text-sm text-[#F1F1F1] transition-colors hover:bg-white/5 hover:text-primary whitespace-nowrap"
                           >
-                            <span dir={isRtl ? "rtl" : "ltr"}>{child.label}</span>
+                            <span dir={isRtl ? "rtl" : "ltr"}>
+                              {child.label}
+                            </span>
                           </Link>
                         ))}
                       </motion.div>
@@ -430,7 +421,8 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                       pathWithoutLocale === "/" ||
                       pathWithoutLocale === ""));
 
-                const hasDropdown = key === "about" || YEAR_DROPDOWN_KEYS.has(key);
+                const hasDropdown =
+                  key === "about" || YEAR_DROPDOWN_KEYS.has(key);
 
                 if (!hasDropdown) {
                   return (
@@ -500,7 +492,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                           transition={{ duration: 0.2 }}
                           className={[
                             "flex flex-col gap-3 mt-3 overflow-hidden",
-                            isRtl ? "border-e border-white/10 pe-4" : "border-s border-white/10 ps-4",
+                            isRtl
+                              ? "border-e border-white/10 pe-4"
+                              : "border-s border-white/10 ps-4",
                           ].join(" ")}
                         >
                           {children.map((child) => (
@@ -510,7 +504,9 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                               onClick={() => setMobileOpen(false)}
                               className="font-helvetica text-lg text-white/70 transition-colors hover:text-primary"
                             >
-                              <span dir={isRtl ? "rtl" : "ltr"}>{child.label}</span>
+                              <span dir={isRtl ? "rtl" : "ltr"}>
+                                {child.label}
+                              </span>
                             </Link>
                           ))}
                         </motion.div>

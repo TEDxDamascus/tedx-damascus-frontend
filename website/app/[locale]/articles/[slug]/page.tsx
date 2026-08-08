@@ -250,7 +250,9 @@ export default async function ArticlePage({ params }: Props) {
       <div className="max-w-[1120px] mx-auto px-4 lg:px-6 space-y-[30px]">
        <RelatedArticles 
           articles={relatedArticles} 
-          locale={locale} 
+          locale={locale}
+          shareUrl={shareUrl}
+          shareTitle={blog.title}
           author={blog.author ? {
             name: blog.author.author_name?.[locale as 'ar' | 'en'] || blog.author.name,
             avatar: blog.author.author_image_url || blog.author.avatar,

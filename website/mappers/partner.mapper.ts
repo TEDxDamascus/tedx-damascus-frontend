@@ -40,7 +40,8 @@ export function mapPartnerToDetailsView(
 },
 
     // ✅ FIXED: map services too
-services: (partner.services || []).map((s) => ({      title: s.title,
+services: (partner.services || []).map((s) => ({
+      title: getLang(s.title, locale),
       description: getLang(s.description, locale),
     })),
   };
