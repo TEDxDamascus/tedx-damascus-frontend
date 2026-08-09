@@ -48,18 +48,16 @@ interface OurStoryProps {
   locale: string;
 }
 
-/** Flat, click-through order of every milestone photo, plus each milestone's index into that flat list — powers the full-screen carousel lightbox. */
-const ALL_IMAGES: string[] = MILESTONE_IMAGES.flatMap((m) =>
+/** Each milestone's own photos, in click-through order — powers that milestone's full-screen carousel lightbox. */
+const MILESTONE_IMAGE_LISTS: string[][] = MILESTONE_IMAGES.map((m) =>
   [m.front, m.middle, m.back].filter((src): src is string => Boolean(src)),
 );
-const IMAGE_INDICES: Array<{ front: number; middle: number; back?: number }> = (() => {
-  let cursor = 0;
-  return MILESTONE_IMAGES.map((m) => {
-    const entry: { front: number; middle: number; back?: number } = { front: cursor++, middle: cursor++ };
-    if (m.back) entry.back = cursor++;
-    return entry;
-  });
-})();
+/** Local index of each photo within its own milestone's image list, matching `MILESTONE_IMAGE_LISTS`. */
+const IMAGE_INDICES: Array<{ front: number; middle: number; back?: number }> = MILESTONE_IMAGES.map((m) => {
+  const entry: { front: number; middle: number; back?: number } = { front: 0, middle: 1 };
+  if (m.back) entry.back = 2;
+  return entry;
+});
 
 /** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. Each photo opens the full-screen carousel lightbox on click. */
 function MilestoneImageStack({
@@ -133,7 +131,7 @@ function MilestoneImageStack({
 export function OurStory({ locale }: OurStoryProps) {
   const t = useTranslations('OurStory');
   const isRtl = locale === 'ar';
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<{ milestone: number; index: number } | null>(null);
 
   const milestones: Milestone[] = [1, 2, 3, 4].map((n, i) => ({
     date: t(`m${n}Date`),
@@ -229,7 +227,7 @@ export function OurStory({ locale }: OurStoryProps) {
                       back={m.backImage}
                       flip={!imageOnStart}
                       indices={IMAGE_INDICES[i]}
-                      onImageClick={setLightboxIndex}
+                      onImageClick={(index) => setLightbox({ milestone: i, index })}
                     />
                   </MotionReveal>
                 </div>
@@ -248,10 +246,10 @@ export function OurStory({ locale }: OurStoryProps) {
       </div>
 
       <ImageLightbox
-        images={ALL_IMAGES}
-        initialIndex={lightboxIndex ?? 0}
-        open={lightboxIndex !== null}
-        onClose={() => setLightboxIndex(null)}
+        images={lightbox ? MILESTONE_IMAGE_LISTS[lightbox.milestone] : []}
+        initialIndex={lightbox?.index ?? 0}
+        open={lightbox !== null}
+        onClose={() => setLightbox(null)}
       />
     </section>
   );

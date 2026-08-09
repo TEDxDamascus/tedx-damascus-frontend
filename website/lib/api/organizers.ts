@@ -45,7 +45,7 @@ export async function getOrganizerById(
 ): Promise<OrganizerData | null> {
   try {
     const res = await organizersApi.getById(id);
-    return res?.data || res || null;
+    return res || null;
   } catch (error) {
     console.error(`Failed to fetch organizer ${id}:`, error);
     return null;
