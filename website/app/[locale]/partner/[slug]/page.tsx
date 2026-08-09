@@ -12,27 +12,32 @@ interface PageProps {
 const BASE_URL = "https://api.tedxdamascus.sy";
 
 export async function generateStaticParams() {
-  const res = await fetch(`${BASE_URL}/partners`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/partners`, {
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch partners");
+    if (!res.ok) {
+      throw new Error("Failed to fetch partners");
+    }
+
+    const data = await res.json();
+    const partners = data.data || [];
+
+    if (!Array.isArray(partners)) {
+      throw new Error("API did not return array");
+    }
+
+    return partners
+      .flatMap((p: any) => [
+        { locale: "en", slug: p.slug?.en?.trim() },
+        { locale: "ar", slug: p.slug?.ar?.trim() },
+      ])
+      .filter((entry) => Boolean(entry.slug));
+  } catch (error) {
+    console.error("Error generating static params for partners:", error);
+    return [];
   }
-
-  const data = await res.json();
-  const partners = data.data || [];
-
-  if (!Array.isArray(partners)) {
-    throw new Error("API did not return array");
-  }
-
-  return partners
-    .flatMap((p: any) => [
-      { locale: "en", slug: p.slug?.en?.trim() },
-      { locale: "ar", slug: p.slug?.ar?.trim() },
-    ])
-    .filter((entry) => Boolean(entry.slug));
 }
 
 async function getPartner(slug: string) {
