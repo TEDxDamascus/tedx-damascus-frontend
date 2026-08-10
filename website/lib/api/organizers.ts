@@ -30,9 +30,11 @@ export const organizersApi = new CrudService<OrganizerData>(
   false,
 );
 
-export async function getAllOrganizers(): Promise<OrganizerData[]> {
+export async function getAllOrganizers(
+  lang?: string,
+): Promise<OrganizerData[]> {
   try {
-    const res = await organizersApi.getAll();
+    const res = await organizersApi.getAll(lang ? { lang } : undefined);
     return Array.isArray(res) ? res : res?.data || [];
   } catch (error) {
     console.error("Failed to fetch organizers:", error);
@@ -42,12 +44,8 @@ export async function getAllOrganizers(): Promise<OrganizerData[]> {
 
 export async function getOrganizerById(
   id: string,
+  lang?: string,
 ): Promise<OrganizerData | null> {
-  try {
-    const res = await organizersApi.getById(id);
-    return res || null;
-  } catch (error) {
-    console.error(`Failed to fetch organizer ${id}:`, error);
-    return null;
-  }
+  const organizers = await getAllOrganizers(lang);
+  return organizers.find((organizer) => organizer._id === id) || null;
 }

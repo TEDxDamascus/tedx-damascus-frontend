@@ -39,7 +39,7 @@ export default async function OrganizerDetailsPage({
 }: OrganizerDetailsPageProps) {
   const { locale, id } = await params;
 
-  const organizer = await getOrganizerById(id);
+  const organizer = await getOrganizerById(id, locale);
 
   if (!organizer) {
     notFound();
