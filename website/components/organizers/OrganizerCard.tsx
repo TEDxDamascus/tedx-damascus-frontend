@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
 
 interface OrganizerCardProps {
@@ -11,16 +10,10 @@ interface OrganizerCardProps {
 }
 
 export default function OrganizerCard({
-  locale,
   organizer,
 }: OrganizerCardProps) {
-  const organizerId = organizer._id ;
-
   return (
-    <Link
-      href={`/${locale}/organizers/${organizerId}`}
-      className="group relative flex flex-col w-full max-w-[320px] bg-[#121212] overflow-hidden rounded-none border border-transparent transition-all duration-300 cursor-pointer"
-    >
+    <div className="group relative flex flex-col w-full max-w-[320px] bg-[#121212] overflow-hidden rounded-none border border-transparent transition-all duration-300">
       <div className="absolute top-0 left-0 z-20 w-4 h-4 border-t-4 border-l-4 border-[#EB0028] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="relative w-full h-[450px] bg-[#1a1a1a]">
@@ -48,6 +41,6 @@ export default function OrganizerCard({
           </p>
         )}
       </div>
-    </Link>
+    </div>
   );
 }

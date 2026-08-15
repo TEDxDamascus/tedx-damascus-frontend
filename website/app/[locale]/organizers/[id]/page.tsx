@@ -1,10 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import {
-  getOrganizerById,
-  getAllOrganizers,
-  OrganizerData,
-} from "@/lib/api/organizers";
+import { getOrganizerById } from "@/lib/api/organizers";
 import OrganizerDetails from "@/components/organizer/OrganizerDetails";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -17,21 +13,10 @@ interface OrganizerDetailsPageProps {
 }
 
 export async function generateStaticParams() {
-  const locales = ["en", "ar"];
-
-  try {
-    const organizers = await getAllOrganizers();
-
-    return locales.flatMap((locale) =>
-      organizers.map((organizer: OrganizerData) => ({
-        locale,
-        id: organizer._id,
-      })),
-    );
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
-  }
+  // Organizer detail pages are disabled for now (the underlying GET
+  // /organizer/:id endpoint requires login). Returning no params means
+  // static export won't build any pages under this route.
+  return [];
 }
 
 export default async function OrganizerDetailsPage({
