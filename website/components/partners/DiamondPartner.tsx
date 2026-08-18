@@ -4,6 +4,7 @@ import React from "react";
 import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
+import { normalizeTier } from "@/lib/api/partners";
 
 interface DiamondPartnerProps {
   locale: "en" | "ar";
@@ -19,7 +20,8 @@ export default function DiamondPartner({
   const cleanPartners = Array.isArray(partners) ? partners : [];
 
   const diamondPartners = cleanPartners.filter((p) => {
-    return p?.partner_ship_type?.toLowerCase().trim() === "diamond";
+    const type = normalizeTier(p.partner_ship_type || p.tier?.name);
+    return type === "diamond";
   });
 
   if (diamondPartners.length === 0) {

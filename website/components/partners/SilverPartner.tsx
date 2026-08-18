@@ -4,6 +4,8 @@ import React from "react";
 import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
+import { normalizeTier } from "@/lib/api/partners";
+
 
 interface SilverPartnerProps {
   locale: "en" | "ar";
@@ -16,7 +18,10 @@ export default function SilverPartner({
 }: SilverPartnerProps) {
   const isRtl = locale === "ar";
 
-  const displayPartners = partners || [];
+const displayPartners = (partners || []).filter((p) => {
+  const type = normalizeTier(p.partner_ship_type || p.tier?.name);
+  return type === "silver";
+});
 
   if (displayPartners.length === 0) return null;
 

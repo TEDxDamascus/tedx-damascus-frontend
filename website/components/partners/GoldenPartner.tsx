@@ -4,6 +4,7 @@ import React from "react";
 import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
+import { normalizeTier } from "@/lib/api/partners";
 
 interface GoldenPartnerProps {
   locale: "en" | "ar";
@@ -15,7 +16,11 @@ export default function GoldenPartner({
   partners,
 }: GoldenPartnerProps) {
   const isRtl = locale === "ar";
-  const displayPartners = partners || [];
+  console.log("GOLDEN PARTNERS RECEIVED:", partners);
+  const displayPartners = (partners || []).filter((p) => {
+    const type = normalizeTier(p.partner_ship_type || p.tier?.name);
+    return type === "gold";
+  });
 
   const safeSlug = (slug: any) =>
     typeof slug === "string" ? slug : slug?.en || slug?.ar || "";
