@@ -128,7 +128,9 @@ website
 │     ├─ loading.tsx
 │     ├─ not-found.tsx
 │     ├─ organizers
-│     │  └─ page.tsx
+│     │  ├─ page.tsx
+│     │  └─ [id]
+│     │     └─ page.tsx
 │     ├─ page.tsx
 │     ├─ partner
 │     │  └─ [slug]
@@ -157,6 +159,7 @@ website
 │  │  ├─ AboutContent.tsx
 │  │  ├─ AboutHero.tsx
 │  │  ├─ our-story
+│  │  │  ├─ ImageLightbox.tsx
 │  │  │  ├─ ImageTrail.tsx
 │  │  │  ├─ index.ts
 │  │  │  ├─ MotionReveal.tsx
@@ -234,13 +237,15 @@ website
 │  │  ├─ index.ts
 │  │  └─ Navbar.tsx
 │  ├─ organizer
-│  │  ├─ OrganizerBio.jsx
-│  │  ├─ OrganizerProfileHero.jsx
-│  │  └─ OrganizerSpotlight.jsx
+│  │  ├─ OrganizerBio.tsx
+│  │  ├─ OrganizerDetails.tsx
+│  │  ├─ OrganizerHeroPattern.tsx
+│  │  ├─ OrganizerProfileHero.tsx
+│  │  └─ OrganizerSpotlight.tsx
 │  ├─ organizers
-│  │  ├─ OrganizerCard.jsx
-│  │  ├─ OrganizersGrid.jsx
-│  │  └─ OrganizersHero.jsx
+│  │  ├─ OrganizerCard.tsx
+│  │  ├─ OrganizersGrid.tsx
+│  │  └─ OrganizersHero.tsx
 │  ├─ partner
 │  │  ├─ PartnerContactCard.tsx
 │  │  ├─ PartnerContentDetails.tsx
@@ -458,6 +463,11 @@ website
 │     │  ├─ ted-mobile-logo.png
 │     │  ├─ tedx-logo.png
 │     │  └─ upload-icon.png
+│     ├─ organizers
+│     │  ├─ fillSquare.png
+│     │  ├─ fillTriangle.png
+│     │  ├─ Square.png
+│     │  └─ Triangle.png
 │     ├─ partner-details
 │     │  └─ pattern.png
 │     ├─ partners
@@ -475,7 +485,8 @@ website
 │     ├─ speakers
 │     │  ├─ Background.png
 │     │  ├─ email.svg
-│     │  └─ linked-in.svg
+│     │  ├─ linked-in.svg
+│     │  └─ share-button.svg
 │     ├─ team
 │     │  ├─ border-bottom-left.png
 │     │  ├─ border-top-right.png

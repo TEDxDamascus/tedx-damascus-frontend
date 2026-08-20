@@ -2,35 +2,48 @@
 
 import React from "react";
 import CustomPartnerSection from "./CustomPartnerSection";
-import { PartnerViewData } from "@/lib/api/partners";
+import {
+  isFixedTier,
+  normalizeTier,
+  PartnerViewData,
+} from "@/lib/api/partners";
 
 interface DynamicPartnersProps {
   locale: "en" | "ar";
-  partners: PartnerViewData[];
+  partners?: PartnerViewData[];
 }
 
 export default function DynamicPartners({
   locale,
   partners = [],
 }: DynamicPartnersProps) {
+  const groupedPartners = partners.reduce(
+    (acc, partner) => {
+      const rawType =
+        partner.partner_ship_type || partner.tier?.name || "";
 
-  const groupedPartners = partners.reduce((acc, partner) => {
-    const type = partner.partner_ship_type?.trim().toLowerCase() || "other";
+      const type = normalizeTier(rawType);
 
-    if (!acc[type]) acc[type] = [];
+      if (!type || type === "other" || isFixedTier(type)) {
+        return acc;
+      }
 
-    acc[type].push(partner);
+      if (!acc[type]) {
+        acc[type] = [];
+      }
 
-    return acc;
-  }, {} as Record<string, PartnerViewData[]>);
+      acc[type].push(partner);
 
-  const mainTiers = ["diamond", "gold", "golden", "silver"];
-
-  const customTiers = Object.keys(groupedPartners).filter(
-    (tier) => !mainTiers.includes(tier)
+      return acc;
+    },
+    {} as Record<string, PartnerViewData[]>,
   );
 
-  if (customTiers.length === 0) return null;
+  const customTiers = Object.keys(groupedPartners);
+
+  if (customTiers.length === 0) {
+    return null;
+  }
 
   return (
     <div className="w-full">
@@ -38,9 +51,12 @@ export default function DynamicPartners({
         const tierPartners = groupedPartners[tierKey];
 
         const formattedTitle =
-  tierKey
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase()) + " Partner";
+          locale === "ar"
+            ? `شريك ${tierKey}`
+            : tierKey
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (l) => l.toUpperCase()) +
+              " Partner";
 
         return (
           <CustomPartnerSection
