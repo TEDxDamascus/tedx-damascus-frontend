@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { getAllOrganizers, getOrganizerById, formatOrganizer } from "@/lib/api/organizers";
-import OrganizerDetailClient from "@/components/organizer/OrganizerDetailClient";
+import OrganizerDetails from "@/components/organizer/OrganizerDetails";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { routing } from "@/routing";
@@ -14,10 +14,8 @@ interface OrganizerDetailsPageProps {
 }
 
 export async function generateStaticParams() {
-  // The list endpoint (GET /organizer) is public, so we can still enumerate
-  // real ids at build time even though the per-id endpoint (GET /organizer/:id)
-  // requires login. Each shell renders from the public list data and then
-  // upgrades to the authenticated response client-side once a session exists.
+  // GET /organizer (the list) is public, so ids can be enumerated at build
+  // time even though GET /organizer/:id itself requires login.
   const params: { locale: string; id: string }[] = [];
   for (const locale of routing.locales) {
     const organizers = await getAllOrganizers(locale);
@@ -44,11 +42,7 @@ export default async function OrganizerDetailsPage({
   return (
     <main className="min-h-screen bg-[#101010]">
       <Navbar locale={locale} />
-      <OrganizerDetailClient
-        id={id}
-        locale={locale}
-        initialOrganizer={formattedOrganizer}
-      />
+      <OrganizerDetails organizer={formattedOrganizer} locale={locale} />
       <Footer locale={locale} />
     </main>
   );
