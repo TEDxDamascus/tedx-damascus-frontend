@@ -1,12 +1,5 @@
-import { PartnerData, PartnerViewData } from "@/lib/api/partners";
-
-/**
- * Helper: translate multi-language field
- */
-export const getLang = (
-  field: any,
-  locale: "en" | "ar"
-) => {
+import { normalizeTier, PartnerData, PartnerViewData, } from "@/lib/api/partners";
+export const getLang = (field: any, locale: "en" | "ar") => {
   if (!field) return "";
 
   if (typeof field === "string") return field;
@@ -14,10 +7,9 @@ export const getLang = (
   return locale === "ar" ? field.ar || field.en : field.en || field.ar;
 };
 
-
 export function mapPartnerToDetailsView(
   partner: PartnerData,
-  locale: "en" | "ar"
+  locale: "en" | "ar",
 ): PartnerViewData {
   return {
     _id: partner._id,
@@ -25,7 +17,9 @@ export function mapPartnerToDetailsView(
     name: getLang(partner.name, locale),
     slug: getLang(partner.slug, locale),
 
-    partner_ship_type: partner.partner_ship_type,
+    partner_ship_type: normalizeTier(
+      partner.partner_ship_type || (partner as any).tier?.name || "",
+    ),
 
     short_description: getLang(partner.short_description, locale),
     long_description: getLang(partner.long_description, locale),
@@ -33,14 +27,14 @@ export function mapPartnerToDetailsView(
     image: partner.image,
 
     social_links: partner.social_links,
-   contact_info: {
-  address: getLang(partner.contact_info?.address, locale),
-  phone: partner.contact_info?.phone || "",
-  email: partner.contact_info?.email || "",
-},
 
-    // ✅ FIXED: map services too
-services: (partner.services || []).map((s) => ({
+    contact_info: {
+      address: getLang(partner.contact_info?.address, locale),
+      phone: partner.contact_info?.phone || "",
+      email: partner.contact_info?.email || "",
+    },
+
+    services: (partner.services || []).map((s) => ({
       title: getLang(s.title, locale),
       description: getLang(s.description, locale),
     })),
