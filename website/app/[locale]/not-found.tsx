@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { NotFoundShell } from '@/components/not-found/NotFoundShell';
 
 export default function LocaleNotFound() {
-  redirect('/en/home');
+  return <NotFoundShell />;
 }
