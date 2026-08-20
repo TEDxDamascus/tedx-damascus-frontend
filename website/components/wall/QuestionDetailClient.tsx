@@ -13,8 +13,10 @@ const COMMENTS_SRC = '/images/add-your-line/Comments.svg';
 const ANSWERS_BATCH = 12;
 const ANSWERS_VIEW = 3;
 const H_PER_PAGE = 4;
-// Disabled for now: the "all wall questions" endpoint isn't ready yet.
-const WALL_HISTORY_ENABLED = false;
+// "Other questions" (Question History) — GET /wall-cards/questions. Errors
+// are swallowed below (falls back to the existing "no history yet" empty
+// state), so enabling this is safe even if the endpoint isn't fully ready.
+const WALL_HISTORY_ENABLED = true;
 
 interface ARow { id: string; text: string }
 interface QRow {

@@ -1,7 +1,6 @@
 import { Inter, Cairo, Manrope, Almarai } from 'next/font/google';
 import { NotFoundShell } from '@/components/not-found/NotFoundShell';
 // Root not-found renders outside [locale]/layout, so it must load styles itself.
-// @ts-expect-error CSS side-effect import has no type declarations
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });

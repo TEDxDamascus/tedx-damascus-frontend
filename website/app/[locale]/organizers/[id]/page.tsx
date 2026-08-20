@@ -1,9 +1,10 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getOrganizerById } from "@/lib/api/organizers";
-import OrganizerDetails from "@/components/organizer/OrganizerDetails";
+import { getAllOrganizers, getOrganizerById, formatOrganizer } from "@/lib/api/organizers";
+import OrganizerDetailClient from "@/components/organizer/OrganizerDetailClient";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { routing } from "@/routing";
 
 interface OrganizerDetailsPageProps {
   params: Promise<{
@@ -13,10 +14,18 @@ interface OrganizerDetailsPageProps {
 }
 
 export async function generateStaticParams() {
-  // Organizer detail pages are disabled for now (the underlying GET
-  // /organizer/:id endpoint requires login). Returning no params means
-  // static export won't build any pages under this route.
-  return [];
+  // The list endpoint (GET /organizer) is public, so we can still enumerate
+  // real ids at build time even though the per-id endpoint (GET /organizer/:id)
+  // requires login. Each shell renders from the public list data and then
+  // upgrades to the authenticated response client-side once a session exists.
+  const params: { locale: string; id: string }[] = [];
+  for (const locale of routing.locales) {
+    const organizers = await getAllOrganizers(locale);
+    for (const organizer of organizers) {
+      params.push({ locale, id: organizer._id });
+    }
+  }
+  return params;
 }
 
 export default async function OrganizerDetailsPage({
@@ -30,39 +39,16 @@ export default async function OrganizerDetailsPage({
     notFound();
   }
 
-  const nameString =
-    typeof organizer.name === "object"
-      ? organizer.name[locale] || organizer.name.en || ""
-      : organizer.name;
-
-  const bioString =
-    typeof organizer.bio === "object"
-      ? organizer.bio?.[locale] || organizer.bio?.en || ""
-      : organizer.bio || "";
-
-  const imageUrl =
-    typeof organizer.image === "object"
-      ? organizer.image.url
-      : organizer.image || "";
-
-  const galleryUrls: string[] = (organizer.gallery || [])
-    .map((item) => (typeof item === "object" && item !== null ? item.url : item))
-    .filter((url): url is string => Boolean(url));
-
-  const formattedOrganizer = {
-    _id: organizer._id,
-    name: nameString,
-    image: imageUrl,
-    bio: bioString,
-    social_links: organizer.social_links || [],
-    role: organizer.role || "",
-    gallery: galleryUrls,
-  };
+  const formattedOrganizer = formatOrganizer(organizer, locale);
 
   return (
     <main className="min-h-screen bg-[#101010]">
       <Navbar locale={locale} />
-      <OrganizerDetails organizer={formattedOrganizer} locale={locale} />
+      <OrganizerDetailClient
+        id={id}
+        locale={locale}
+        initialOrganizer={formattedOrganizer}
+      />
       <Footer locale={locale} />
     </main>
   );
