@@ -4,11 +4,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
-<<<<<<< Updated upstream
 import { getImageUrl } from "@/lib/api/client";
-=======
 import { PressKitShareButton } from "@/components/shared";
->>>>>>> Stashed changes
 
 interface OrganizerProfileHeroProps {
   organizer: OrganizerViewData;
