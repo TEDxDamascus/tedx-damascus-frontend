@@ -5,6 +5,7 @@ import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
 import { normalizeTier } from "@/lib/api/partners";
+import { getImageUrl } from "@/lib/api/client";
 
 interface GoldenPartnerProps {
   locale: "en" | "ar";
@@ -44,7 +45,7 @@ export default function GoldenPartner({
             locale={locale}
             name={partner.name}
             description={partner.short_description}
-            logoUrl={partner.image}
+            logoUrl={getImageUrl(partner.image)}
             bgIconUrl={isRtl ? "شريك ذهبي" : "Gold Partner"}
             websiteUrl={partner.social_links?.[0] ?? "#"}
             profileUrl={`/${locale}/partner/${safeSlug(partner.slug)}`}

@@ -51,6 +51,15 @@ export const MOCK_EVENTS: MockEvent[] = [
 
 /* ─── Helpers ────────────────────────────────────────────── */
 
+function isEventEnded(dateStr: string | undefined): boolean {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return false;
+  // The event is still "on" through the end of its own day.
+  d.setHours(23, 59, 59, 999);
+  return d.getTime() < Date.now();
+}
+
 function formatDate(dateStr: string | undefined, locale: string): string {
   if (!dateStr) return '';
   try {
@@ -102,6 +111,7 @@ export function EventDetailsHero({ locale, slug: _slug, event }: EventDetailsHer
 
   const date = event ? formatDate(event.date, locale) : '';
   const location = event ? localizeField(event.location, locale) : '';
+  const ended = event?.status === 'past' || isEventEnded(event?.date);
 
   // Brief is the hero title — fall back to static phrase if empty
   const BRIEF_FALLBACK = isRtl
@@ -203,29 +213,31 @@ export function EventDetailsHero({ locale, slug: _slug, event }: EventDetailsHer
             )}
           </div>
 
-          {/* CTA buttons */}
-          <div className="flex flex-wrap gap-4 pt-2">
-            <Link
-              href="#"
-              className={[
-                'inline-flex h-[60px] items-center justify-center px-10',
-                'bg-primary font-helvetica text-[16px] font-medium tracking-[0.46px] uppercase',
-                'text-[#f1f1f1] transition-opacity hover:opacity-90',
-              ].join(' ')}
-            >
-              {isRtl ? 'التقدم كمتحدث' : 'APPLY AS A SPEAKER'}
-            </Link>
-            <Link
-              href="#"
-              className={[
-                'inline-flex h-[60px] items-center justify-center px-10',
-                'bg-black font-helvetica text-[16px] font-medium tracking-[0.46px] uppercase',
-                'text-[#f1f1f1] transition-opacity hover:opacity-90',
-              ].join(' ')}
-            >
-              {isRtl ? 'التقدم كحضور' : 'APPLY AS AN ATTENDEE'}
-            </Link>
-          </div>
+          {/* CTA buttons — hidden once the event has ended, there's nothing to apply to anymore */}
+          {!ended && (
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link
+                href="#"
+                className={[
+                  'inline-flex h-[60px] items-center justify-center px-10',
+                  'bg-primary font-helvetica text-[16px] font-medium tracking-[0.46px] uppercase',
+                  'text-[#f1f1f1] transition-opacity hover:opacity-90',
+                ].join(' ')}
+              >
+                {isRtl ? 'التقدم كمتحدث' : 'APPLY AS A SPEAKER'}
+              </Link>
+              <Link
+                href="#"
+                className={[
+                  'inline-flex h-[60px] items-center justify-center px-10',
+                  'bg-black font-helvetica text-[16px] font-medium tracking-[0.46px] uppercase',
+                  'text-[#f1f1f1] transition-opacity hover:opacity-90',
+                ].join(' ')}
+              >
+                {isRtl ? 'التقدم كحضور' : 'APPLY AS AN ATTENDEE'}
+              </Link>
+            </div>
+          )}
 
         </div>
         </div>

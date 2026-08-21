@@ -5,6 +5,7 @@ import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData, CardSizeEnum } from "@/lib/api/partners";
 import { useRouter } from "next/navigation";
+import { getImageUrl } from "@/lib/api/client";
 
 interface CustomPartnerSectionProps {
   locale: "en" | "ar";
@@ -35,7 +36,10 @@ const rawSize = partners[0]?.custom_card_size ?? CardSizeEnum.MEDIUM;  const siz
 
   const handleNavigate = (slug?: string) => {
     if (!slug) return;
-    router.push(`/${locale}/partner/${slug}`);
+    // trailingSlash: true in next.config.ts means the static export writes
+    // each partner page to partner/<slug>/index.html — router.push() (unlike
+    // next/link) doesn't normalize that for us.
+    router.push(`/${locale}/partner/${slug}/`);
   };
 
   return (
@@ -56,7 +60,7 @@ const rawSize = partners[0]?.custom_card_size ?? CardSizeEnum.MEDIUM;  const siz
               locale={locale}
               name={safeName(partner.name)}
               description={partner.short_description}
-              logoUrl={partner.image || ""}
+              logoUrl={partner.image ? getImageUrl(partner.image) : ""}
               bgIconUrl={title}
               websiteUrl={partner.social_links?.[0] ?? "#"}
               profileUrl={`/${locale}/partner/${safeSlug(partner.slug)}`}
@@ -99,8 +103,9 @@ const rawSize = partners[0]?.custom_card_size ?? CardSizeEnum.MEDIUM;  const siz
               name={safeName(partner.name)}
               description={partner.short_description ?? ""}
               logoUrl={
-                partner.image ||
-                "https://placehold.co/300x300/222/fff?text=Logo"
+                partner.image
+                  ? getImageUrl(partner.image)
+                  : "https://placehold.co/300x300/222/fff?text=Logo"
               }
               websiteUrl={partner.social_links?.[0] ?? "#"}
               profileUrl={

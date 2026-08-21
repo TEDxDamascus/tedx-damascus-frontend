@@ -5,6 +5,7 @@ import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
 import { normalizeTier } from "@/lib/api/partners";
+import { getImageUrl } from "@/lib/api/client";
 
 interface DiamondPartnerProps {
   locale: "en" | "ar";
@@ -53,7 +54,9 @@ export default function DiamondPartner({
               name={partnerName}
               description={partnerDesc}
               logoUrl={
-                partner.image || "/images/partners/DiamondPartnerLogo.png"
+                partner.image
+                  ? getImageUrl(partner.image)
+                  : "/images/partners/DiamondPartnerLogo.png"
               }
               websiteUrl={websiteUrl}
               profileUrl={`/${locale}/partner/${partnerSlug}`}
