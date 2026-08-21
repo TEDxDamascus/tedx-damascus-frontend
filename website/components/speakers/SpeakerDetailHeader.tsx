@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { PressKitShareButton } from '@/components/shared';
 
 const SPEAKER_PLACEHOLDER = '/images/speakers/Background.png';
 const PATTERN_SRC = '/images/about/pattern.svg';
@@ -22,16 +22,6 @@ function normalizeExternalUrl(url: string): string {
   return `https://${url}`;
 }
 
-function buildShareLinks(url: string, text: string) {
-  const encodedUrl = encodeURIComponent(url);
-  const encodedText = encodeURIComponent(text);
-  return {
-    whatsapp: `https://wa.me/?text=${encodedText}%20${encodedUrl}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-  };
-}
-
 export function SpeakerDetailHeader({
   name,
   bio,
@@ -40,70 +30,10 @@ export function SpeakerDetailHeader({
   linkedinUrl,
   isRtl,
 }: SpeakerDetailHeaderProps) {
-  const [showSharePopup, setShowSharePopup] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  const shareMessage = isRtl
-    ? `تعرّف على ${name} في TEDx Damascus`
-    : `Check out ${name} at TEDx Damascus`;
-
   const labels = {
     linkedin: isRtl ? 'لينكد إن' : 'LINKEDIN',
     share: isRtl ? 'مشاركة' : 'PRESS KIT',
-    whatsapp: 'WhatsApp',
-    facebook: 'Facebook',
-    copyLink: isRtl ? 'نسخ الرابط' : 'Copy Link',
-    copied: isRtl ? 'تم النسخ!' : 'Copied!',
-    shareVia: isRtl ? 'مشاركة عبر' : 'Share via',
   };
-
-  useEffect(() => {
-    if (!showSharePopup) return;
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setShowSharePopup(false);
-    }
-
-    function onPointerDown(e: MouseEvent) {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        setShowSharePopup(false);
-      }
-    }
-
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('mousedown', onPointerDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('mousedown', onPointerDown);
-    };
-  }, [showSharePopup]);
-
-  async function handleShare() {
-    const url = window.location.href;
-    const title = document.title || name;
-
-    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title, text: shareMessage, url });
-        return;
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-      }
-    }
-
-    setShowSharePopup(true);
-  }
-
-  async function handleCopyLink() {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard access denied — no-op
-    }
-  }
 
   const normalizedLinkedin = linkedinUrl ? normalizeExternalUrl(linkedinUrl) : undefined;
 
@@ -260,9 +190,10 @@ export function SpeakerDetailHeader({
                 </Link>
               )}
 
-              <button
-                type="button"
-                onClick={handleShare}
+              <PressKitShareButton
+                name={name}
+                isRtl={isRtl}
+                label={labels.share}
                 className={actionClass}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -274,70 +205,7 @@ export function SpeakerDetailHeader({
                   className="shrink-0"
                   draggable={false}
                 />
-                <span>{labels.share}</span>
-              </button>
-
-              {/* Fallback share popup */}
-              {showSharePopup && (
-                <div
-                  ref={popupRef}
-                  role="dialog"
-                  aria-label={labels.shareVia}
-                  className={[
-                    'absolute z-20 top-full mt-3 min-w-[220px] rounded-lg border border-white/10 bg-[#1a1a1a] p-3 shadow-xl',
-                    isRtl ? 'end-0' : 'start-0',
-                  ].join(' ')}
-                >
-                  <p
-                    className={[
-                      'mb-2 px-2 text-xs font-bold uppercase tracking-wider text-white/40',
-                      isRtl ? 'font-arabic normal-case tracking-normal text-end' : 'font-sans',
-                    ].join(' ')}
-                  >
-                    {labels.shareVia}
-                  </p>
-                  <div className="flex flex-col gap-0.5">
-                    <a
-                      href={buildShareLinks(window.location.href, shareMessage).whatsapp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-                      onClick={() => setShowSharePopup(false)}
-                    >
-                      {labels.whatsapp}
-                    </a>
-                    <a
-                      href={buildShareLinks(window.location.href, shareMessage).linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-                      onClick={() => setShowSharePopup(false)}
-                    >
-                      LinkedIn
-                    </a>
-                    <a
-                      href={buildShareLinks(window.location.href, shareMessage).facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-md px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/5 hover:text-white"
-                      onClick={() => setShowSharePopup(false)}
-                    >
-                      {labels.facebook}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={handleCopyLink}
-                      className={[
-                        'rounded-md px-3 py-2.5 text-start text-sm transition-colors hover:bg-white/5',
-                        copied ? 'text-primary' : 'text-white/80 hover:text-white',
-                        isRtl ? 'text-end' : '',
-                      ].join(' ')}
-                    >
-                      {copied ? labels.copied : labels.copyLink}
-                    </button>
-                  </div>
-                </div>
-              )}
+              </PressKitShareButton>
             </div>
           </div>
         </div>

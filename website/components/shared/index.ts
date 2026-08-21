@@ -15,3 +15,5 @@ export type { MultipleChoiceProps, MultipleChoiceOption } from './MultipleChoice
 
 export { StarRating } from './StarRating';
 export type { StarRatingProps } from './StarRating';
+
+export { PressKitShareButton } from './PressKitShareButton';

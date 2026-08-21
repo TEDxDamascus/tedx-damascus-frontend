@@ -4,19 +4,37 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
+<<<<<<< Updated upstream
 import { getImageUrl } from "@/lib/api/client";
+=======
+import { PressKitShareButton } from "@/components/shared";
+>>>>>>> Stashed changes
 
 interface OrganizerProfileHeroProps {
   organizer: OrganizerViewData;
   locale?: string;
 }
 
+function normalizeExternalUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://${url}`;
+}
+
 export default function OrganizerProfileHero({
   organizer,
+  locale = "en",
 }: OrganizerProfileHeroProps) {
+  const isRtl = locale === "ar";
   const linkedinUrl = organizer.social_links?.find((link) =>
-    link.includes("linkedin"),
+    link.toLowerCase().includes("linkedin"),
   );
+  const normalizedLinkedin = linkedinUrl
+    ? normalizeExternalUrl(linkedinUrl)
+    : undefined;
+
+  const actionClass =
+    "inline-flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-widest text-[#A8A8A8] hover:text-white transition-colors";
 
   return (
     <section className="relative w-full text-white flex items-center justify-center pt-32 sm:pt-40 lg:pt-52 pb-12 lg:pb-16 px-4 sm:px-6 overflow-hidden">
@@ -91,12 +109,12 @@ export default function OrganizerProfileHero({
 
           {/* الروابط */}
           <div className="mt-8 sm:mt-12 flex items-center gap-6 sm:gap-8 flex-wrap justify-center lg:justify-start">
-            {linkedinUrl && (
+            {normalizedLinkedin && (
               <Link
-                href={linkedinUrl}
+                href={normalizedLinkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-widest text-[#A8A8A8] hover:text-white transition-colors"
+                className={actionClass}
               >
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 fill-current"
@@ -108,9 +126,10 @@ export default function OrganizerProfileHero({
               </Link>
             )}
 
-            <Link
-              href="#"
-              className="inline-flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-widest text-[#A8A8A8] hover:text-white transition-colors"
+            <PressKitShareButton
+              name={organizer.name}
+              isRtl={isRtl}
+              className={actionClass}
             >
               <svg
                 className="w-4 h-4 sm:w-5 sm:h-5 fill-current"
@@ -118,8 +137,7 @@ export default function OrganizerProfileHero({
               >
                 <path d="M18 8a3 3 0 1 0-2.83-4H15A3 3 0 0 0 12 7c0 .12.01.23.03.34L7.9 9.72a3 3 0 1 0 0 4.56l4.13 2.38c-.02.11-.03.22-.03.34a3 3 0 1 0 3-3c-.65 0-1.24.2-1.74.53L9.14 11.6a3.07 3.07 0 0 0 0-1.2l4.12-2.37c.5.34 1.09.53 1.74.53Z" />
               </svg>
-              Press Kit
-            </Link>
+            </PressKitShareButton>
           </div>
         </div>
       </div>
