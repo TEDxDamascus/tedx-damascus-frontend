@@ -88,12 +88,23 @@ export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href
 
                 <h2
                     className={[
-                        'mt-0.5  mb-2 text-md font-normal  text-[#A8A8A8] ',
+                        'mt-0.5 text-md font-normal text-[#A8A8A8] ',
                         isRtl ? 'font-arabic text-start' : 'font-helvetica text-start',
                     ].join(' ')}
                 >
                     {title}
                 </h2>
+
+                {bio && (
+                    <p
+                        className={[
+                            'text-sm leading-[1.5] text-[#7a7a7a] line-clamp-2',
+                            isRtl ? 'font-arabic text-start' : 'font-sans text-start',
+                        ].join(' ')}
+                    >
+                        {bio}
+                    </p>
+                )}
             </div>
         </article>
     );

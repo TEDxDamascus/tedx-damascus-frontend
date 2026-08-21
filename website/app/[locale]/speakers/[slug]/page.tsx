@@ -1,6 +1,7 @@
 import { routing } from '@/routing';
 import { SpeakerDetailClient } from '@/components/speakers/SpeakerDetailClient';
 import { Footer } from '@/components/layout';
+import { fetchWithRetry } from '@/lib/api/fetch-retry';
 
 const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
@@ -28,7 +29,7 @@ function extractSlug(s: ApiSpeakerStub): string {
 export async function generateStaticParams() {
   const slugs: string[] = [];
   try {
-    const res = await fetch(`${API_BASE_URL}/speakers`, { cache: 'no-store' });
+    const res = await fetchWithRetry(`${API_BASE_URL}/speakers`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       const speakers: ApiSpeakerStub[] = Array.isArray(data) ? data : (data?.data ?? []);

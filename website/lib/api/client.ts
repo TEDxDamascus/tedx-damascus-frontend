@@ -49,7 +49,21 @@ class ApiClient {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
+      async (error) => {
+        // api.tedxdamascus.sy has repeatedly shown plain TLS connection
+        // resets under load. A network-level failure (no `error.response` at
+        // all — reset/timeout/DNS, as opposed to a real 4xx/5xx) during a
+        // build-time generateStaticParams call silently drops that page from
+        // the whole static export rather than crashing anything, so retry a
+        // couple of times before giving up.
+        const config = error.config as (AxiosRequestConfig & { __retryCount?: number }) | undefined;
+        const isNetworkError = !error.response;
+        if (config && isNetworkError && (config.__retryCount ?? 0) < 2) {
+          config.__retryCount = (config.__retryCount ?? 0) + 1;
+          await new Promise((resolve) => setTimeout(resolve, 500 * config.__retryCount!));
+          return this.client.request(config);
+        }
+
         // This is a public, unauthenticated site with no admin/login route of
         // its own — several backend endpoints (see e.g. the organizer detail
         // route, and /wall-cards/questions) wrongly require auth for what
