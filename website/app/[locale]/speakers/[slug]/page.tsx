@@ -39,6 +39,12 @@ export async function generateStaticParams() {
     }
   } catch { /* API unreachable at build time */ }
 
+  // With `output: "export"`, Next/Turbopack treats an empty array from
+  // generateStaticParams() as if the function were missing entirely and
+  // hard-fails the whole build, so guarantee at least one entry even when
+  // the API is unreachable or has zero speakers.
+  if (slugs.length === 0) slugs.push('__none__');
+
   return routing.locales.flatMap((locale) =>
     slugs.map((slug) => ({ locale, slug }))
   );

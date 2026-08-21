@@ -83,14 +83,26 @@ export async function generateStaticParams() {
     const enSlugs = enResponse.data.map((blog) => toPathSafeSlug(blog.slug));
     const arSlugs = arResponse.data.map((blog) => toPathSafeSlug(blog.slug));
 
-    return [
+    const params = [
       ...enSlugs.map((slug) => ({ locale: 'en', slug })),
       ...arSlugs.map((slug) => ({ locale: 'ar', slug })),
     ];
+
+    // With `output: "export"`, Next/Turbopack treats an empty array from
+    // generateStaticParams() as if the function were missing entirely and
+    // hard-fails the whole build, so guarantee at least one entry even when
+    // the API legitimately has zero published blogs.
+    if (params.length === 0) {
+      return [{ locale: 'en', slug: '__none__' }, { locale: 'ar', slug: '__none__' }];
+    }
+
+    return params;
   } catch (error) {
     console.error('Failed to fetch blogs for static params:', error);
-    // Return empty array as fallback - will cause build to fail if no params
-    return [];
+    // A flaky/unreachable API at build time must not crash the whole static
+    // export (see note above) — fall back to a harmless placeholder slug
+    // instead of an empty array.
+    return [{ locale: 'en', slug: '__none__' }, { locale: 'ar', slug: '__none__' }];
   }
 }
 

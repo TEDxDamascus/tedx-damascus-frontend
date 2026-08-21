@@ -23,6 +23,17 @@ export async function generateStaticParams() {
       params.push({ locale, id: organizer._id });
     }
   }
+
+  // With `output: "export"`, Next/Turbopack treats an empty array from
+  // generateStaticParams() as if the function were missing entirely and
+  // hard-fails the whole build, so guarantee at least one entry even when
+  // the API is unreachable or has zero organizers.
+  if (params.length === 0) {
+    for (const locale of routing.locales) {
+      params.push({ locale, id: "__none__" });
+    }
+  }
+
   return params;
 }
 
