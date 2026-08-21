@@ -72,9 +72,9 @@ class ApiClient {
         // anything, so retry a couple of times before giving up.
         const config = error.config as (AxiosRequestConfig & { __retryCount?: number }) | undefined;
         const isNetworkError = !error.response;
-        if (config && isNetworkError && (config.__retryCount ?? 0) < 2) {
+        if (config && isNetworkError && (config.__retryCount ?? 0) < 4) {
           config.__retryCount = (config.__retryCount ?? 0) + 1;
-          await new Promise((resolve) => setTimeout(resolve, 500 * config.__retryCount!));
+          await new Promise((resolve) => setTimeout(resolve, 600 * config.__retryCount!));
           return this.client.request(config);
         }
 

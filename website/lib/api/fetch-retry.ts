@@ -12,8 +12,8 @@
 export async function fetchWithRetry(
   url: string,
   init?: RequestInit,
-  retries = 2,
-  delayMs = 500,
+  retries = 4,
+  delayMs = 600,
 ): Promise<Response> {
   let lastError: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
