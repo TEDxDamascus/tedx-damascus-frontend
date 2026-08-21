@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout';
+import { getImageUrl } from '@/lib/api/client';
 import type { ApiEventDetail } from './EventDetailsClient';
 import { localizeField } from './EventDetailsClient';
 
@@ -125,9 +126,9 @@ export function EventDetailsHero({ locale, slug: _slug, event }: EventDetailsHer
       className="relative flex min-h-[90vh] flex-col w-full overflow-hidden"
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      {/* Background image */}
+      {/* Background image — real event image when the backend has one, static art otherwise */}
       <Image
-        src="/images/events/event-details-bg.jpg"
+        src={event?.event_image ? getImageUrl(event.event_image) : '/images/events/event-details-bg.jpg'}
         alt=""
         fill
         className="object-cover object-center pointer-events-none select-none"

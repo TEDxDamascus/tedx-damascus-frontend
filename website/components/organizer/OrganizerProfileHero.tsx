@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
+import { getImageUrl } from "@/lib/api/client";
 
 interface OrganizerProfileHeroProps {
   organizer: OrganizerViewData;
@@ -62,7 +63,7 @@ export default function OrganizerProfileHero({
           <div className="relative w-full h-full z-20 bg-[#1A1A1A] overflow-hidden border border-neutral-800">
             {organizer.image ? (
               <Image
-                src={organizer.image}
+                src={getImageUrl(organizer.image)}
                 alt={organizer.name}
                 fill
                 className="object-cover object-top grayscale"

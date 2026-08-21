@@ -1,5 +1,6 @@
 "use client";
 import { OrganizerViewData } from "@/lib/api/organizers";
+import { getImageUrl } from "@/lib/api/client";
 
 interface OrganizerSpotlightProps {
   organizer?: OrganizerViewData;
@@ -35,7 +36,7 @@ export default function OrganizerSpotlight({
           {leftColumnImages.map((url, idx) => (
             <div key={`left-${idx}`} className="w-full overflow-hidden bg-neutral-900 border border-neutral-800/50">
               <img
-                src={url}
+                src={getImageUrl(url)}
                 alt={`Spotlight ${idx * 2 + 1}`}
                 className="w-full h-auto object-contain block"
                 loading="lazy"
@@ -48,7 +49,7 @@ export default function OrganizerSpotlight({
           {rightColumnImages.map((url, idx) => (
             <div key={`right-${idx}`} className="w-full overflow-hidden bg-neutral-900 border border-neutral-800/50">
               <img
-                src={url}
+                src={getImageUrl(url)}
                 alt={`Spotlight ${idx * 2 + 2}`}
                 className="w-full h-auto object-contain block"
                 loading="lazy"

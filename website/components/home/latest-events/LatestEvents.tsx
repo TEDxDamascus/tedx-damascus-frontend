@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { eventsApi } from '@/lib/api/client';
+import { eventsApi, getImageUrl } from '@/lib/api/client';
 
 /* ─── Types ─────────────────────────────────────────────── */
-
-const EVENT_CARD_IMAGE = '/images/events/event-card.png';
 
 function toSlug(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
@@ -45,6 +43,7 @@ interface EventItem {
   bio: string;
   bioAr: string;
   isPast: boolean;
+  image?: string;
 }
 
 /* ─── Card ───────────────────────────────────────────────── */
@@ -69,7 +68,7 @@ function EventCardHome({ event, locale, viewDetails }: CardProps) {
       {/* Image — gradient vignette on all edges so no solid-square background shows */}
       <div className="relative h-[247px] w-full overflow-hidden bg-transparent">
         <Image
-          src={EVENT_CARD_IMAGE}
+          src={getImageUrl(event.image)}
           alt={title}
           fill
           className="object-contain p-4"
@@ -170,6 +169,7 @@ export function LatestEvents({ locale }: LatestEventsProps) {
             bio: loc(e.brief ?? e.description, 'en') || 'Damascus: where the story is told anew',
             bioAr: loc(e.brief ?? e.description, 'ar') || 'دمشق: حيث تُروى الحكاية من جديد',
             isPast: e.isPast ?? false,
+            image: e.event_image ?? e.image ?? e.imageUrl,
           };
         });
         raw.forEach((e, i) => {
