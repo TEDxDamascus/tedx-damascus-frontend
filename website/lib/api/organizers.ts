@@ -42,13 +42,25 @@ export async function getAllOrganizers(
   }
 }
 
-// GET /organizer/:id requires a logged-in session and this site has no login
-// flow, so the detail page fetches the public list and filters client/server
-// side instead.
+// GET /organizer/:id is public now, so fetch the record directly the same
+// way events/partners do — falling back to the public list only if the
+// direct call fails (e.g. a transient 503 right after an admin deletes then
+// restores the organizer, before the retry in generic-api-service.ts kicks
+// in, or the record's `_id` genuinely doesn't exist).
 export async function getOrganizerById(
   id: string,
   lang?: string,
 ): Promise<OrganizerData | null> {
+  try {
+    const res = await organizersApi.getById(id);
+    const organizer = (res as any)?.data ?? res;
+    if (organizer && organizer._id) {
+      return organizer;
+    }
+  } catch (error) {
+    console.error(`Failed to fetch organizer ${id} directly, falling back to list:`, error);
+  }
+
   const organizers = await getAllOrganizers(lang);
   return organizers.find((organizer) => organizer._id === id) || null;
 }

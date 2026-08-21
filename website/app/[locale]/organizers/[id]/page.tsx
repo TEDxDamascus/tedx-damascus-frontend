@@ -15,7 +15,7 @@ interface OrganizerDetailsPageProps {
 
 export async function generateStaticParams() {
   // GET /organizer (the list) is public, so ids can be enumerated at build
-  // time even though GET /organizer/:id itself requires login.
+  // time.
   const params: { locale: string; id: string }[] = [];
   for (const locale of routing.locales) {
     const organizers = await getAllOrganizers(locale);
