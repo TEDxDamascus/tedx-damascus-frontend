@@ -50,9 +50,16 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        // This is a public, unauthenticated site with no admin/login route of
+        // its own — several backend endpoints (see e.g. the organizer detail
+        // route, and /wall-cards/questions) wrongly require auth for what
+        // should be public reads. A hard `window.location.href` redirect here
+        // used to hijack the whole page on any 401, even though callers
+        // already handle the rejection gracefully (empty-state fallbacks).
+        // Just clear the stale token and let each caller's own .catch decide
+        // what to show.
         if (error.response?.status === 401 && typeof window !== 'undefined') {
           localStorage.removeItem('token');
-          window.location.href = '/admin/login';
         }
         return Promise.reject(error);
       }
