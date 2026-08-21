@@ -135,7 +135,7 @@ export function TeamPage({ locale }: TeamPageProps) {
             </p>
           </div>
           <Link
-            href={`/${locale}/volunteer`}
+            href={`/${locale}/forms/volunteer`}
             className="inline-flex h-14 shrink-0 items-center justify-center whitespace-nowrap bg-primary px-8 font-helvetica text-[15px] font-medium uppercase tracking-[0.4px] text-[#f1f1f1] transition-opacity hover:opacity-90"
           >
             {t('ctaButton')}

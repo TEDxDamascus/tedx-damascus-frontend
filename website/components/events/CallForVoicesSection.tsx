@@ -14,14 +14,14 @@ const CARDS = [
     key: 'team' as const,
     collapsedImg: '/images/teams-partners/team-card.png',
     expandedImg: '/images/teams-partners/team-color.jpg',
-    href: '/volunteer',
+    href: '/forms/volunteer',
     cta: 'nominateCta' as const,
   },
   {
     key: 'organizers' as const,
     collapsedImg: '/images/teams-partners/organizers-card.png',
     expandedImg: '/images/teams-partners/organizers-color.jpg',
-    href: '/volunteer',
+    href: '/forms/volunteer',
     cta: 'nominateCta' as const,
   },
   {
@@ -35,7 +35,7 @@ const CARDS = [
     key: 'partners' as const,
     collapsedImg: '/images/teams-partners/partners-card.png',
     expandedImg: '/images/teams-partners/partners-color.jpg',
-    href: '/volunteer',
+    href: '/forms/volunteer',
     cta: 'nominateCta' as const,
   },
 ] as const;

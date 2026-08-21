@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GenericApiForm } from '@/components/forms/GenericApiForm';
-import { ROLE_MAP } from './form-role-map';
 
 interface DynamicFormRendererProps {
   slug: string;
@@ -53,10 +52,7 @@ export function DynamicFormRenderer({ slug, locale }: DynamicFormRendererProps) 
     );
   }
 
-  const Form = role ? ROLE_MAP[role] : undefined;
-
-  if (Form) return <Form locale={locale} />;
-
-  // Unknown slug — fetch from API
+  // Known roles are always handled by the guards above (redirected to an
+  // external form or to home); anything else is a backend-driven form.
   return <GenericApiForm formId={slug} locale={locale} />;
 }
