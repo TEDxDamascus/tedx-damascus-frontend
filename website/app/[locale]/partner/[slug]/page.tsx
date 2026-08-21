@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import PartnerDetails from "@/components/partner/PartnerDetails";
 import { mapPartnerToDetailsView } from "@/mappers/partner.mapper";
+import { toPathSafeSlug } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{
@@ -34,14 +35,14 @@ export async function generateStaticParams() {
       if (partner.slug?.en?.trim()) {
         params.push({
           locale: "en" as const,
-          slug: partner.slug.en.trim(),
+          slug: toPathSafeSlug(partner.slug.en.trim()),
         });
       }
 
       if (partner.slug?.ar?.trim()) {
         params.push({
           locale: "ar" as const,
-          slug: partner.slug.ar.trim(),
+          slug: toPathSafeSlug(partner.slug.ar.trim()),
         });
       }
 
@@ -78,15 +79,16 @@ async function getPartner(slug: string) {
 
   return partners.find((partner: any) => {
     const enSlug = partner.slug?.en
-      ?.trim()
-      .toLowerCase();
+      ?.trim();
+    const enSafeSlug = enSlug ? toPathSafeSlug(enSlug).toLowerCase() : undefined;
 
     const arSlug = partner.slug?.ar
       ?.trim();
+    const arSafeSlug = arSlug ? toPathSafeSlug(arSlug) : undefined;
 
     return (
-      enSlug === normalizedSlug ||
-      arSlug === decodedSlug
+      enSafeSlug === normalizedSlug ||
+      arSafeSlug === decodedSlug
     );
   });
 }

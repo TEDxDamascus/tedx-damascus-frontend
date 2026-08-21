@@ -47,6 +47,18 @@ export function pickLocaleText(value: unknown, locale: string): string {
   return '';
 }
 
+/**
+ * Makes a raw, editor-entered slug safe to use as a static-export path segment.
+ * CMS content sometimes has slugs typed with literal spaces (e.g. "gold partner"),
+ * which `output: "export"` turns straight into a directory name containing spaces
+ * — that breaks some hosting platforms' post-build packaging/verification steps.
+ * Unlike `slugify` below, this keeps non-ASCII text (Arabic slugs) intact and only
+ * collapses whitespace, so it's safe to use for both locales.
+ */
+export function toPathSafeSlug(raw: string): string {
+  return raw.trim().replace(/\s+/g, '-');
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()
