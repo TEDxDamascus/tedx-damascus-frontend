@@ -1,0 +1,46 @@
+name: Deploy static export to Hostinger
+
+# Builds the Next.js static export in CI and uploads it directly to Hostinger
+# via FTP, bypassing Hostinger's own Node.js build pipeline. That pipeline
+# reliably completes `next build` (verified locally many times over) but then
+# reports "No output directory found after build" regardless of what the
+# build actually produces — a platform-side issue with the Root
+# directory ("website") + custom Output directory ("out") combination, not
+# something fixable from repo config. This workflow sidesteps it entirely.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build static export
+        working-directory: website
+        run: npm run build
+
+      - name: Deploy to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: website/out/
+          server-dir: /public_html/

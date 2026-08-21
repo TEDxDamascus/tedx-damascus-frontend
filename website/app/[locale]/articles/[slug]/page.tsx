@@ -10,7 +10,7 @@ import { ReferencesGrid } from '@/components/articles/ReferencesGrid';
 import type { ArticlePageProps } from '@/components/articles/types';
 import { blogsService } from '@/lib/api/blogs.service';
 import { blogReferencesService } from '@/lib/api/blog-references.service';
-import { getLocalizedSlug } from '@/lib/utils';
+import { getLocalizedSlug, toPathSafeSlug } from '@/lib/utils';
 import { Blog } from '@/lib/api/blogs.types';
 import { Metadata } from 'next';
 import { getImageUrl } from '@/lib/api/client';
@@ -74,27 +74,66 @@ export async function generateStaticParams() {
       }),
     ]);
 
-    const enSlugs = enResponse.data.map((blog) => blog.slug);
-    const arSlugs = arResponse.data.map((blog) => blog.slug);
+    // Editor-entered slugs sometimes contain literal spaces (e.g. a title typed
+    // straight into the slug field). `output: "export"` turns the raw slug into
+    // a directory name, so an un-sanitized slug produces a path with spaces in
+    // it — which breaks some hosting platforms' post-build packaging steps even
+    // though `next build` itself completes fine. See resolveBlogBySlug below for
+    // how the sanitized param is matched back to the real record when rendering.
+    const enSlugs = enResponse.data.map((blog) => toPathSafeSlug(blog.slug));
+    const arSlugs = arResponse.data.map((blog) => toPathSafeSlug(blog.slug));
 
-    return [
+    const params = [
       ...enSlugs.map((slug) => ({ locale: 'en', slug })),
       ...arSlugs.map((slug) => ({ locale: 'ar', slug })),
     ];
+
+    // With `output: "export"`, Next/Turbopack treats an empty array from
+    // generateStaticParams() as if the function were missing entirely and
+    // hard-fails the whole build, so guarantee at least one entry even when
+    // the API legitimately has zero published blogs.
+    if (params.length === 0) {
+      return [{ locale: 'en', slug: '__none__' }, { locale: 'ar', slug: '__none__' }];
+    }
+
+    return params;
   } catch (error) {
     console.error('Failed to fetch blogs for static params:', error);
-    // Return empty array as fallback - will cause build to fail if no params
-    return [];
+    // A flaky/unreachable API at build time must not crash the whole static
+    // export (see note above) — fall back to a harmless placeholder slug
+    // instead of an empty array.
+    return [{ locale: 'en', slug: '__none__' }, { locale: 'ar', slug: '__none__' }];
   }
 }
 
-// Helper function to fetch blog by slug and return the blog data
-async function getBlogBySlugWithFallback(slug: string, locale: string): Promise<Blog | null> {
+// Resolves a blog by its (possibly path-sanitized) slug. Tries the direct
+// by-slug endpoint first — the fast path for the vast majority of slugs, which
+// have no whitespace and are unchanged by toPathSafeSlug. Falls back to
+// matching the sanitized slug against the full list when that 404s, which
+// happens for the handful of CMS entries whose real slug contains spaces.
+async function resolveBlogBySlug(slug: string, locale: string): Promise<Blog | null> {
   try {
     const response = await blogsService.getBlogBySlug(slug, locale);
-    return response?.data || null;
+    if (response?.data) return response.data;
   } catch (error) {
-    console.error('Failed to fetch blog by slug:', error);
+    console.error('Direct blog-by-slug lookup failed, trying sanitized-slug fallback:', error);
+  }
+
+  try {
+    const listResponse = await blogsService.getBlogs({
+      page: 1,
+      limit: 100,
+      lang: locale as 'en' | 'ar',
+      sort: 'createdAt',
+      order: 'desc',
+    });
+    const match = listResponse.data.find((blog) => toPathSafeSlug(blog.slug) === slug);
+    if (!match) return null;
+
+    const detail = await blogsService.getBlogById(match._id, locale);
+    return detail?.data || null;
+  } catch (error) {
+    console.error('Failed to resolve blog via sanitized-slug fallback:', error);
     return null;
   }
 }
@@ -108,9 +147,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   setRequestLocale(locale);
 
   try {
-    const response = await blogsService.getBlogBySlug(slug, locale);
-    const blog = response?.data;
-    
+    const blog = await resolveBlogBySlug(slug, locale);
+
     if (blog?.seo) {
       const title = blog.seo.meta_title;
       const description = blog.seo.meta_description;
@@ -160,8 +198,7 @@ export default async function ArticlePage({ params }: Props) {
   let referencesError = '';
 
   try {
-    const response = await blogsService.getBlogBySlug(slug, locale);
-    blog = response?.data || null;
+    blog = await resolveBlogBySlug(slug, locale);
   } catch (error) {
     console.error('Failed to fetch blog:', error);
   }

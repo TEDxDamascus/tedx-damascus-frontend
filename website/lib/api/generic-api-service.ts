@@ -63,7 +63,27 @@ class ApiClient {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
+      async (error) => {
+        // api.tedxdamascus.sy has repeatedly shown plain TLS connection
+        // resets under load. A network-level failure (no `error.response` at
+        // all — reset/timeout/DNS, as opposed to a real 4xx/5xx) during a
+        // build-time generateStaticParams call (e.g. organizers) silently
+        // drops that page from the whole static export rather than crashing
+        // anything, so retry a couple of times before giving up.
+        //
+        // A plain 503 is retried too: deleting then restoring a record (e.g.
+        // an organizer) leaves the API answering 503 for a few seconds
+        // afterwards even though the record is back, so treat it the same as
+        // a transient network blip instead of surfacing it immediately.
+        const config = error.config as (AxiosRequestConfig & { __retryCount?: number }) | undefined;
+        const isNetworkError = !error.response;
+        const isTransientServerError = error.response?.status === 503;
+        if (config && (isNetworkError || isTransientServerError) && (config.__retryCount ?? 0) < 4) {
+          config.__retryCount = (config.__retryCount ?? 0) + 1;
+          await new Promise((resolve) => setTimeout(resolve, 600 * config.__retryCount!));
+          return this.client.request(config);
+        }
+
         if (error.response?.status === 401 && isAuthenticated) {
           // Unauthorized - redirect to login
           this.handleUnauthorized();

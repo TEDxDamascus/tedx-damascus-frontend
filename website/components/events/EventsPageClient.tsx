@@ -73,6 +73,7 @@ interface NormalizedEvent {
   badge: string;
   bio: string;
   bioAr: string;
+  image?: string;
 }
 
 interface EventsPageClientProps {
@@ -108,6 +109,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
             badge: e.event_type ?? e.category ?? e.badge ?? t('cardBadge'),
             bio: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'en'),
             bioAr: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'ar'),
+            image: e.event_image ?? e.image ?? e.imageUrl,
           };
         });
         raw.forEach((e, i) => {
@@ -252,6 +254,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
                   bio={isRtl ? event.bioAr : event.bio}
                   isRtl={isRtl}
                   href={`/${locale}/events/${event.slug}`}
+                  image={event.image}
                 />
               ))}
             </div>

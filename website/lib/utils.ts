@@ -23,10 +23,13 @@ export function getLocalizedSlug(
   slug: string | { en: string; ar: string },
   locale: string
 ): string {
-  if (typeof slug === 'string') {
-    return slug;
-  }
-  return locale === 'ar' ? slug.ar : slug.en;
+  const raw = typeof slug === 'string' ? slug : (locale === 'ar' ? slug.ar : slug.en);
+  // Must match the sanitization `generateStaticParams` applies when building
+  // the static export (see app/[locale]/articles/[slug]/page.tsx) — editors
+  // sometimes type a title straight into the slug field, leaving literal
+  // spaces. An un-sanitized slug here would link to a path that was never
+  // generated as a static file, 404ing (or 503ing, depending on the host).
+  return toPathSafeSlug(raw);
 }
 
 /**
@@ -45,6 +48,18 @@ export function pickLocaleText(value: unknown, locale: string): string {
     if (preferred != null && typeof preferred === 'object') return pickLocaleText(preferred, locale);
   }
   return '';
+}
+
+/**
+ * Makes a raw, editor-entered slug safe to use as a static-export path segment.
+ * CMS content sometimes has slugs typed with literal spaces (e.g. "gold partner"),
+ * which `output: "export"` turns straight into a directory name containing spaces
+ * — that breaks some hosting platforms' post-build packaging/verification steps.
+ * Unlike `slugify` below, this keeps non-ASCII text (Arabic slugs) intact and only
+ * collapses whitespace, so it's safe to use for both locales.
+ */
+export function toPathSafeSlug(raw: string): string {
+  return raw.trim().replace(/\s+/g, '-');
 }
 
 export function slugify(text: string): string {

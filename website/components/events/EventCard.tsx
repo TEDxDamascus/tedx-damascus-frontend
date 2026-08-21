@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getImageUrl } from '@/lib/api/client';
 
 const CALENDAR_SRC = '/images/events/calendar-03.svg';
-const EVENT_IMAGE_SRC = '/images/events/event-card.png';
 
 export type EventCardProps = {
     title: string;
@@ -14,9 +14,10 @@ export type EventCardProps = {
     isRtl: boolean;
     href?: string;
     bio?: string;
+    image?: string;
 };
 
-export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href }: EventCardProps) {
+export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href, image }: EventCardProps) {
     const card = (
         <article
             className="flex w-full flex-col overflow-hidden rounded-2xl  "
@@ -26,7 +27,7 @@ export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href
             {/* Make the image tile have a sharp bottom edge (no visible card border) and reduce overlay haze */}
             <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-t-2xl bg-black">
                 <Image
-                    src={EVENT_IMAGE_SRC}
+                    src={getImageUrl(image)}
                     alt=""
                     fill
                     className="object-cover object-center"
@@ -87,12 +88,23 @@ export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href
 
                 <h2
                     className={[
-                        'mt-0.5  mb-2 text-md font-normal  text-[#A8A8A8] ',
+                        'mt-0.5 text-md font-normal text-[#A8A8A8] ',
                         isRtl ? 'font-arabic text-start' : 'font-helvetica text-start',
                     ].join(' ')}
                 >
                     {title}
                 </h2>
+
+                {bio && (
+                    <p
+                        className={[
+                            'text-sm leading-[1.5] text-[#7a7a7a] line-clamp-2',
+                            isRtl ? 'font-arabic text-start' : 'font-sans text-start',
+                        ].join(' ')}
+                    >
+                        {bio}
+                    </p>
+                )}
             </div>
         </article>
     );

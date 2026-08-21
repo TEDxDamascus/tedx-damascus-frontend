@@ -49,10 +49,37 @@ class ApiClient {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
+      async (error) => {
+        // api.tedxdamascus.sy has repeatedly shown plain TLS connection
+        // resets under load. A network-level failure (no `error.response` at
+        // all — reset/timeout/DNS, as opposed to a real 4xx/5xx) during a
+        // build-time generateStaticParams call silently drops that page from
+        // the whole static export rather than crashing anything, so retry a
+        // couple of times before giving up.
+        //
+        // A plain 503 is retried too: deleting then restoring a record leaves
+        // the API answering 503 for a few seconds afterwards even though the
+        // record is back, so treat it the same as a transient network blip
+        // instead of surfacing it immediately.
+        const config = error.config as (AxiosRequestConfig & { __retryCount?: number }) | undefined;
+        const isNetworkError = !error.response;
+        const isTransientServerError = error.response?.status === 503;
+        if (config && (isNetworkError || isTransientServerError) && (config.__retryCount ?? 0) < 4) {
+          config.__retryCount = (config.__retryCount ?? 0) + 1;
+          await new Promise((resolve) => setTimeout(resolve, 600 * config.__retryCount!));
+          return this.client.request(config);
+        }
+
+        // This is a public, unauthenticated site with no admin/login route of
+        // its own — several backend endpoints (see e.g. the organizer detail
+        // route, and /wall-cards/questions) wrongly require auth for what
+        // should be public reads. A hard `window.location.href` redirect here
+        // used to hijack the whole page on any 401, even though callers
+        // already handle the rejection gracefully (empty-state fallbacks).
+        // Just clear the stale token and let each caller's own .catch decide
+        // what to show.
         if (error.response?.status === 401 && typeof window !== 'undefined') {
           localStorage.removeItem('token');
-          window.location.href = '/admin/login';
         }
         return Promise.reject(error);
       }

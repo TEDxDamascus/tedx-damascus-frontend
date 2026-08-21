@@ -1,13 +1,10 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import {
-  getOrganizerById,
-  getAllOrganizers,
-  OrganizerData,
-} from "@/lib/api/organizers";
+import { getAllOrganizers, getOrganizerById, formatOrganizer } from "@/lib/api/organizers";
 import OrganizerDetails from "@/components/organizer/OrganizerDetails";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { routing } from "@/routing";
 
 interface OrganizerDetailsPageProps {
   params: Promise<{
@@ -17,21 +14,27 @@ interface OrganizerDetailsPageProps {
 }
 
 export async function generateStaticParams() {
-  const locales = ["en", "ar"];
-
-  try {
-    const organizers = await getAllOrganizers();
-
-    return locales.flatMap((locale) =>
-      organizers.map((organizer: OrganizerData) => ({
-        locale,
-        id: organizer._id,
-      })),
-    );
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
+  // GET /organizer (the list) is public, so ids can be enumerated at build
+  // time.
+  const params: { locale: string; id: string }[] = [];
+  for (const locale of routing.locales) {
+    const organizers = await getAllOrganizers(locale);
+    for (const organizer of organizers) {
+      params.push({ locale, id: organizer._id });
+    }
   }
+
+  // With `output: "export"`, Next/Turbopack treats an empty array from
+  // generateStaticParams() as if the function were missing entirely and
+  // hard-fails the whole build, so guarantee at least one entry even when
+  // the API is unreachable or has zero organizers.
+  if (params.length === 0) {
+    for (const locale of routing.locales) {
+      params.push({ locale, id: "__none__" });
+    }
+  }
+
+  return params;
 }
 
 export default async function OrganizerDetailsPage({
@@ -39,40 +42,13 @@ export default async function OrganizerDetailsPage({
 }: OrganizerDetailsPageProps) {
   const { locale, id } = await params;
 
-  const organizer = await getOrganizerById(id);
+  const organizer = await getOrganizerById(id, locale);
 
   if (!organizer) {
     notFound();
   }
 
-  const nameString =
-    typeof organizer.name === "object"
-      ? organizer.name[locale] || organizer.name.en || ""
-      : organizer.name;
-
-  const bioString =
-    typeof organizer.bio === "object"
-      ? organizer.bio?.[locale] || organizer.bio?.en || ""
-      : organizer.bio || "";
-
-  const imageUrl =
-    typeof organizer.image === "object"
-      ? organizer.image.url
-      : organizer.image || "";
-
-  const galleryUrls: string[] = (organizer.gallery || [])
-    .map((item) => (typeof item === "object" && item !== null ? item.url : item))
-    .filter((url): url is string => Boolean(url));
-
-  const formattedOrganizer = {
-    _id: organizer._id,
-    name: nameString,
-    image: imageUrl,
-    bio: bioString,
-    social_links: organizer.social_links || [],
-    role: organizer.role || "",
-    gallery: galleryUrls,
-  };
+  const formattedOrganizer = formatOrganizer(organizer, locale);
 
   return (
     <main className="min-h-screen bg-[#101010]">

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { PartnerViewData } from "@/lib/api/partners";
+import { getImageUrl } from "@/lib/api/client";
 
 interface PartnerInfoProps {
   locale: "en" | "ar";
@@ -20,7 +21,7 @@ export default function PartnerInfo({ locale, partner }: PartnerInfoProps) {
         <div className="flex justify-center xl:justify-end order-1 xl:order-2">
           <div className="relative w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] xl:w-[450px] xl:h-[450px] bg-[#1A1A1A]">
             <Image
-              src={partner.image}
+              src={getImageUrl(partner.image)}
               alt={partner.name}
               fill
               className="object-contain"

@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { eventsApi } from '@/lib/api/client';
+import { eventsApi, getImageUrl } from '@/lib/api/client';
 
 /* ─── Types ─────────────────────────────────────────────── */
-
-const EVENT_CARD_IMAGE = '/images/events/event-card.png';
 
 function toSlug(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
@@ -45,20 +43,8 @@ interface EventItem {
   bio: string;
   bioAr: string;
   isPast: boolean;
+  image?: string;
 }
-
-const FALLBACK_EVENTS: EventItem[] = [
-  {
-    id: 1,
-    slug: 'tedx-damascus-2026',
-    title: 'TEDx Damascus 2026',
-    titleAr: 'TEDx Damascus 2026',
-    date: 'Sep 2026',
-    bio: 'Damascus: where the story is told anew',
-    bioAr: 'دمشق: حيث تُروى الحكاية من جديد',
-    isPast: false,
-  },
-];
 
 /* ─── Card ───────────────────────────────────────────────── */
 
@@ -82,7 +68,7 @@ function EventCardHome({ event, locale, viewDetails }: CardProps) {
       {/* Image — gradient vignette on all edges so no solid-square background shows */}
       <div className="relative h-[247px] w-full overflow-hidden bg-transparent">
         <Image
-          src={EVENT_CARD_IMAGE}
+          src={getImageUrl(event.image)}
           alt={title}
           fill
           className="object-contain p-4"
@@ -162,15 +148,15 @@ export function LatestEvents({ locale }: LatestEventsProps) {
   const t = useTranslations('LatestEvents');
   const isRtl = locale === 'ar';
 
-  const [events, setEvents] = useState<EventItem[]>(FALLBACK_EVENTS);
-  const [vpnBlocked, setVpnBlocked] = useState(false);
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     eventsApi
       .getAll({ status: 'published', limit: 3 })
       .then((res: any) => {
         const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
-        if (raw.length === 0) return;
+        if (raw.length === 0) { setEvents([]); return; }
         const normalized: EventItem[] = raw.map((e) => {
           const rawId = e._id ?? e.id ?? '';
           const enTitle = loc(e.title ?? e.name, 'en');
@@ -183,6 +169,7 @@ export function LatestEvents({ locale }: LatestEventsProps) {
             bio: loc(e.brief ?? e.description, 'en') || 'Damascus: where the story is told anew',
             bioAr: loc(e.brief ?? e.description, 'ar') || 'دمشق: حيث تُروى الحكاية من جديد',
             isPast: e.isPast ?? false,
+            image: e.event_image ?? e.image ?? e.imageUrl,
           };
         });
         raw.forEach((e, i) => {
@@ -190,10 +177,16 @@ export function LatestEvents({ locale }: LatestEventsProps) {
         });
         setEvents(normalized);
       })
-      .catch(() => setVpnBlocked(true));
+      .catch(() => setEvents([]))
+      .finally(() => setLoaded(true));
   }, []);
 
   const cardProps = { locale, viewDetails: t('viewDetails') };
+
+  // No mocked/placeholder events — once the fetch has settled, hide the
+  // whole section rather than show fabricated content when the backend has
+  // nothing to return.
+  if (!loaded || events.length === 0) return null;
 
   return (
     <section
@@ -209,11 +202,6 @@ export function LatestEvents({ locale }: LatestEventsProps) {
           <p className="mt-3 font-helvetica text-[15px] xl:text-[16px] font-medium leading-[1.4] tracking-[0.15px] text-[#a8a8a8]">
             {t('subtitle')}
           </p>
-          {vpnBlocked && (
-            <p className="mt-3 font-helvetica text-[11px] leading-[1.4] text-white/30">
-              {isRtl ? 'أوقف VPN لرؤية الفعاليات المباشرة' : 'Disable VPN to load live events'}
-            </p>
-          )}
         </div>
 
         <div className="relative flex-1 overflow-hidden">
@@ -266,11 +254,6 @@ export function LatestEvents({ locale }: LatestEventsProps) {
           <p className="mt-2 font-helvetica text-[15px] sm:text-[17px] font-medium leading-[1.4] text-[#a8a8a8]">
             {t('subtitle')}
           </p>
-          {vpnBlocked && (
-            <p className="mt-2 font-helvetica text-[11px] text-white/30">
-              {isRtl ? 'أوقف VPN لرؤية الفعاليات المباشرة' : 'Disable VPN to load live events'}
-            </p>
-          )}
         </div>
 
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:justify-center sm:flex-wrap">

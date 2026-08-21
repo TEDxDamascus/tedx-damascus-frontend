@@ -5,6 +5,7 @@ import PartnerTierHeader from "./PartnerTierHeader";
 import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
 import { normalizeTier } from "@/lib/api/partners";
+import { getImageUrl } from "@/lib/api/client";
 
 
 interface SilverPartnerProps {
@@ -41,8 +42,9 @@ const displayPartners = (partners || []).filter((p) => {
             name={partner.name}
             description={partner.short_description ?? ""}
             logoUrl={
-              partner.image ||
-              "https://placehold.co/300x300/222/fff?text=Logo"
+              partner.image
+                ? getImageUrl(partner.image)
+                : "https://placehold.co/300x300/222/fff?text=Logo"
             }
             websiteUrl={partner.social_links?.[0] ?? "#"}
             profileUrl={

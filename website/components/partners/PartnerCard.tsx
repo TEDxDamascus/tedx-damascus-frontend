@@ -3,7 +3,18 @@
 import React from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+// `next.config.ts` has `trailingSlash: true`, so the static export writes
+// each partner page to `partner/<slug>/index.html`. `next/link` normalizes
+// its own `href` for that automatically, but a manually-built path used with
+// a plain `<a>` or `router.push()` does not — it needs the trailing slash
+// added here or the built path never resolves once deployed.
+function withTrailingSlash(path: string): string {
+  if (!path || path === "#" || path.endsWith("/")) return path;
+  return `${path}/`;
+}
 
 interface PartnerCardProps {
   locale: string;
@@ -94,6 +105,7 @@ export default function PartnerCard({
 }: PartnerCardProps) {
   const isRtl = locale === "ar";
   const router = useRouter();
+  const normalizedProfileUrl = withTrailingSlash(profileUrl);
 
 const isWholeCardClickable =
   !showProfileBtn && profileUrl !== "#";
@@ -103,7 +115,7 @@ const isWholeCardClickable =
 
   const handleCardClick = () => {
     if (isWholeCardClickable) {
-      router.push(profileUrl);
+      router.push(normalizedProfileUrl);
     }
   };
 
@@ -163,8 +175,8 @@ const isWholeCardClickable =
 
         <div className="flex flex-wrap gap-6 mt-2">
           {showProfileBtn && (
-            <a
-              href={profileUrl}
+            <Link
+              href={normalizedProfileUrl}
               onClick={(e) => e.stopPropagation()}
               className={`inline-flex items-center gap-2 font-helvetica font-bold uppercase ${btnTextSize} ${btnPadding} ${profileBtnBg}`}
             >
@@ -174,7 +186,7 @@ const isWholeCardClickable =
               ) : (
                 <ArrowRight className="w-5 h-5" />
               )}
-            </a>
+            </Link>
           )}
 
           {showWebsiteBtn && (

@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
+import { getImageUrl } from "@/lib/api/client";
 
 interface OrganizerCardProps {
   locale: "en" | "ar";
@@ -14,19 +15,17 @@ export default function OrganizerCard({
   locale,
   organizer,
 }: OrganizerCardProps) {
-  const organizerId = organizer._id ;
-
   return (
     <Link
-      href={`/${locale}/organizers/${organizerId}`}
-      className="group relative flex flex-col w-full max-w-[320px] bg-[#121212] overflow-hidden rounded-none border border-transparent transition-all duration-300 cursor-pointer"
+      href={`/${locale}/organizers/${organizer._id}`}
+      className="group relative flex flex-col w-full max-w-[320px] bg-[#121212] overflow-hidden rounded-none border border-transparent transition-all duration-300"
     >
       <div className="absolute top-0 left-0 z-20 w-4 h-4 border-t-4 border-l-4 border-[#EB0028] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <div className="relative w-full h-[450px] bg-[#1a1a1a]">
         {organizer.image ? (
           <Image
-            src={organizer.image}
+            src={getImageUrl(organizer.image)}
             alt={organizer.name}
             fill
             className="object-cover object-top grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
