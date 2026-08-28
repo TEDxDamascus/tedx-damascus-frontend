@@ -130,18 +130,10 @@ interface OurStoryProps {
   locale: string;
 }
 
-/** Each milestone's own photos, in click-through order — powers that milestone's full-screen carousel lightbox. */
-const MILESTONE_IMAGE_LISTS: string[][] = MILESTONE_IMAGES.map((m) =>
-  [m.front, m.middle, m.back].filter((src): src is string => Boolean(src)),
-);
-/** Local index of each photo within its own milestone's image list, matching `MILESTONE_IMAGE_LISTS`. */
-const IMAGE_INDICES: Array<{ front: number; middle: number; back?: number }> = MILESTONE_IMAGES.map((m) => {
-  const entry: { front: number; middle: number; back?: number } = { front: 0, middle: 1 };
-  if (m.back) entry.back = 2;
-  return entry;
-});
+/** Main (front) photos only — decorative bg / peeking layers stay on the page, not in the lightbox. */
+const STORY_GALLERY = MILESTONE_IMAGES.map((m) => m.front);
 
-/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. Each photo opens the full-screen carousel lightbox on click. */
+/** Three photos stacked directly above one another, the back two peeking out past the top edge, matching the Figma reference. `back` is optional for milestones with only two source photos. Clicking any layer opens the full-page main-image gallery at this section. */
 function MilestoneImageStack({
   front,
   innerFront,
@@ -158,7 +150,6 @@ function MilestoneImageStack({
   bgScale = 'scale-x-[1.4]',
   roundedClass = 'rounded-2xl',
   cardBg,
-  indices,
   onImageClick,
 }: {
   front: string;
@@ -183,8 +174,7 @@ function MilestoneImageStack({
   roundedClass?: string;
   /** Optional Tailwind bg class for the inner card (shows when front uses object-contain). */
   cardBg?: string;
-  indices: { front: number; middle: number; back?: number };
-  onImageClick: (index: number) => void;
+  onImageClick: () => void;
 }) {
 
   if (noRotate) {
@@ -198,7 +188,7 @@ function MilestoneImageStack({
             alt=""
             className={`absolute inset-0 h-full w-full cursor-pointer object-cover ${bgScale} ${bgTop ? 'object-top' : ''}`}
             draggable={false}
-            onClick={() => onImageClick(indices.middle)}
+            onClick={onImageClick}
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -206,7 +196,7 @@ function MilestoneImageStack({
             alt=""
             className={['absolute inset-0 h-full w-full cursor-pointer', (containFront || frontScale) ? `object-contain ${frontScale ?? ''}` : 'object-cover'].join(' ').trim()}
             draggable={false}
-            onClick={() => onImageClick(indices.front)}
+            onClick={onImageClick}
           />
         </div>
       </div>
@@ -239,7 +229,7 @@ function MilestoneImageStack({
               alt=""
               className="h-full w-full cursor-pointer object-cover"
               draggable={false}
-              onClick={() => onImageClick(indices.back!)}
+              onClick={onImageClick}
             />
           </div>
         )}
@@ -256,7 +246,7 @@ function MilestoneImageStack({
             alt=""
             className="h-full w-full cursor-pointer object-cover"
             draggable={false}
-            onClick={() => onImageClick(indices.middle)}
+            onClick={onImageClick}
           />
         </div>
 
@@ -270,7 +260,7 @@ function MilestoneImageStack({
             alt=""
             className={`h-full w-full cursor-pointer ${containFront ? `object-contain ${frontScale ?? ''}` : 'object-cover'}`}
             draggable={false}
-            onClick={() => onImageClick(indices.front)}
+            onClick={onImageClick}
           />
           {innerFront && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -279,7 +269,7 @@ function MilestoneImageStack({
               alt=""
               className="absolute inset-0 h-full w-full cursor-pointer object-contain p-3"
               draggable={false}
-              onClick={() => onImageClick(indices.front)}
+              onClick={onImageClick}
             />
           )}
         </div>
@@ -291,7 +281,7 @@ function MilestoneImageStack({
 export function OurStory({ locale }: OurStoryProps) {
   const t = useTranslations('OurStory');
   const isRtl = locale === 'ar';
-  const [lightbox, setLightbox] = useState<{ milestone: number; index: number } | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const milestones: Milestone[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((n, i) => ({
     date: t(`m${n}Date`),
@@ -420,8 +410,7 @@ export function OurStory({ locale }: OurStoryProps) {
                       bgScale={i === 9 ? 'scale-[0.95]' : i === 12 ? 'scale-x-[1.8]' : i === 13 ? 'opacity-0' : i === 19 ? 'scale-[1.05]' : 'scale-x-[1.4]'}
                       cardBg={i === 13 ? 'bg-[#1a1a1a]' : undefined}
                       roundedClass={i === 9 ? 'rounded-2xl rounded-tr-[48px]' : 'rounded-2xl'}
-                      indices={IMAGE_INDICES[i]}
-                      onImageClick={(index) => setLightbox({ milestone: i, index })}
+                      onImageClick={() => setLightboxIndex(i)}
                     />
                   </MotionReveal>
                 </div>
@@ -456,10 +445,10 @@ export function OurStory({ locale }: OurStoryProps) {
       </div>
 
       <ImageLightbox
-        images={lightbox ? MILESTONE_IMAGE_LISTS[lightbox.milestone] : []}
-        initialIndex={lightbox?.index ?? 0}
-        open={lightbox !== null}
-        onClose={() => setLightbox(null)}
+        images={STORY_GALLERY}
+        initialIndex={lightboxIndex ?? 0}
+        open={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
       />
     </section>
   );
