@@ -178,6 +178,8 @@ export interface TeamMemberApiData {
   name: { en: string; ar: string };
   image?: { url: string } | string;
   year?: number;
+  social_links?: string[];
+  /** @deprecated API returns `social_links`; kept for older payloads. */
   social_link?: string[];
   bio?: { en: string; ar: string };
   createdAt: string;
