@@ -49,13 +49,14 @@ function toSlug(text: string): string {
 function parseSocialLinks(
   links: string[] = [],
   contactInfo?: ContactInfo
-): { linkedin?: string; email?: string } {
+): { linkedin?: string; facebook?: string; email?: string } {
   const linkedin = links.find((l) => l.toLowerCase().includes('linkedin.com'));
+  const facebook = links.find((l) => l.toLowerCase().includes('facebook.com'));
   const emailFromLinks = links.find(
     (l) => l.startsWith('mailto:') || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(l)
   );
   const email = emailFromLinks ?? contactInfo?.email;
-  return { linkedin, email };
+  return { linkedin, facebook, email };
 }
 
 interface SpeakerDetailClientProps {
@@ -106,7 +107,7 @@ export function SpeakerDetailClient({ locale }: SpeakerDetailClientProps) {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const { linkedin } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
+  const { linkedin, facebook } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
   useDocumentTitle(speaker ? loc(speaker.name, isRtl ? 'ar' : 'en') : undefined);
 
   return (
@@ -135,6 +136,7 @@ export function SpeakerDetailClient({ locale }: SpeakerDetailClientProps) {
             description={loc(speaker.description, isRtl ? 'ar' : 'en')}
             imageUrl={getImageUrl(speaker.speaker_image)}
             linkedinUrl={linkedin}
+            facebookUrl={facebook}
             isRtl={isRtl}
           />
           <SpeakerDetailAbout

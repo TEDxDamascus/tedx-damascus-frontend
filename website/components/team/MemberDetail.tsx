@@ -25,6 +25,10 @@ function extractLinkedin(links: string[] = []): string | undefined {
   return links.find((l) => l.toLowerCase().includes('linkedin.com'));
 }
 
+function extractFacebook(links: string[] = []): string | undefined {
+  return links.find((l) => l.toLowerCase().includes('facebook.com'));
+}
+
 export function MemberDetail({ locale }: MemberDetailProps) {
   const tMember = useTranslations('TeamMember');
   const isRtl = locale === 'ar';
@@ -95,8 +99,11 @@ export function MemberDetail({ locale }: MemberDetailProps) {
   const name = pickLocaleText(live.name, locale);
   const category = `TEDx Damascus ${live.year ?? ''}`.trim();
   const bio = pickLocaleText(live.bio, locale);
-  const linkedinUrl = extractLinkedin(live.social_link);
+  const socialLinks = live.social_links ?? live.social_link ?? [];
+  const linkedinUrl = extractLinkedin(socialLinks);
+  const facebookUrl = extractFacebook(socialLinks);
   const normalizedLinkedin = linkedinUrl ? normalizeExternalUrl(linkedinUrl) : undefined;
+  const normalizedFacebook = facebookUrl ? normalizeExternalUrl(facebookUrl) : undefined;
 
   const actionClass = [
     'flex items-center gap-2.5 font-sans text-[13px] font-bold uppercase tracking-[1px]',
@@ -188,6 +195,26 @@ export function MemberDetail({ locale }: MemberDetailProps) {
                         draggable={false}
                       />
                       <span>{tMember('linkedIn')}</span>
+                    </Link>
+                  )}
+
+                  {normalizedFacebook && (
+                    <Link
+                      href={normalizedFacebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={actionClass}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/images/speakers/facebook.svg"
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="shrink-0"
+                        draggable={false}
+                      />
+                      <span>{tMember('facebook')}</span>
                     </Link>
                   )}
 
