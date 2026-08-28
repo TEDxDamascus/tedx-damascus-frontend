@@ -6,6 +6,7 @@ import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
 import { normalizeTier } from "@/lib/api/partners";
 import { getImageUrl } from "@/lib/api/client";
+import { partnerDetailHref, partnerSlugFromField } from "@/lib/partner-slug";
 
 
 interface SilverPartnerProps {
@@ -48,8 +49,8 @@ const displayPartners = (partners || []).filter((p) => {
             }
             websiteUrl={partner.social_links?.[0] ?? "#"}
             profileUrl={
-              partner.slug
-                ? `/${locale}/partner/${partner.slug}`
+              partnerSlugFromField(partner.slug, locale)
+                ? partnerDetailHref(locale, partnerSlugFromField(partner.slug, locale))
                 : "#"
             }
             bgIconUrl={isRtl ? "شريك فضي" : "Silver Tier"}

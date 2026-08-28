@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/layout';
 import { speakersApi, getImageUrl } from '@/lib/api/client';
+import { resolveSpeakerSlug } from '@/lib/speaker-slug';
 import { SpeakerDetailHeader } from './SpeakerDetailHeader';
 import { SpeakerDetailAbout } from './SpeakerDetailAbout';
 import { SpeakerDetailGallery } from './SpeakerDetailGallery';
@@ -57,17 +59,30 @@ function parseSocialLinks(
 
 interface SpeakerDetailClientProps {
   locale: string;
-  slug: string;
 }
 
-export function SpeakerDetailClient({ locale, slug }: SpeakerDetailClientProps) {
+export function SpeakerDetailClient({ locale }: SpeakerDetailClientProps) {
   const isRtl = locale === 'ar';
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams<{ slug?: string }>();
+  const slug = resolveSpeakerSlug(pathname, searchParams.get('slug'), params.slug);
 
   const [speaker, setSpeaker] = useState<ApiSpeakerDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (!slug) {
+      setSpeaker(null);
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(false);
+
     speakersApi
       .getAll()
       .then((res: unknown) => {

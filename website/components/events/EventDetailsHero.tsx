@@ -118,7 +118,8 @@ export function EventDetailsHero({ locale, slug: _slug, event }: EventDetailsHer
   const BRIEF_FALLBACK = isRtl
     ? 'دمشق: حيث تروى الحكاية من جديد'
     : 'Damascus: where the story is told anew';
-  const briefRaw = (event?.brief || '') || BRIEF_FALLBACK;
+  const briefFromApi = event ? localizeField(event.brief, locale) : '';
+  const briefRaw = briefFromApi || BRIEF_FALLBACK;
   const briefColonIdx = briefRaw.indexOf(':');
 
   return (

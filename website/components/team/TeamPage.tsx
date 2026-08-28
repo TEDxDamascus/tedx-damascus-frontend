@@ -8,7 +8,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { teamApi, getImageUrl, type TeamMemberApiData } from '@/lib/api/client';
 import { pickLocaleText } from '@/lib/utils';
 import { TeamCard } from './TeamCard';
-import { TEAM_SLUGS } from './data';
+import { teamMemberHref } from '@/lib/team-member';
 
 interface TeamPageProps {
   locale: string;
@@ -39,8 +39,8 @@ export function TeamPage({ locale }: TeamPageProps) {
     : liveMembers;
 
   // No static placeholder members — the grid shows exactly what the API returns.
-  const members = filteredLive.map((live, i) => ({
-    slug: TEAM_SLUGS[i] ?? String(live._id),
+  const members = filteredLive.map((live) => ({
+    id: String(live._id),
     name: pickLocaleText(live.name, locale),
     role: '',
     category: `TEDx Damascus ${live.year ?? ''}`.trim(),
@@ -106,8 +106,8 @@ export function TeamPage({ locale }: TeamPageProps) {
           <div className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {members.map((m) => (
               <TeamCard
-                key={m.slug}
-                href={`/${locale}/team/${m.slug}`}
+                key={m.id}
+                href={teamMemberHref(locale, m.id)}
                 photo={m.photo}
                 name={m.name}
                 role={m.role}

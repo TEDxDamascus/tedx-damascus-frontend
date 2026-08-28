@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # CMS detail pages are one statically exported shell per type.
+  # Pretty URLs cannot exist as real folders with output: "export".
+  # External redirect so the browser URL matches the HTML Next exported.
+
+  RewriteRule ^(en|ar)/speakers/detail/?$ - [L]
+  RewriteRule ^(en|ar)/speakers/([^/]+)/?$ /$1/speakers/detail/?slug=$2 [R=302,L,QSA]
+
+  RewriteRule ^(en|ar)/events/detail/?$ - [L]
+  RewriteRule ^(en|ar)/events/([^/]+)/?$ /$1/events/detail/?slug=$2 [R=302,L,QSA]
+
+  RewriteRule ^(en|ar)/organizers/detail/?$ - [L]
+  RewriteRule ^(en|ar)/organizers/([^/]+)/?$ /$1/organizers/detail/?id=$2 [R=302,L,QSA]
+
+  RewriteRule ^(en|ar)/team/detail/?$ - [L]
+  RewriteRule ^(en|ar)/team/([^/]+)/?$ /$1/team/detail/?id=$2 [R=302,L,QSA]
+
+  RewriteRule ^(en|ar)/partner/detail/?$ - [L]
+  RewriteRule ^(en|ar)/partner/([^/]+)/?$ /$1/partner/detail/?slug=$2 [R=302,L,QSA]
+
+  RewriteRule ^(en|ar)/articles/detail/?$ - [L]
+  RewriteRule ^(en|ar)/articles/([^/]+)/?$ /$1/articles/detail/?slug=$2 [R=302,L,QSA]
+</IfModule>

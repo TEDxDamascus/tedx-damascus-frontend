@@ -1,28 +1,30 @@
-import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/routing';
 import { MemberDetail } from '@/components/team/MemberDetail';
-import { TEAM_SLUGS } from '@/components/team/data';
 import { Footer } from '@/components/layout/Footer';
-
-export function generateStaticParams() {
-  return routing.locales.flatMap((locale) => TEAM_SLUGS.map((slug) => ({ locale, slug })));
-}
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-export default async function TeamMemberPage({ params }: Props) {
-  const { locale, slug } = await params;
-  setRequestLocale(locale);
+// One HTML shell per locale (`detail`). Team members come from the CMS and
+// cannot be enumerated as static folders after deploy. MemberDetail reads
+// ?id= and matches by `_id` (not list index). Old pretty URLs
+// /{locale}/team/{slug}/ are redirected by public/.htaccess.
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale, slug: 'detail' }));
+}
 
-  const index = TEAM_SLUGS.indexOf(slug);
-  if (index === -1) notFound();
+export default async function TeamMemberPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
 
   return (
     <main className="relative">
-      <MemberDetail locale={locale} index={index + 1} />
+      <Suspense fallback={null}>
+        <MemberDetail locale={locale} />
+      </Suspense>
       <Footer locale={locale} />
     </main>
   );

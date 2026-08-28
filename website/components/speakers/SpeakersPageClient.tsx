@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import { Navbar, Footer } from '@/components/layout';
 import { SpeakerCard } from './SpeakerCard';
 import { speakersApi, getImageUrl } from '@/lib/api/client';
+import { speakerDetailHref } from '@/lib/speaker-slug';
 
 const PATTERN_SRC = '/images/about/pattern.svg';
 
@@ -248,7 +249,7 @@ export function SpeakersPageClient({ locale }: SpeakersPageClientProps) {
                   eventName={isRtl ? speaker.eventNameAr : speaker.eventName}
                   imageUrl={speaker.imageUrl}
                   isRtl={isRtl}
-                  href={`/${locale}/speakers/${speaker.slug}`}
+                  href={speakerDetailHref(locale, speaker.slug)}
                 />
               ))}
             </div>
