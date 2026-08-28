@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -65,6 +66,18 @@ function SyrianFlag() {
   );
 }
 
+function clientSnapshot() {
+  return true;
+}
+
+function serverSnapshot() {
+  return false;
+}
+
+function noopSubscribe() {
+  return () => {};
+}
+
 function HamburgerIcon({ open }: { open: boolean }) {
   return (
     <div className="w-6 h-5 flex flex-col justify-between">
@@ -100,6 +113,11 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const altHref =
     `/${altLocale}${pathname.replace(/^\/(en|ar)/, "")}` || `/${altLocale}`;
 
+  const mounted = useSyncExternalStore(
+    noopSubscribe,
+    clientSnapshot,
+    serverSnapshot,
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openKey, setOpenKey] = useState<NavKey | null>(null);
   const [mobileExpandedKey, setMobileExpandedKey] = useState<NavKey | null>(
@@ -108,15 +126,16 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   // Team/Speakers/Partners editions only exist for the current TEDx year — no
   // past-year data is published yet, so the dropdown offers just this year.
   const [years] = useState<number[]>([new Date().getFullYear()]);
+  const [navPath, setNavPath] = useState(pathname);
   const dropdownRefs = useRef<Partial<Record<NavKey, HTMLDivElement | null>>>(
     {},
   );
-
-  useEffect(() => {
+  if (navPath !== pathname) {
+    setNavPath(pathname);
     setMobileOpen(false);
     setMobileExpandedKey(null);
     setOpenKey(null);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -379,22 +398,58 @@ export function Navbar({ locale, navRef }: NavbarProps) {
         </div>
       </header>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0, x: isRtl ? -30 : 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: isRtl ? -30 : 30 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 bg-[#101010] flex flex-col overflow-y-auto"
-            dir={isRtl ? "rtl" : "ltr"}
-          >
-            <div className="h-1 w-full bg-[#EB0028] shrink-0" />
-            <nav
-              className="flex flex-col flex-1 justify-center px-8 py-10 gap-5"
-              aria-label="Mobile navigation"
-            >
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {mobileOpen && (
+              <motion.div
+                key="mobile-menu"
+                initial={{ opacity: 0, x: isRtl ? -30 : 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: isRtl ? -30 : 30 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="fixed inset-0 z-[100] isolate bg-[#101010] flex flex-col overflow-y-auto overscroll-contain"
+                dir={isRtl ? "rtl" : "ltr"}
+              >
+                <div className="h-1 w-full bg-[#EB0028] shrink-0" />
+                <div className="flex items-center justify-between px-5 py-4 shrink-0">
+                  <div dir="ltr">
+                    <Link
+                      href={`/${locale}/home`}
+                      onClick={() => setMobileOpen(false)}
+                      className="inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
+                    >
+                      <Image
+                        src="/images/icons/tedx-logo.png"
+                        alt="TEDxDamascus"
+                        width={55}
+                        height={32}
+                        className="object-contain [grid-column:1] [grid-row:1]"
+                      />
+                      <span className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
+                        Damascus
+                      </span>
+                      <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
+                        x
+                      </span>
+                      <span className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
+                        = independently organized TED event
+                      </span>
+                    </Link>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileOpen(false)}
+                    aria-label="Close menu"
+                    className="flex items-center justify-center w-10 h-10"
+                  >
+                    <HamburgerIcon open />
+                  </button>
+                </div>
+                <nav
+                  className="flex flex-col flex-1 justify-center px-8 py-6 gap-5"
+                  aria-label="Mobile navigation"
+                >
               {NAV_ITEMS.map(({ key, href }, i) => {
                 const fullHref = `/${locale}${href}`;
 
@@ -526,9 +581,11 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                 {langContent}
               </Link>
             </div>
-          </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </>
   );
 }
