@@ -9,6 +9,7 @@ import { PressKitShareButton } from '@/components/shared';
 import { teamApi, getImageUrl, type TeamMemberApiData } from '@/lib/api/client';
 import { pickLocaleText } from '@/lib/utils';
 import { resolveTeamMemberKey, toMemberSlug } from '@/lib/team-member';
+import { useDocumentTitle } from '@/lib/use-document-title';
 
 interface MemberDetailProps {
   locale: string;
@@ -38,6 +39,7 @@ export function MemberDetail({ locale }: MemberDetailProps) {
 
   const [live, setLive] = useState<TeamMemberApiData | null>(null);
   const [loading, setLoading] = useState(true);
+  useDocumentTitle(live ? pickLocaleText(live.name, locale) : undefined);
 
   useEffect(() => {
     if (!key) {
