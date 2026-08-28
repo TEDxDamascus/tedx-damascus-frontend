@@ -1,17 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/api/client';
+import { ImageLightbox } from '@/components/shared/ImageLightbox';
 
 interface PhotoTileProps {
   src: string;
   label: string;
   className?: string;
+  onClick?: () => void;
 }
 
-function PhotoTile({ src, label, className = '' }: PhotoTileProps) {
+function PhotoTile({ src, label, className = '', onClick }: PhotoTileProps) {
   return (
-    <div className={`group relative overflow-hidden bg-[#0d0d0d] ${className}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative h-full w-full cursor-pointer overflow-hidden border-0 bg-[#0d0d0d] p-0 ${className}`}
+    >
       <Image
         src={src}
         alt={label}
@@ -24,7 +31,7 @@ function PhotoTile({ src, label, className = '' }: PhotoTileProps) {
           {label}
         </span>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -44,6 +51,8 @@ interface SpeakerDetailGalleryProps {
 }
 
 export function SpeakerDetailGallery({ gallery, locale }: SpeakerDetailGalleryProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   if (!gallery || gallery.length === 0) return null;
 
   const isRtl = locale === 'ar';
@@ -88,11 +97,19 @@ export function SpeakerDetailGallery({ gallery, locale }: SpeakerDetailGalleryPr
               src={g.src}
               label={g.label}
               className={getMosaicClass(i, items.length)}
+              onClick={() => setOpenIndex(i)}
             />
           ))}
         </div>
 
       </div>
+
+      <ImageLightbox
+        images={items.map((g) => g.src)}
+        initialIndex={openIndex ?? 0}
+        open={openIndex !== null}
+        onClose={() => setOpenIndex(null)}
+      />
     </section>
   );
 }

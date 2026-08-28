@@ -10,14 +10,14 @@ export type EventCardProps = {
     title: string;
     dateLabel: string;
     timeLabel: string;
-    badge: string;
     isRtl: boolean;
     href?: string;
-    bio?: string;
+    brief?: string;
+    description?: string;
     image?: string;
 };
 
-export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href, image }: EventCardProps) {
+export function EventCard({ title, dateLabel, timeLabel, brief, description, isRtl, href, image }: EventCardProps) {
     const card = (
         <article
             className="flex w-full flex-col overflow-hidden rounded-2xl  "
@@ -75,34 +75,36 @@ export function EventCard({ title, dateLabel, timeLabel, badge, bio, isRtl, href
                 </div>
             </div>
 
-            {/* Body: ~20px padding;  tag → title */}
+            {/* Body: title (red) → brief → description */}
             <div className="flex flex-col gap-3 p-3.5">
-                <p
-                    className={[
-                        '  px-0.5 py-0.5 text-lg font-bold text-[#EB0028]',
-                        isRtl ? 'font-arabic' : 'font-sans',
-                    ].join(' ')}
-                >
-                    {badge}
-                </p>
-
                 <h2
                     className={[
-                        'mt-0.5 text-md font-normal text-[#A8A8A8] ',
-                        isRtl ? 'font-arabic text-start' : 'font-helvetica text-start',
+                        'px-0.5 py-0.5 text-lg font-bold text-[#EB0028]',
+                        isRtl ? 'font-arabic' : 'font-sans',
                     ].join(' ')}
                 >
                     {title}
                 </h2>
 
-                {bio && (
+                {brief && (
+                    <p
+                        className={[
+                            'mt-0.5 text-md font-normal text-[#A8A8A8] line-clamp-2',
+                            isRtl ? 'font-arabic text-start' : 'font-helvetica text-start',
+                        ].join(' ')}
+                    >
+                        {brief}
+                    </p>
+                )}
+
+                {description && (
                     <p
                         className={[
                             'text-sm leading-[1.5] text-[#7a7a7a] line-clamp-2',
                             isRtl ? 'font-arabic text-start' : 'font-sans text-start',
                         ].join(' ')}
                     >
-                        {bio}
+                        {description}
                     </p>
                 )}
             </div>
