@@ -1,3 +1,5 @@
+import { readCmsQueryValue } from '@/lib/utils';
+
 /** Statically exported shell path: /{locale}/speakers/detail/ */
 export const SPEAKER_DETAIL_SHELL_SLUG = 'detail';
 
@@ -10,19 +12,19 @@ export function resolveSpeakerSlug(
   searchSlug: string | null | undefined,
   paramSlug?: string,
 ): string {
-  const fromQuery = searchSlug?.trim();
-  if (fromQuery) return decodeURIComponent(fromQuery);
+  const fromQuery = readCmsQueryValue(searchSlug);
+  if (fromQuery) return fromQuery;
 
   const parts = pathname.split('/').filter(Boolean);
   const speakersIdx = parts.findIndex((part) => part === 'speakers');
-  const fromPath = speakersIdx >= 0 ? parts[speakersIdx + 1] ?? '' : '';
-  const decodedPath = fromPath ? decodeURIComponent(fromPath) : '';
-  if (decodedPath && decodedPath !== SPEAKER_DETAIL_SHELL_SLUG) {
-    return decodedPath;
+  const fromPath = speakersIdx >= 0 ? readCmsQueryValue(parts[speakersIdx + 1]) : '';
+  if (fromPath && fromPath !== SPEAKER_DETAIL_SHELL_SLUG) {
+    return fromPath;
   }
 
-  if (paramSlug && paramSlug !== SPEAKER_DETAIL_SHELL_SLUG) {
-    return paramSlug;
+  const fromParam = readCmsQueryValue(paramSlug);
+  if (fromParam && fromParam !== SPEAKER_DETAIL_SHELL_SLUG) {
+    return fromParam;
   }
 
   return '';

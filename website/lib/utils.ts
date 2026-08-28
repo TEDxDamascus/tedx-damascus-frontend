@@ -62,6 +62,25 @@ export function toPathSafeSlug(raw: string): string {
   return raw.trim().replace(/\s+/g, '-');
 }
 
+/** Next.js `output: "export"` requests `/en/events/index.txt` (RSC payload). */
+export function isNextExportArtifact(segment: string): boolean {
+  const v = segment.trim().replace(/\/+$/, '').split('/').pop() ?? '';
+  return /^index\.(txt|html)$/i.test(v);
+}
+
+export function readCmsQueryValue(raw: string | null | undefined): string {
+  if (!raw?.trim()) return '';
+  let value = raw.trim();
+  try {
+    value = decodeURIComponent(value);
+  } catch {
+    /* already decoded */
+  }
+  value = value.replace(/\/+$/, '');
+  if (isNextExportArtifact(value)) return '';
+  return value;
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

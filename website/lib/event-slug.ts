@@ -1,3 +1,5 @@
+import { readCmsQueryValue } from '@/lib/utils';
+
 /** Statically exported shell path: /{locale}/events/detail/ */
 export const EVENT_DETAIL_SHELL_SLUG = 'detail';
 
@@ -10,19 +12,19 @@ export function resolveEventSlug(
   searchSlug: string | null | undefined,
   paramSlug?: string,
 ): string {
-  const fromQuery = searchSlug?.trim();
-  if (fromQuery) return decodeURIComponent(fromQuery);
+  const fromQuery = readCmsQueryValue(searchSlug);
+  if (fromQuery) return fromQuery;
 
   const parts = pathname.split('/').filter(Boolean);
   const eventsIdx = parts.findIndex((part) => part === 'events');
-  const fromPath = eventsIdx >= 0 ? parts[eventsIdx + 1] ?? '' : '';
-  const decodedPath = fromPath ? decodeURIComponent(fromPath) : '';
-  if (decodedPath && decodedPath !== EVENT_DETAIL_SHELL_SLUG) {
-    return decodedPath;
+  const fromPath = eventsIdx >= 0 ? readCmsQueryValue(parts[eventsIdx + 1]) : '';
+  if (fromPath && fromPath !== EVENT_DETAIL_SHELL_SLUG) {
+    return fromPath;
   }
 
-  if (paramSlug && paramSlug !== EVENT_DETAIL_SHELL_SLUG) {
-    return paramSlug;
+  const fromParam = readCmsQueryValue(paramSlug);
+  if (fromParam && fromParam !== EVENT_DETAIL_SHELL_SLUG) {
+    return fromParam;
   }
 
   return '';
