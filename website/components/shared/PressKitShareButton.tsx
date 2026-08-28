@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { canonicalProfileShareUrl } from '@/lib/share-url';
+
+function currentShareUrl(): string {
+  return canonicalProfileShareUrl(window.location.href);
+}
 
 function buildShareLinks(url: string, text: string) {
   const encodedUrl = encodeURIComponent(url);
@@ -106,8 +111,8 @@ export function PressKitShareButton({
   }, [showSharePopup, isRtl]);
 
   async function handleShare() {
-    const url = window.location.href;
-    const title = document.title || name;
+    const url = currentShareUrl();
+    const title = document.title || `${name} | TEDx Damascus`;
 
     if (canUseNativeShare()) {
       try {
@@ -123,7 +128,7 @@ export function PressKitShareButton({
 
   async function handleCopyLink() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(currentShareUrl());
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -134,7 +139,7 @@ export function PressKitShareButton({
   const shareLinks =
     typeof window === 'undefined'
       ? { whatsapp: '#', linkedin: '#', facebook: '#' }
-      : buildShareLinks(window.location.href, shareMessage);
+      : buildShareLinks(currentShareUrl(), shareMessage);
 
   return (
     <>

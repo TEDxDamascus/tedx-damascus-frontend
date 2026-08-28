@@ -5,6 +5,7 @@ import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/layout';
 import { speakersApi, getImageUrl } from '@/lib/api/client';
 import { resolveSpeakerSlug } from '@/lib/speaker-slug';
+import { useDocumentTitle } from '@/lib/use-document-title';
 import { SpeakerDetailHeader } from './SpeakerDetailHeader';
 import { SpeakerDetailAbout } from './SpeakerDetailAbout';
 import { SpeakerDetailGallery } from './SpeakerDetailGallery';
@@ -106,6 +107,7 @@ export function SpeakerDetailClient({ locale }: SpeakerDetailClientProps) {
   }, [slug]);
 
   const { linkedin } = parseSocialLinks(speaker?.social_links, speaker?.contact_info);
+  useDocumentTitle(speaker ? loc(speaker.name, isRtl ? 'ar' : 'en') : undefined);
 
   return (
     <>

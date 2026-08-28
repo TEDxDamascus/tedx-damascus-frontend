@@ -9,6 +9,7 @@ import {
   type OrganizerViewData,
 } from '@/lib/api/organizers';
 import { resolveOrganizerId } from '@/lib/organizer-id';
+import { useDocumentTitle } from '@/lib/use-document-title';
 import OrganizerDetails from './OrganizerDetails';
 
 interface OrganizerDetailClientProps {
@@ -24,6 +25,7 @@ export function OrganizerDetailClient({ locale }: OrganizerDetailClientProps) {
 
   const [organizer, setOrganizer] = useState<OrganizerViewData | null>(null);
   const [loading, setLoading] = useState(true);
+  useDocumentTitle(organizer?.name);
 
   useEffect(() => {
     if (!id) {

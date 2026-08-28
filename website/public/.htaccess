@@ -6,6 +6,24 @@
   # Never treat those filenames as CMS slugs (that produced ?slug=index.txt).
   RewriteRule \.(txt|html|js|css|json|map|xml|ico|png|jpe?g|gif|svg|webp|woff2?)$ - [L,NC]
   RewriteRule ^_next/ - [L]
+  RewriteRule ^og\.php$ - [L]
+
+  # Social crawlers do not run JavaScript. Serve OG title/image from og.php
+  # instead of the static detail shell (otherwise Facebook shows a blank card).
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/speakers/detail/?$ /og.php?type=speaker&locale=$1 [L,QSA]
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/speakers/([^/.]+)/?$ /og.php?type=speaker&locale=$1&slug=$2 [L]
+
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/team/detail/?$ /og.php?type=team&locale=$1 [L,QSA]
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/team/([^/.]+)/?$ /og.php?type=team&locale=$1&id=$2 [L]
+
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/organizers/detail/?$ /og.php?type=organizer&locale=$1 [L,QSA]
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/organizers/([^/.]+)/?$ /og.php?type=organizer&locale=$1&id=$2 [L]
 
   # CMS detail pages are one statically exported shell per type.
   # Pretty URLs cannot exist as real folders with output: "export".
