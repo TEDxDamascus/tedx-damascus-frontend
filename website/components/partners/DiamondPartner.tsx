@@ -6,6 +6,7 @@ import PartnerCard from "./PartnerCard";
 import { PartnerViewData } from "@/lib/api/partners";
 import { normalizeTier } from "@/lib/api/partners";
 import { getImageUrl } from "@/lib/api/client";
+import { partnerDetailHref, partnerSlugFromField } from "@/lib/partner-slug";
 
 interface DiamondPartnerProps {
   locale: "en" | "ar";
@@ -41,7 +42,7 @@ export default function DiamondPartner({
         {diamondPartners.map((partner) => {
           const partnerName = partner.name || "";
           const partnerDesc = partner.short_description ?? "";
-          const partnerSlug = partner.slug || "";
+          const partnerSlug = partnerSlugFromField(partner.slug, locale);
           const websiteUrl = partner.social_links?.[0] ?? "#";
 
           return (
@@ -59,7 +60,7 @@ export default function DiamondPartner({
                   : "/images/partners/DiamondPartnerLogo.png"
               }
               websiteUrl={websiteUrl}
-              profileUrl={`/${locale}/partner/${partnerSlug}`}
+              profileUrl={partnerDetailHref(locale, partnerSlug)}
               showProfileBtn={true}
               showWebsiteBtn={true}
               showWebsiteBtnBorder={true}

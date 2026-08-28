@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { BlogCardProps } from './types';
+import { articleDetailHref } from '@/lib/article-slug';
 
 export function BlogCard({
   title,
@@ -103,7 +104,7 @@ export function BlogCard({
     // Use provided locale or default to 'en'
     const lang = locale ?? 'en';
     return (
-      <Link href={`/${lang}/articles/${slug}`} className="block">
+      <Link href={articleDetailHref(lang, slug)} className="block">
         {content}
       </Link>
     );

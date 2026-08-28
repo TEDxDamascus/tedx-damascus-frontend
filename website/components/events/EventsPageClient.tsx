@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import { Navbar, Footer } from '@/components/layout';
 import { EventCard } from './EventCard';
 import { eventsApi } from '@/lib/api/client';
+import { eventDetailHref } from '@/lib/event-slug';
 
 const PATTERN_SRC = '/images/about/pattern.svg';
 
@@ -253,7 +254,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
                   badge={event.badge}
                   bio={isRtl ? event.bioAr : event.bio}
                   isRtl={isRtl}
-                  href={`/${locale}/events/${event.slug}`}
+                  href={eventDetailHref(locale, event.slug)}
                   image={event.image}
                 />
               ))}

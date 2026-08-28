@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { PressKitShareButton } from '@/components/shared';
 import { teamApi, getImageUrl, type TeamMemberApiData } from '@/lib/api/client';
 import { pickLocaleText } from '@/lib/utils';
+import { resolveTeamMemberKey, toMemberSlug } from '@/lib/team-member';
 
 interface MemberDetailProps {
   locale: string;
-  /** 1-based member index — position in the live /team list, matching the grid's static routing slots. */
-  index: number;
 }
 
 function normalizeExternalUrl(url: string): string {
@@ -24,25 +24,46 @@ function extractLinkedin(links: string[] = []): string | undefined {
   return links.find((l) => l.toLowerCase().includes('linkedin.com'));
 }
 
-export function MemberDetail({ locale, index }: MemberDetailProps) {
+export function MemberDetail({ locale }: MemberDetailProps) {
   const tMember = useTranslations('TeamMember');
   const isRtl = locale === 'ar';
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams<{ slug?: string }>();
+  const key = resolveTeamMemberKey(
+    pathname,
+    searchParams.get('id') ?? searchParams.get('slug'),
+    params.slug,
+  );
 
   const [live, setLive] = useState<TeamMemberApiData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!key) {
+      setLive(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
     teamApi
       .getAll()
       .then((res: unknown) => {
         const raw: TeamMemberApiData[] = Array.isArray(res)
           ? res
           : ((res as { data?: TeamMemberApiData[] })?.data ?? []);
-        setLive(raw[index - 1] ?? null);
+        const match = raw.find((m) => {
+          if (String(m._id) === key) return true;
+          const en = toMemberSlug(pickLocaleText(m.name, 'en'));
+          const ar = toMemberSlug(pickLocaleText(m.name, 'ar'));
+          return en === key || ar === key;
+        });
+        setLive(match ?? null);
       })
       .catch(() => setLive(null))
       .finally(() => setLoading(false));
-  }, [index]);
+  }, [key]);
 
   if (loading) {
     return (
