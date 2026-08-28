@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { eventsApi } from '@/lib/api/client';
+import { Navbar } from '@/components/layout';
+import { resolveEventSlug } from '@/lib/event-slug';
 import { EventDetailsHero } from './EventDetailsHero';
 import { EventDetailsAbout } from './EventDetailsAbout';
 import { EventDetailsSpeakers } from './EventDetailsSpeakers';
@@ -27,7 +30,7 @@ export interface ApiEventDetail {
   event_type?: string;
   event_image?: string;
   status: string;
-  brief?: string;
+  brief?: Localizable;
   description: Localizable;
   location?: Localizable;
   location_description?: Localizable;
@@ -219,8 +222,6 @@ const STATIC_EVENTS: Record<string, ApiEventDetail> = {
   },
 };
 
-const DEFAULT_EVENT = STATIC_EVENTS['from-war-to-big-dreams'];
-
 function toSlugLocal(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 }
@@ -252,28 +253,40 @@ function getCachedEvent(slug: string): ApiEventDetail | null {
 
 interface EventDetailsClientProps {
   locale: string;
-  slug: string;
 }
 
-function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
-  const [event, setEvent] = useState<ApiEventDetail>(
-    () => STATIC_EVENTS[slug] ?? DEFAULT_EVENT
-  );
+export function EventDetailsClient({ locale }: EventDetailsClientProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams<{ slug?: string }>();
+  const slug = resolveEventSlug(pathname, searchParams.get('slug'), params.slug);
+
+  const [event, setEvent] = useState<ApiEventDetail | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!slug) {
+      setEvent(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const staticFallback = STATIC_EVENTS[slug] ?? null;
     const cached = getCachedEvent(slug);
     if (cached) setEvent(cached);
+    else if (staticFallback) setEvent(staticFallback);
 
     const load = async () => {
       try {
-        const cachedId = String(cached?._id ?? (cached as any)?.id ?? '').trim();
-        const res: any = cachedId
+        const cachedId = String(cached?._id ?? (cached as { id?: string } | null)?.id ?? '').trim();
+        const res: unknown = cachedId
           ? await eventsApi.getById(cachedId, locale)
           : await eventsApi.getBySlug(slug, locale);
-        const data = res?.data ?? res;
-        if (data && (data._id || data.id)) {
+        const data = (res as { data?: ApiEventDetail })?.data ?? (res as ApiEventDetail);
+        if (data && (data._id || (data as { id?: string }).id)) {
           setEvent(data);
-          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(data)); } catch {}
+          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(data)); } catch { /* ignore */ }
           return;
         }
 
@@ -285,12 +298,42 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
         const match = list.find((e) => eventToSlug(e) === slug || String(e._id) === slug);
         if (match) {
           setEvent(match);
-          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(match)); } catch {}
+          try { localStorage.setItem(`tedx_event_${slug}`, JSON.stringify(match)); } catch { /* ignore */ }
+        } else if (!cached && !staticFallback) {
+          setEvent(null);
         }
-      } catch { /* keep cached/static fallback */ }
+      } catch {
+        if (!cached && !staticFallback) setEvent(null);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [locale, slug]);
+
+  if (loading && !event) {
+    return (
+      <div className="flex min-h-[60vh] flex-col bg-black">
+        <Navbar locale={locale} />
+        <div className="flex flex-1 items-center justify-center">
+          <span className="animate-pulse font-helvetica text-white/50">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="flex min-h-[60vh] flex-col bg-black">
+        <Navbar locale={locale} />
+        <div className="flex flex-1 items-center justify-center">
+          <span className="font-helvetica text-white/50">
+            Could not load event. Please try again later.
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   const speakers = event.speakers ?? [];
   const gallery = event.gallery ?? [];
@@ -308,8 +351,4 @@ function EventDetailsInner({ locale, slug }: EventDetailsClientProps) {
       <EventDetailsVenue locale={locale} event={event} />
     </>
   );
-}
-
-export function EventDetailsClient({ locale, slug }: EventDetailsClientProps) {
-  return <EventDetailsInner locale={locale} slug={slug} />;
 }

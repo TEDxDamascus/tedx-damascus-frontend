@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { eventsApi, getImageUrl } from '@/lib/api/client';
+import { eventDetailHref } from '@/lib/event-slug';
 
 /* ─── Types ─────────────────────────────────────────────── */
 
@@ -114,7 +115,7 @@ function EventCardHome({ event, locale, viewDetails }: CardProps) {
 
       {/* View details */}
       <Link
-        href={`/${locale}/events/${event.slug}`}
+        href={eventDetailHref(locale, event.slug)}
         className="absolute left-0 right-0 top-[332px] flex items-center justify-center gap-1 font-helvetica text-[12px] font-bold leading-[1.57] tracking-[0.1px] text-primary hover:opacity-80 transition-opacity"
       >
         <span className={isRtl ? 'font-arabic' : ''}>{viewDetails}</span>

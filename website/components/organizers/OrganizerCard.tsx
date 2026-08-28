@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { OrganizerViewData } from "@/lib/api/organizers";
 import { getImageUrl } from "@/lib/api/client";
+import { organizerDetailHref } from "@/lib/organizer-id";
 
 interface OrganizerCardProps {
   locale: "en" | "ar";
@@ -17,7 +18,7 @@ export default function OrganizerCard({
 }: OrganizerCardProps) {
   return (
     <Link
-      href={`/${locale}/organizers/${organizer._id}`}
+      href={organizerDetailHref(locale, organizer._id)}
       className="group relative flex flex-col w-full max-w-[320px] bg-[#121212] overflow-hidden rounded-none border border-transparent transition-all duration-300"
     >
       <div className="absolute top-0 left-0 z-20 w-4 h-4 border-t-4 border-l-4 border-[#EB0028] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
