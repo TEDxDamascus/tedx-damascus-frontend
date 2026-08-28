@@ -1,3 +1,5 @@
+import { readCmsQueryValue } from '@/lib/utils';
+
 /** Statically exported shell path: /{locale}/team/detail/ */
 export const TEAM_DETAIL_SHELL_SLUG = 'detail';
 
@@ -10,19 +12,19 @@ export function resolveTeamMemberKey(
   searchId: string | null | undefined,
   paramSlug?: string,
 ): string {
-  const fromQuery = searchId?.trim();
-  if (fromQuery) return decodeURIComponent(fromQuery);
+  const fromQuery = readCmsQueryValue(searchId);
+  if (fromQuery) return fromQuery;
 
   const parts = pathname.split('/').filter(Boolean);
   const teamIdx = parts.findIndex((part) => part === 'team');
-  const fromPath = teamIdx >= 0 ? parts[teamIdx + 1] ?? '' : '';
-  const decodedPath = fromPath ? decodeURIComponent(fromPath) : '';
-  if (decodedPath && decodedPath !== TEAM_DETAIL_SHELL_SLUG) {
-    return decodedPath;
+  const fromPath = teamIdx >= 0 ? readCmsQueryValue(parts[teamIdx + 1]) : '';
+  if (fromPath && fromPath !== TEAM_DETAIL_SHELL_SLUG) {
+    return fromPath;
   }
 
-  if (paramSlug && paramSlug !== TEAM_DETAIL_SHELL_SLUG) {
-    return paramSlug;
+  const fromParam = readCmsQueryValue(paramSlug);
+  if (fromParam && fromParam !== TEAM_DETAIL_SHELL_SLUG) {
+    return fromParam;
   }
 
   return '';

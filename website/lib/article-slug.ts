@@ -1,4 +1,4 @@
-import { toPathSafeSlug } from '@/lib/utils';
+import { readCmsQueryValue, toPathSafeSlug } from '@/lib/utils';
 
 /** Statically exported shell path: /{locale}/articles/detail/ */
 export const ARTICLE_DETAIL_SHELL_SLUG = 'detail';
@@ -14,19 +14,19 @@ export function resolveArticleSlug(
   searchSlug: string | null | undefined,
   paramSlug?: string,
 ): string {
-  const fromQuery = searchSlug?.trim();
-  if (fromQuery) return decodeURIComponent(fromQuery);
+  const fromQuery = readCmsQueryValue(searchSlug);
+  if (fromQuery) return fromQuery;
 
   const parts = pathname.split('/').filter(Boolean);
   const articlesIdx = parts.findIndex((part) => part === 'articles');
-  const fromPath = articlesIdx >= 0 ? parts[articlesIdx + 1] ?? '' : '';
-  const decodedPath = fromPath ? decodeURIComponent(fromPath) : '';
-  if (decodedPath && decodedPath !== ARTICLE_DETAIL_SHELL_SLUG) {
-    return decodedPath;
+  const fromPath = articlesIdx >= 0 ? readCmsQueryValue(parts[articlesIdx + 1]) : '';
+  if (fromPath && fromPath !== ARTICLE_DETAIL_SHELL_SLUG) {
+    return fromPath;
   }
 
-  if (paramSlug && paramSlug !== ARTICLE_DETAIL_SHELL_SLUG) {
-    return paramSlug;
+  const fromParam = readCmsQueryValue(paramSlug);
+  if (fromParam && fromParam !== ARTICLE_DETAIL_SHELL_SLUG) {
+    return fromParam;
   }
 
   return '';

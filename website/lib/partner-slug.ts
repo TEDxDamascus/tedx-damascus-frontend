@@ -1,4 +1,4 @@
-import { toPathSafeSlug } from '@/lib/utils';
+import { isNextExportArtifact, toPathSafeSlug } from '@/lib/utils';
 
 /** Statically exported shell path: /{locale}/partner/detail/ */
 export const PARTNER_DETAIL_SHELL_SLUG = 'detail';
@@ -11,7 +11,9 @@ export function normalizePartnerSlug(raw: string): string {
   } catch {
     /* already decoded */
   }
-  return toPathSafeSlug(value.replace(/\/+$/, '')).toLowerCase();
+  value = value.replace(/\/+$/, '');
+  if (isNextExportArtifact(value)) return '';
+  return toPathSafeSlug(value).toLowerCase();
 }
 
 export function partnerDetailHref(locale: string, slug: string): string {
