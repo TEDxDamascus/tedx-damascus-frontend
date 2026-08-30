@@ -54,7 +54,7 @@ export function MemberDetail({ locale }: MemberDetailProps) {
 
     setLoading(true);
     teamApi
-      .getAll()
+      .getAll({ limit: 500 })
       .then((res: unknown) => {
         const raw: TeamMemberApiData[] = Array.isArray(res)
           ? res

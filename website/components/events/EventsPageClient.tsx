@@ -27,7 +27,7 @@ function formatEventDate(dateStr: string | undefined, locale: string): string {
   }
 }
 const INITIAL_VISIBLE = 9;
-const LOAD_MORE_STEP = 3;
+const LOAD_MORE_STEP = 9;
 
 type LocaleString = string | { en?: string; ar?: string };
 
@@ -96,7 +96,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
 
   useEffect(() => {
     eventsApi
-      .getAll({ status: 'published' })
+      .getAll({ status: 'published', limit: 500 })
       .then((res: unknown) => {
         const raw: ApiEvent[] = Array.isArray(res) ? res : ((res as { data?: ApiEvent[] })?.data ?? []);
         const normalized: NormalizedEvent[] = raw.map((e) => {

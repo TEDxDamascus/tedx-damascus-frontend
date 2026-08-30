@@ -154,7 +154,7 @@ export function LatestEvents({ locale }: LatestEventsProps) {
 
   useEffect(() => {
     eventsApi
-      .getAll({ status: 'published', limit: 3 })
+      .getAll({ status: 'published', limit: 9 })
       .then((res: any) => {
         const raw: any[] = Array.isArray(res) ? res : (res?.data ?? []);
         if (raw.length === 0) { setEvents([]); return; }
@@ -195,55 +195,45 @@ export function LatestEvents({ locale }: LatestEventsProps) {
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       {/* ── Desktop ── */}
-      <div className="hidden lg:flex w-full items-center px-[clamp(2rem,6vw,7.5rem)] gap-[40px] xl:gap-[60px]">
-        <div className="flex shrink-0 flex-col items-start text-start w-[200px] xl:w-[240px]">
-          <h2 className="font-helvetica text-[40px] xl:text-[48px] font-normal leading-[1.2] text-white">
-            {t('title')}
-          </h2>
-          <p className="mt-3 font-helvetica text-[15px] xl:text-[16px] font-medium leading-[1.4] tracking-[0.15px] text-[#a8a8a8]">
-            {t('subtitle')}
-          </p>
-        </div>
-
-        <div className="relative flex-1 overflow-hidden">
-          <div className="flex items-center justify-center gap-[48px] xl:gap-[56px]">
-            {events.slice(0, 3).map((event) => (
-              <EventCardHome key={event.slug} event={event} {...cardProps} />
-            ))}
+      <div className="hidden lg:flex w-full flex-col px-[clamp(2rem,6vw,7.5rem)]">
+        <div className="mb-12 flex items-end justify-between gap-8">
+          <div className="flex max-w-[420px] flex-col items-start text-start">
+            <h2 className="font-helvetica text-[40px] xl:text-[48px] font-normal leading-[1.2] text-white">
+              {t('title')}
+            </h2>
+            <p className="mt-3 font-helvetica text-[15px] xl:text-[16px] font-medium leading-[1.4] tracking-[0.15px] text-[#a8a8a8]">
+              {t('subtitle')}
+            </p>
           </div>
-          {/* Gradient fade from the outer edge of the cards — coming from the cards side */}
-          <div
-            className={[
-              'pointer-events-none absolute inset-y-0 z-10 w-24',
-              isRtl
-                ? 'left-0 bg-gradient-to-r from-[var(--page-bg)] to-transparent'
-                : 'right-0 bg-gradient-to-l from-[var(--page-bg)] to-transparent',
-            ].join(' ')}
-            aria-hidden
-          />
+
+          <Link
+            href={`/${locale}/events`}
+            className="flex shrink-0 items-center justify-center text-primary hover:opacity-80 transition-opacity"
+            aria-label={t('seeMore')}
+          >
+            <svg
+              className="h-[44px] w-[44px]"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+            >
+              <path
+                d={isRtl ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'}
+                stroke="currentColor"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Link>
         </div>
 
-        <Link
-          href={`/${locale}/events`}
-          className="flex shrink-0 items-center justify-center text-primary hover:opacity-80 transition-opacity"
-          aria-label={t('seeMore')}
-        >
-          <svg
-            className="h-[44px] w-[44px]"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-          >
-            <path
-              d={isRtl ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'}
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </Link>
+        <div className="grid grid-cols-3 justify-items-center gap-x-[48px] gap-y-10 xl:gap-x-[56px]">
+          {events.slice(0, 9).map((event) => (
+            <EventCardHome key={event.slug} event={event} {...cardProps} />
+          ))}
+        </div>
       </div>
 
       {/* ── Mobile / Tablet ── */}
