@@ -290,7 +290,7 @@ export function EventDetailsClient({ locale }: EventDetailsClientProps) {
           return;
         }
 
-        const allRes = await eventsApi.getAll({});
+        const allRes = await eventsApi.getAll({ limit: 500 });
         const list: ApiEventDetail[] = Array.isArray(allRes)
           ? allRes
           : ((allRes as { data?: ApiEventDetail[] })?.data ?? []);

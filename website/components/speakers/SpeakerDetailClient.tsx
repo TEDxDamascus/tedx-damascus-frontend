@@ -86,7 +86,7 @@ export function SpeakerDetailClient({ locale }: SpeakerDetailClientProps) {
     setError(false);
 
     speakersApi
-      .getAll()
+      .getAll({ limit: 500 })
       .then((res: unknown) => {
         const list: ApiSpeakerDetail[] = Array.isArray(res)
           ? res

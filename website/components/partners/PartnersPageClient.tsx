@@ -72,7 +72,7 @@ export default function PartnersPageClient({ locale }: Props) {
 
   useEffect(() => {
     partnersApi
-      .getAll()
+      .getAll({ limit: 500 })
       .then((res: any) => {
         const rawData = res?.data ?? [];
 

@@ -187,7 +187,8 @@ export interface TeamMemberApiData {
 }
 
 export const teamApi = {
-  getAll: () => apiClient.get<{ success: boolean; data: TeamMemberApiData[] }>('/team'),
+  getAll: (params?: { year?: number | string; limit?: number; page?: number }) =>
+    apiClient.get<{ success: boolean; data: TeamMemberApiData[] }>('/team', { params }),
 };
 
 export const formsApi = {

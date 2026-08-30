@@ -49,7 +49,7 @@ export default function OrganizersPage({ params }: PageProps) {
 
   useEffect(() => {
     organizersApi
-      .getAll({ lang: locale })
+      .getAll({ lang: locale, limit: 500 })
       .then((res) => {
         const rawData = res?.data ?? [];
         const formatted = rawData.map((item: OrganizerData) =>
