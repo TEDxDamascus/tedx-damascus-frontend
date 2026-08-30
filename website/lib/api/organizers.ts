@@ -34,7 +34,7 @@ export async function getAllOrganizers(
   lang?: string,
 ): Promise<OrganizerData[]> {
   try {
-    const res = await organizersApi.getAll(lang ? { lang } : undefined);
+    const res = await organizersApi.getAll({ limit: 500, ...(lang ? { lang } : {}) });
     return Array.isArray(res) ? res : res?.data || [];
   } catch (error) {
     console.error("Failed to fetch organizers:", error);

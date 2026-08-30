@@ -52,7 +52,7 @@ renderOg($SITE, $prettyUrl, $found['title'], $found['description'], $found['imag
 function fetchProfile(string $api, string $type, string $key, string $locale): ?array
 {
   if ($type === 'speaker') {
-    $list = apiList($api . '/speakers');
+    $list = apiList($api . '/speakers?limit=500');
     foreach ($list as $item) {
       $slug = toSlug(loc($item['slug'] ?? '', 'en'));
       $id = (string) ($item['_id'] ?? '');
@@ -71,7 +71,7 @@ function fetchProfile(string $api, string $type, string $key, string $locale): ?
   }
 
   if ($type === 'team') {
-    $list = apiList($api . '/team');
+    $list = apiList($api . '/team?limit=500');
     foreach ($list as $item) {
       $id = (string) ($item['_id'] ?? '');
       $en = toSlug(loc($item['name'] ?? '', 'en'));
@@ -92,7 +92,7 @@ function fetchProfile(string $api, string $type, string $key, string $locale): ?
   $direct = apiJson($api . '/organizer/' . rawurlencode($key));
   $item = is_array($direct) ? (($direct['data'] ?? null) ?: $direct) : null;
   if (!is_array($item) || empty($item['_id'])) {
-    $list = apiList($api . '/organizer');
+    $list = apiList($api . '/organizer?limit=500');
     foreach ($list as $row) {
       if ((string) ($row['_id'] ?? '') === $key) {
         $item = $row;
