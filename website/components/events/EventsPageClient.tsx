@@ -27,7 +27,7 @@ function formatEventDate(dateStr: string | undefined, locale: string): string {
   }
 }
 const INITIAL_VISIBLE = 9;
-const LOAD_MORE_STEP = 3;
+const LOAD_MORE_STEP = 9;
 
 type LocaleString = string | { en?: string; ar?: string };
 
@@ -53,6 +53,7 @@ interface ApiEvent {
   event_type?: string;
   category?: string;
   badge?: string;
+  brief?: LocaleString;
   bio?: LocaleString;
   bioAr?: string;
   tagline?: LocaleString;
@@ -72,8 +73,10 @@ interface NormalizedEvent {
   dateLabel: string;
   timeLabel: string;
   badge: string;
-  bio: string;
-  bioAr: string;
+  brief: string;
+  briefAr: string;
+  description: string;
+  descriptionAr: string;
   image?: string;
 }
 
@@ -93,7 +96,7 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
 
   useEffect(() => {
     eventsApi
-      .getAll({ status: 'published' })
+      .getAll({ status: 'published', limit: 500 })
       .then((res: unknown) => {
         const raw: ApiEvent[] = Array.isArray(res) ? res : ((res as { data?: ApiEvent[] })?.data ?? []);
         const normalized: NormalizedEvent[] = raw.map((e) => {
@@ -108,8 +111,10 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
             dateLabel: formatEventDate(e.date ?? e.startDate, locale) || t('cardDate'),
             timeLabel: e.time ?? e.start_time ?? e.startTime ?? t('cardTime'),
             badge: e.event_type ?? e.category ?? e.badge ?? t('cardBadge'),
-            bio: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'en'),
-            bioAr: loc(e.bio ?? e.tagline ?? e.shortDescription ?? e.description, 'ar'),
+            brief: loc(e.brief, 'en'),
+            briefAr: loc(e.brief, 'ar'),
+            description: loc(e.description ?? e.bio ?? e.tagline ?? e.shortDescription, 'en'),
+            descriptionAr: loc(e.description ?? e.bio ?? e.tagline ?? e.shortDescription, 'ar'),
             image: e.event_image ?? e.image ?? e.imageUrl,
           };
         });
@@ -251,8 +256,8 @@ export function EventsPageClient({ locale }: EventsPageClientProps) {
                   title={isRtl ? event.titleAr : event.title}
                   dateLabel={event.dateLabel}
                   timeLabel={event.timeLabel}
-                  badge={event.badge}
-                  bio={isRtl ? event.bioAr : event.bio}
+                  brief={isRtl ? event.briefAr : event.brief}
+                  description={isRtl ? event.descriptionAr : event.description}
                   isRtl={isRtl}
                   href={eventDetailHref(locale, event.slug)}
                   image={event.image}

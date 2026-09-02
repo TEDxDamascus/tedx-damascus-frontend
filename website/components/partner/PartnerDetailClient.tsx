@@ -45,7 +45,7 @@ export function PartnerDetailClient({ locale }: PartnerDetailClientProps) {
 
     setLoading(true);
     partnersApi
-      .getAll({ limit: 200 })
+      .getAll({ limit: 500 })
       .then((res) => {
         const list: PartnerData[] = Array.isArray(res)
           ? res

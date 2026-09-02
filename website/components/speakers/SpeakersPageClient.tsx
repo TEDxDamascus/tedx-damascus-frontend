@@ -73,7 +73,7 @@ export function SpeakersPageClient({ locale }: SpeakersPageClientProps) {
 
   useEffect(() => {
     speakersApi
-      .getAll()
+      .getAll({ limit: 500 })
       .then((res: unknown) => {
         const raw: ApiSpeaker[] = Array.isArray(res) ? res : ((res as { data?: ApiSpeaker[] })?.data ?? []);
         const normalized: NormalizedSpeaker[] = raw.map((s) => {

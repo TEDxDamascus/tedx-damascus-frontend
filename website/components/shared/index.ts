@@ -17,3 +17,6 @@ export { StarRating } from './StarRating';
 export type { StarRatingProps } from './StarRating';
 
 export { PressKitShareButton } from './PressKitShareButton';
+
+export { ImageLightbox } from './ImageLightbox';
+

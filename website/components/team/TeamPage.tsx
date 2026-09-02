@@ -24,7 +24,7 @@ export function TeamPage({ locale }: TeamPageProps) {
 
   useEffect(() => {
     teamApi
-      .getAll()
+      .getAll({ limit: 500 })
       .then((res: any) => {
         const raw: TeamMemberApiData[] = Array.isArray(res) ? res : (res?.data ?? []);
         setLiveMembers(raw);

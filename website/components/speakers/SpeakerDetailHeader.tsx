@@ -13,6 +13,7 @@ export interface SpeakerDetailHeaderProps {
   description: string;
   imageUrl?: string;
   linkedinUrl?: string;
+  facebookUrl?: string;
   isRtl: boolean;
 }
 
@@ -28,14 +29,17 @@ export function SpeakerDetailHeader({
   description,
   imageUrl,
   linkedinUrl,
+  facebookUrl,
   isRtl,
 }: SpeakerDetailHeaderProps) {
   const labels = {
     linkedin: isRtl ? 'لينكد إن' : 'LINKEDIN',
+    facebook: isRtl ? 'فيسبوك' : 'FACEBOOK',
     share: isRtl ? 'مشاركة' : 'PRESS KIT',
   };
 
   const normalizedLinkedin = linkedinUrl ? normalizeExternalUrl(linkedinUrl) : undefined;
+  const normalizedFacebook = facebookUrl ? normalizeExternalUrl(facebookUrl) : undefined;
 
   const actionClass = [
     'flex items-center gap-2.5 font-sans text-[13px] font-bold uppercase tracking-[1px]',
@@ -187,6 +191,26 @@ export function SpeakerDetailHeader({
                     draggable={false}
                   />
                   <span>{labels.linkedin}</span>
+                </Link>
+              )}
+
+              {normalizedFacebook && (
+                <Link
+                  href={normalizedFacebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={actionClass}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/speakers/facebook.svg"
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="shrink-0"
+                    draggable={false}
+                  />
+                  <span>{labels.facebook}</span>
                 </Link>
               )}
 
