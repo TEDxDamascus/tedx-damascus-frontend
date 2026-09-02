@@ -79,8 +79,41 @@ export function AboutContent({ locale }: AboutContentProps) {
             </div>
           </motion.div>
         </section>
-
-        {/* Section 2 - About TED */}
+        {/* Section 2 - About TEDx */}
+        <section className="mb-[64px] grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-[48px]">
+          <motion.div
+            className="order-2 lg:order-1 max-w-[536px]"
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            variants={fadeInLeft}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            <h2 className="mb-6 text-[24px] font-bold text-white lg:text-[24px] font-helvetica">
+              <Title title={t('tedx.title')} />
+            </h2>
+            <p className="leading-relaxed text-[#a8a8a8] text-base font-helvetica">
+              {t('tedx.description')}
+            </p>
+          </motion.div>
+          <motion.div
+            className="order-1 lg:order-2 max-w-[536px]"
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportConfig}
+            variants={fadeInRight}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+          >
+            <div className="h-[272px] max-w-[536px] overflow-hidden rounded-2xl w-full">
+              <img
+                src="/images/about/About TEDx.png"
+                alt={t('tedx.imageAlt')}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </motion.div>
+        </section>
+         {/* Section 3 - About TED */}
         <section className="mb-[64px] grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-[48px]">
           <motion.div
             className={isRtl ? 'order-2' : 'order-1'}
@@ -115,40 +148,6 @@ export function AboutContent({ locale }: AboutContentProps) {
           </motion.div>
         </section>
 
-        {/* Section 3 - About TEDx */}
-        <section className="mb-[64px] grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-[48px]">
-          <motion.div
-            className="order-2 lg:order-1 max-w-[536px]"
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportConfig}
-            variants={fadeInLeft}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            <h2 className="mb-6 text-[24px] font-bold text-white lg:text-[24px] font-helvetica">
-              <Title title={t('tedx.title')} />
-            </h2>
-            <p className="leading-relaxed text-[#a8a8a8] text-base font-helvetica">
-              {t('tedx.description')}
-            </p>
-          </motion.div>
-          <motion.div
-            className="order-1 lg:order-2 max-w-[536px]"
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportConfig}
-            variants={fadeInRight}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-          >
-            <div className="h-[272px] max-w-[536px] overflow-hidden rounded-2xl w-full">
-              <img
-                src="/images/about/About TEDx.png"
-                alt={t('tedx.imageAlt')}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </motion.div>
-        </section>
       </div>
     </main>
   );
