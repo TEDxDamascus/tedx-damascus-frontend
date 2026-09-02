@@ -23,12 +23,12 @@ export function TeamCard({ href, photo, name, role, category, isRtl }: TeamCardP
         aria-hidden
       />
 
-      <div className="relative aspect-square w-full overflow-hidden bg-[#101010]">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#101010]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photo}
           alt=""
-          className="h-full w-full object-cover grayscale transition-all duration-500 ease-out group-hover:scale-105 group-hover:grayscale-0"
+          className="h-full w-full object-cover object-top grayscale transition-all duration-500 ease-out group-hover:scale-105 group-hover:grayscale-0"
           draggable={false}
           loading="lazy"
         />
