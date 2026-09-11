@@ -12,8 +12,8 @@ interface CallForVoicesSectionProps {
 const CARDS = [
   {
     key: 'team' as const,
-    collapsedImg: '/images/teams-partners/team-card.png',
-    expandedImg: '/images/teams-partners/team-color.jpg',
+    collapsedImg: '/images/team/team-card-bw.jpg',
+    expandedImg: '/images/team/team-card.jpeg',
     href: '/forms/volunteer',
     cta: 'nominateCta' as const,
   },

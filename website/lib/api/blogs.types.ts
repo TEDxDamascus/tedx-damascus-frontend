@@ -41,6 +41,7 @@ export interface BlogJsonLd {
   author: {
     '@type': string;
     name: string;
+    image?: string | null;
   };
   datePublished: string;
   dateModified: string;
@@ -81,6 +82,9 @@ export interface Blog {
   category_id?: Category;
   user_id?: string;
   user_name?: string | null;
+  author_name?: LocalizedString | string;
+  author_description?: LocalizedString | string;
+  author_image?: ImageObject | string | null;
   author?: any;
   references: any[];
   prev_blog?: RelatedBlog | null;

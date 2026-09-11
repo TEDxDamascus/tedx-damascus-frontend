@@ -87,7 +87,7 @@ export default function OrganizerProfileHero({
                 src={getImageUrl(organizer.image)}
                 alt={organizer.name}
                 fill
-                className="object-cover object-top grayscale"
+                className="object-cover object-top"
                 priority
               />
             ) : (

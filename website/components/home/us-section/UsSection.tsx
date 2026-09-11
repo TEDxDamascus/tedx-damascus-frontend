@@ -13,9 +13,9 @@ const CARDS = [
   {
     key: 'team',
     href: '/team',
-    collapsedImg: '/images/teams-partners/team-card.png',
-    expandedImg:  '/images/teams-partners/team-color.jpg',
-    objectPos:    'object-center',
+    collapsedImg: '/images/team/team-card-bw.jpg',
+    expandedImg:  '/images/team/team-card.jpeg',
+    objectPos:    'object-[center_58%]',
   },
   {
     key: 'organizers',
