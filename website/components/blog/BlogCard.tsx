@@ -6,6 +6,7 @@ import { articleDetailHref } from '@/lib/article-slug';
 
 export function BlogCard({
   title,
+  description,
   category,
   date,
   image,
@@ -19,20 +20,23 @@ export function BlogCard({
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
       className="
-        h-[372px]
-        max-w-[358.67px]
+        h-auto
+        min-h-[372px]
+        w-full
+        min-w-0
+        max-w-full
+        overflow-hidden
         rounded-[20px]
         bg-card-bg
-        overflow-hidden
+        font-helvetica
         transition-all
         duration-300
         hover:-translate-y-1
         hover:shadow-xl
-        font-helvetica
       "
     >
       {/* Shared container for image + content alignment */}
-      <div className="px-[12px] pt-[13px]">
+      <div className="min-w-0 px-[12px] pb-4 pt-[13px]">
         {/* Image */}
         <img
           src={image}
@@ -40,15 +44,15 @@ export function BlogCard({
           className="
             h-[210px]
             w-full
-            max-w-[334.67px]
+            max-w-full
             rounded-[13px]
             object-cover
           "
         />
 
         {/* Content */}
-        <div className="mt-3 w-full max-w-[334.67px] min-w-0">
-          <div className="flex flex-col gap-[10px]">
+        <div className="mt-3 w-full min-w-0 max-w-full">
+          <div className="flex min-w-0 flex-col gap-[10px]">
             {/* Category */}
 
 <div
@@ -56,16 +60,17 @@ export function BlogCard({
     inline-flex
     h-[33px]
     w-fit
-    px-4
+    max-w-full
     items-center
     justify-center
+    truncate
     rounded-full
     bg-[#303030]
-    text-sm
+    px-4
     py-2
+    text-sm
     font-medium
     text-[#f1f1f1]
-    whitespace-nowrap
   "
 >
     {category}
@@ -74,19 +79,27 @@ export function BlogCard({
 
             {/* Title */}
             <h3
-              className="
-                line-clamp-2
-                text-base
-                font-semibold
-                leading-6
-                text-white
-              "
+              className={[
+                'line-clamp-2 break-words [overflow-wrap:anywhere] text-sm font-semibold leading-5 text-white sm:text-base sm:leading-6',
+                isRtl ? 'font-arabic' : '',
+              ].join(' ')}
             >
               {title}
             </h3>
 
+            {description ? (
+              <p
+                className={[
+                  'line-clamp-2 break-words [overflow-wrap:anywhere] text-xs leading-5 text-white/70 sm:text-sm',
+                  isRtl ? 'font-arabic' : '',
+                ].join(' ')}
+              >
+                {description}
+              </p>
+            ) : null}
+
             {/* Date */}
-           <div className="flex items-center gap-2 text-sm text-white/75">
+           <div className="flex flex-wrap items-center gap-2 text-sm text-white/75">
           <span>{date}</span>
           <span>•</span>
           <span>{read_time} min read</span>
@@ -104,7 +117,7 @@ export function BlogCard({
     // Use provided locale or default to 'en'
     const lang = locale ?? 'en';
     return (
-      <Link href={articleDetailHref(lang, slug)} className="block">
+      <Link href={articleDetailHref(lang, slug)} className="block min-w-0 w-full">
         {content}
       </Link>
     );

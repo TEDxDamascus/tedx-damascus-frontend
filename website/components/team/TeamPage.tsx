@@ -14,6 +14,10 @@ interface TeamPageProps {
   locale: string;
 }
 
+function arabicName(member: TeamMemberApiData): string {
+  return pickLocaleText(member.name, 'ar').trim();
+}
+
 export function TeamPage({ locale }: TeamPageProps) {
   const t = useTranslations('Team');
   const isRtl = locale === 'ar';
@@ -38,14 +42,16 @@ export function TeamPage({ locale }: TeamPageProps) {
     ? liveMembers.filter((m) => String(m.year ?? '') === yearParam)
     : liveMembers;
 
-  // No static placeholder members — the grid shows exactly what the API returns.
-  const members = filteredLive.map((live) => ({
-    id: String(live._id),
-    name: pickLocaleText(live.name, locale),
-    role: '',
-    category: `TEDx Damascus ${live.year ?? ''}`.trim(),
-    photo: getImageUrl(live.image),
-  }));
+  // Always order by Arabic name (أ، ب، ت…) even when the UI is in English.
+  const members = [...filteredLive]
+    .sort((a, b) => arabicName(a).localeCompare(arabicName(b), 'ar', { sensitivity: 'base' }))
+    .map((live) => ({
+      id: String(live._id),
+      name: pickLocaleText(live.name, locale),
+      role: '',
+      category: `TEDx Damascus ${live.year ?? ''}`.trim(),
+      photo: getImageUrl(live.image),
+    }));
 
   return (
     <section className="relative overflow-hidden bg-page-bg" dir={isRtl ? 'rtl' : 'ltr'}>

@@ -69,15 +69,27 @@ export function ArticleContent({ blog, locale }: ArticleContentProps) {
   processedContent = processLinks(processedContent);
 
   return (
-    <section className="max-w-[1120px] mx-auto px-4 py-[30px] font-helvetica">
+    <section className="mx-auto min-w-0 max-w-[1120px] overflow-x-hidden px-0 py-[30px] font-helvetica sm:px-4">
       {/* Blog Header */}
  
 
       {/* Blog Content with Typography */}
-      <div className="prose prose-lg prose-invert max-w-none dark:prose-invert [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl [&_iframe]:max-w-full [&_iframe]:h-auto [&_iframe]:rounded-xl">
+      <div
+        className={[
+          'prose prose-sm sm:prose-lg prose-invert max-w-none min-w-0 break-words dark:prose-invert',
+          '[&_h1]:break-words [&_h1]:text-xl [&_h1]:leading-snug sm:[&_h1]:text-3xl lg:[&_h1]:text-4xl',
+          '[&_h2]:break-words [&_h2]:text-lg [&_h2]:leading-snug sm:[&_h2]:text-2xl',
+          '[&_h3]:break-words [&_h3]:text-base sm:[&_h3]:text-xl',
+          '[&_p]:break-words [&_p]:[overflow-wrap:anywhere] [&_p]:max-w-full',
+          '[&_li]:break-words [&_li]:[overflow-wrap:anywhere]',
+          '[&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl',
+          '[&_iframe]:max-w-full [&_iframe]:h-auto [&_iframe]:rounded-xl',
+          isRtl ? 'font-arabic text-end' : '',
+        ].join(' ')}
+      >
         <div 
           dangerouslySetInnerHTML={{ __html: processedContent }}
-          className="text-[#B3B3B3]"
+          className="min-w-0 max-w-full text-[#B3B3B3] [overflow-wrap:anywhere]"
         />
       </div>
 
