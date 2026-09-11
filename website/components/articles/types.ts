@@ -13,7 +13,7 @@ export interface AuthorProfile {
   links: Array<{ label: string; href: string }>;
 }
 
-export interface RelatedArticleCardProps extends Pick<BlogCardProps, 'id' | 'title' | 'category' | 'date' | 'image'> {
+export interface RelatedArticleCardProps extends Pick<BlogCardProps, 'id' | 'title' | 'description' | 'category' | 'date' | 'image'> {
   isRtl?: boolean;
   read_time?: string | number;
 }

@@ -65,7 +65,7 @@ export function BlogHero({ locale, label, title, meta }: BlogHeroProps) {
               ) : null}
                <h1
                  className={[
-                   'font-helvetica text-4xl font-normal tracking-tight text-white sm:text-5xl',
+                   'break-words px-2 font-helvetica text-3xl font-normal tracking-tight text-white sm:text-4xl lg:text-5xl',
                    isRtl ? 'font-arabic' : '',
                  ].join(' ')}
                >

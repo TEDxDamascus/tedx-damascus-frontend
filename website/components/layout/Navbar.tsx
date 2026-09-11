@@ -100,6 +100,22 @@ function HamburgerIcon({ open }: { open: boolean }) {
   );
 }
 
+function localeSwitchUrl(altLocale: string, pathnameNoSlash: string) {
+  const pathPart = pathnameNoSlash.replace(/^\/(en|ar)/, "");
+  const path = `/${altLocale}${pathPart}` || `/${altLocale}`;
+  if (typeof window === "undefined") return path;
+
+  const search = window.location.search;
+  const hash = window.location.hash;
+  if (!search && !hash) return path;
+
+  // trailingSlash: true will otherwise redirect /en/articles/detail?slug=x
+  // to /en/articles/detail/ and drop the query — the article page then
+  // thinks there is no slug until a full reload.
+  const withSlash = path.endsWith("/") ? path : `${path}/`;
+  return `${withSlash}${search}${hash}`;
+}
+
 export function Navbar({ locale, navRef }: NavbarProps) {
   const t = useTranslations("Navigation");
   const rawPathname = usePathname();
@@ -112,6 +128,11 @@ export function Navbar({ locale, navRef }: NavbarProps) {
   const altLocale = isRtl ? "en" : "ar";
   const altHref =
     `/${altLocale}${pathname.replace(/^\/(en|ar)/, "")}` || `/${altLocale}`;
+
+  const onLocaleSwitch = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.location.assign(localeSwitchUrl(altLocale, pathname));
+  };
 
   const mounted = useSyncExternalStore(
     noopSubscribe,
@@ -380,6 +401,7 @@ export function Navbar({ locale, navRef }: NavbarProps) {
 
             <Link
               href={altHref}
+              onClick={onLocaleSwitch}
               aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}
               className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity"
             >
@@ -575,7 +597,10 @@ export function Navbar({ locale, navRef }: NavbarProps) {
             <div className="px-8 pb-10">
               <Link
                 href={altHref}
-                onClick={() => setMobileOpen(false)}
+                onClick={(event) => {
+                  setMobileOpen(false);
+                  onLocaleSwitch(event);
+                }}
                 className="flex items-center gap-2 text-[#F1F1F1] hover:opacity-70 transition-opacity"
               >
                 {langContent}

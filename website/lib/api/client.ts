@@ -1,4 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { BlogsQueryParams } from './blogs.types';
+
+/** JSON request body when the CMS payload is not modeled in this app. */
+type JsonBody = Record<string, unknown>;
 
 const API_BASE_URL = 'https://api.tedxdamascus.sy';
 
@@ -8,16 +12,26 @@ function toSecureImageUrl(url: string): string {
   return `https://images.weserv.nl/?url=${encodeURIComponent(url.slice('http://'.length))}`;
 }
 
-export function getImageUrl(id: string | null | undefined | any): string {
-  if (!id) return '/images/events/event-card.png';
-  if (typeof id === 'string') {
-    if (id.startsWith('http') || id.startsWith('/')) return toSecureImageUrl(id);
-    return `${API_BASE_URL}/files/${id}`;
+/** Pull a usable URL out of the shapes the API actually returns (plain string, `{ url }`, or a Mongoose document with `_doc.url`). */
+export function extractMediaUrl(value: unknown): string {
+  if (!value) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    const nested = obj._doc && typeof obj._doc === 'object'
+      ? (obj._doc as Record<string, unknown>)
+      : null;
+    const raw = obj.url ?? obj.absolute_url ?? nested?.url ?? nested?.absolute_url ?? obj.path;
+    if (typeof raw === 'string') return raw.trim();
   }
-  if (id && typeof id === 'object' && id.url) {
-    return toSecureImageUrl(id.url);
-  }
-  return '/images/events/event-card.png';
+  return '';
+}
+
+export function getImageUrl(id: unknown): string {
+  const raw = extractMediaUrl(id);
+  if (!raw) return '/images/events/event-card.png';
+  if (raw.startsWith('http') || raw.startsWith('/')) return toSecureImageUrl(raw);
+  return `${API_BASE_URL}/files/${raw}`;
 }
 
 class ApiClient {
@@ -91,17 +105,17 @@ class ApiClient {
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
     const response = await this.client.post<T>(url, data, config);
     return response.data;
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }
@@ -111,7 +125,7 @@ class ApiClient {
     return response.data;
   }
 
-  async uploadFile<T>(url: string, file: File, additionalData?: Record<string, any>) {
+  async uploadFile<T>(url: string, file: File, additionalData?: Record<string, string | Blob>) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -137,9 +151,9 @@ export const speakersApi = {
     apiClient.get('/speakers', { params }),
   getBySlug: (slug: string, locale: string) =>
     apiClient.get(`/speakers/${slug}?locale=${locale}`),
-  create: (data: any) =>
+  create: (data: JsonBody) =>
     apiClient.post('/speakers', data),
-  update: (id: string, data: any) =>
+  update: (id: string, data: JsonBody) =>
     apiClient.put(`/speakers/${id}`, data),
   delete: (id: string) =>
     apiClient.delete(`/speakers/${id}`),
@@ -152,22 +166,22 @@ export const eventsApi = {
     apiClient.get(`/events/${slug}?locale=${locale}`),
   getById: (id: string, locale: string) =>
     apiClient.get(`/events/${id}?locale=${locale}`),
-  create: (data: any) =>
+  create: (data: JsonBody) =>
     apiClient.post('/events', data),
-  update: (id: string, data: any) =>
+  update: (id: string, data: JsonBody) =>
     apiClient.put(`/events/${id}`, data),
   delete: (id: string) =>
     apiClient.delete(`/events/${id}`),
 };
 
 export const blogsApi = {
-  getAll: (params?: any) =>
+  getAll: (params?: BlogsQueryParams) =>
     apiClient.get('/blogs', { params }),
   getBySlug: (slug: string, locale: string) =>
     apiClient.get(`/blogs/${slug}?locale=${locale}`),
-  create: (data: any) =>
+  create: (data: JsonBody) =>
     apiClient.post('/blogs', data),
-  update: (id: string, data: any) =>
+  update: (id: string, data: JsonBody) =>
     apiClient.put(`/blogs/${id}`, data),
   delete: (id: string) =>
     apiClient.delete(`/blogs/${id}`),
@@ -194,7 +208,7 @@ export const teamApi = {
 export const formsApi = {
   getForm: (type: 'volunteer' | 'speaker') =>
     apiClient.get(`/forms/${type}`),
-  submitForm: (type: string, data: any) =>
+  submitForm: (type: string, data: JsonBody) =>
     apiClient.post(`/forms/${type}/submit`, data),
   getSubmissions: (formId: string) =>
     apiClient.get(`/forms/${formId}/submissions`),

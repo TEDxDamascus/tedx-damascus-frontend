@@ -49,7 +49,7 @@ export function RelatedBlogCards({
           {articles.map((article) => (
             <div
               key={article.id}
-              className="h-full transition-transform duration-300 hover:-translate-y-1 last:mb-16 md:last:mb-0"
+              className="h-full min-w-0 transition-transform duration-300 hover:-translate-y-1 last:mb-16 md:last:mb-0"
             >
               <BlogCard
                 {...article}
