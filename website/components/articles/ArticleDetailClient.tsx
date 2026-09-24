@@ -14,7 +14,8 @@ import { blogReferencesService } from '@/lib/api/blog-references.service';
 import { getLocalizedSlug, pickLocaleText, toPathSafeSlug } from '@/lib/utils';
 import { extractMediaUrl, getImageUrl, teamApi } from '@/lib/api/client';
 import { getAllOrganizers } from '@/lib/api/organizers';
-import { articleDetailHref, resolveArticleSlug } from '@/lib/article-slug';
+import { resolveArticleSlug } from '@/lib/article-slug';
+import { canonicalProfileShareUrl } from '@/lib/share-url';
 import { Blog } from '@/lib/api/blogs.types';
 import { BlogReference } from '@/lib/api/blog-references.types';
 
@@ -300,9 +301,9 @@ export function ArticleDetailClient({ locale }: ArticleDetailClientProps) {
   }
 
   const shareUrl =
-    blog.seo?.canonical_url ||
-    blog.json_ld?.url ||
-    `https://tedxdamascus.sy${articleDetailHref(activeLocale, slug)}`;
+    typeof window !== 'undefined'
+      ? canonicalProfileShareUrl(window.location.href)
+      : `https://tedxdamascus.sy/${activeLocale}/articles/${encodeURIComponent(slug)}/`;
 
   return (
     <main className="bg-black text-white">
