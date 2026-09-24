@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
 import { RelatedArticleCardProps } from './types';
 import { getImageUrl } from '@/lib/api/client';
+import { formatReadTime } from '@/lib/utils';
+import { shareArticleOnInstagram } from '@/lib/share-url';
 
 interface RelatedArticlesProps {
   articles: RelatedArticleCardProps[];
@@ -26,8 +28,6 @@ function buildShareLinks(url: string, title: string) {
   return {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}`,
-    // Instagram has no web share URL for posts — open org profile as fallback
-    instagram: 'https://www.instagram.com/TEDxDamascus',
   };
 }
 
@@ -105,7 +105,7 @@ export function RelatedArticles({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/75 sm:text-sm">
           <span>{featuredArticle.date}</span>
           <span>•</span>
-          <span>{featuredArticle.read_time} min read</span>
+          <span>{formatReadTime(featuredArticle.read_time, locale)}</span>
         </div>
       </div>
     </div>
@@ -168,15 +168,16 @@ export function RelatedArticles({
         <Facebook className="w-6 h-6 fill-current stroke-none text-[#101010]" />
       </a>
 
-      <a
-        href={shareLinks.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="TEDx Damascus on Instagram"
+      <button
+        type="button"
+        aria-label="Share on Instagram"
         className="transition-opacity hover:opacity-70"
+        onClick={() => {
+          if (shareUrl) void shareArticleOnInstagram(shareUrl, title);
+        }}
       >
         <Instagram className="w-6 h-6 text-[#101010] stroke-[2.5]" />
-      </a>
+      </button>
 
       <a
         href={shareLinks.linkedin}

@@ -3,7 +3,7 @@
  * Profile pages live at /{locale}/{section}/detail/?slug|id=, so convert
  * that to a pretty /{locale}/{section}/{key}/ URL for crawlers + previews.
  */
-const PROFILE_SECTIONS = new Set(['speakers', 'team', 'organizers']);
+const PROFILE_SECTIONS = new Set(['speakers', 'team', 'organizers', 'articles']);
 
 export function canonicalProfileShareUrl(href: string): string {
   try {
@@ -31,4 +31,31 @@ export function canonicalProfileShareUrl(href: string): string {
   } catch {
     return href;
   }
+}
+
+/**
+ * Instagram has no web sharer. On phones the system sheet can hand the article
+ * URL to Instagram; elsewhere the link is copied and Instagram opens so it can be pasted.
+ * The preview (title + image) still comes from og.php when that URL is opened.
+ */
+export async function shareArticleOnInstagram(url: string, title: string): Promise<void> {
+  const onPhone =
+    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
+  if (onPhone && typeof navigator.share === 'function') {
+    try {
+      await navigator.share({ title, text: title, url });
+      return;
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    /* clipboard blocked */
+  }
+
+  window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
 }

@@ -12,6 +12,22 @@ export function formatDate(date: string, locale: string) {
   }).format(new Date(date));
 }
 
+/** "4 min read" in English; Arabic uses minute agreement (دقيقة / دقيقتان / دقائق). */
+export function formatReadTime(minutes: string | number | undefined | null, locale: string): string {
+  const n = Number(minutes);
+  if (!Number.isFinite(n) || n <= 0) return '';
+
+  const count = Math.round(n);
+  if (locale !== 'ar') {
+    return count === 1 ? '1 min read' : `${count} min read`;
+  }
+
+  if (count === 1) return 'دقيقة واحدة للقراءة';
+  if (count === 2) return 'دقيقتان للقراءة';
+  if (count >= 3 && count <= 10) return `${count} دقائق للقراءة`;
+  return `${count} دقيقة للقراءة`;
+}
+
 export function getLocalizedContent<T extends { en: string; ar: string }>(
   content: T,
   locale: string
