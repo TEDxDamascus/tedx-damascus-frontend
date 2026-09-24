@@ -1,6 +1,7 @@
 'use client';
 
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import { shareArticleOnInstagram } from '@/lib/share-url';
 
 type ShareBarProps = {
   title: string;
@@ -16,7 +17,6 @@ function buildShareLinks(title: string, description: string, url: string) {
 
   return {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}${encodedDescription ? `%20${encodedDescription}` : ''}`,
-    instagram: 'https://www.instagram.com/',
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedDescription}`,
   };
 }
@@ -47,15 +47,16 @@ export function ShareBar({ title, description = '', url, locale = 'en' }: ShareB
         >
           <Facebook className="w-5 h-5 fill-current stroke-none" />
         </a>
-        <a
-          href={shareLinks.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           className="text-[#E11D48] hover:opacity-80 transition-all duration-200"
           aria-label="Share on Instagram"
+          onClick={() => {
+            if (url) void shareArticleOnInstagram(url, title);
+          }}
         >
           <Instagram className="w-5 h-5 stroke-[2.5]" />
-        </a>
+        </button>
         <a
           href={shareLinks.linkedin}
           target="_blank"

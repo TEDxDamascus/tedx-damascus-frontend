@@ -12,17 +12,20 @@ $SITE = 'https://' . $host;
 
 $type = $_GET['type'] ?? '';
 $locale = (($_GET['locale'] ?? 'en') === 'ar') ? 'ar' : 'en';
-$key = trim((string) ($_GET['slug'] ?? $_GET['id'] ?? ''));
+$key = rawurldecode(trim((string) ($_GET['slug'] ?? $_GET['id'] ?? '')));
 
-$allowedTypes = ['speaker' => 'speakers', 'team' => 'team', 'organizer' => 'organizers'];
-if (!isset($allowedTypes[$type]) || $key === '' || !preg_match('/^[A-Za-z0-9_-]+$/', $key)) {
+$allowedTypes = ['speaker' => 'speakers', 'team' => 'team', 'organizer' => 'organizers', 'article' => 'articles'];
+$asciiKey = (bool) preg_match('/^[A-Za-z0-9_-]+$/', $key);
+$articleKey = $type === 'article' && $key !== '' && !preg_match('/[\/\\\\]/', $key) && strlen($key) < 300;
+if (!isset($allowedTypes[$type]) || $key === '' || (!$asciiKey && !$articleKey)) {
   renderOg($SITE, $SITE . '/', 'TEDx Damascus', 'Ideas worth spreading from the heart of Syria.', $SITE . '/images/icons/tedx-logo.png');
   exit;
 }
 
 $section = $allowedTypes[$type];
 $prettyUrl = $SITE . '/' . $locale . '/' . $section . '/' . rawurlencode($key) . '/';
-$spaUrl = $SITE . '/' . $locale . '/' . $section . '/detail/?' . ($type === 'speaker' ? 'slug' : 'id') . '=' . rawurlencode($key);
+$queryName = ($type === 'organizer' || $type === 'team') ? 'id' : 'slug';
+$spaUrl = $SITE . '/' . $locale . '/' . $section . '/detail/?' . $queryName . '=' . rawurlencode($key);
 
 $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $isCrawler = (bool) preg_match(
@@ -41,13 +44,74 @@ $fallbackDesc = $locale === 'ar'
   : 'Ideas worth spreading from the heart of Syria.';
 $fallbackImage = $SITE . '/images/icons/tedx-logo.png';
 
-$found = fetchProfile($API, $type, $key, $locale);
+$found = $type === 'article'
+  ? fetchArticle($API, $key, $locale)
+  : fetchProfile($API, $type, $key, $locale);
 if (!$found) {
-  renderOg($SITE, $prettyUrl, $fallbackTitle, $fallbackDesc, $fallbackImage);
+  renderOg($SITE, $prettyUrl, $fallbackTitle, $fallbackDesc, $fallbackImage, $type === 'article' ? 'article' : 'profile');
   exit;
 }
 
-renderOg($SITE, $prettyUrl, $found['title'], $found['description'], $found['image']);
+renderOg(
+  $SITE,
+  $prettyUrl,
+  $found['title'],
+  $found['description'],
+  $found['image'],
+  $type === 'article' ? 'article' : 'profile'
+);
+
+function fetchArticle(string $api, string $key, string $locale): ?array
+{
+  $direct = apiJson($api . '/public/blogs/' . rawurlencode($key) . '?lang=' . rawurlencode($locale));
+  $item = unwrapItem($direct);
+  if ($item === null) {
+    $list = apiList($api . '/public/blogs?limit=100&lang=' . rawurlencode($locale) . '&status=published');
+    foreach ($list as $row) {
+      $slug = $row['slug'] ?? '';
+      $en = is_array($slug) ? (string) ($slug['en'] ?? '') : (string) $slug;
+      $ar = is_array($slug) ? (string) ($slug['ar'] ?? '') : '';
+      $id = (string) ($row['_id'] ?? '');
+      if ($en === $key || $ar === $key || $id === $key || rawurldecode($en) === $key || rawurldecode($ar) === $key) {
+        $item = $row;
+        break;
+      }
+    }
+  }
+  if ($item === null) {
+    return null;
+  }
+
+  $title = loc($item['title'] ?? '', $locale);
+  $description = firstNonEmpty(
+    loc($item['og_description'] ?? '', $locale),
+    loc($item['meta_description'] ?? '', $locale),
+    loc($item['description'] ?? '', $locale),
+    $locale === 'ar' ? 'مقال من مدونة TEDx Damascus' : 'An article from the TEDx Damascus blog'
+  );
+  $image = imageUrl($item['og_image'] ?? ($item['blog_image'] ?? null), $api);
+
+  return [
+    'title' => $title !== '' ? $title : 'TEDx Damascus',
+    'description' => $description,
+    'image' => $image,
+  ];
+}
+
+function unwrapItem($decoded): ?array
+{
+  if (!is_array($decoded)) {
+    return null;
+  }
+  $item = $decoded['data'] ?? $decoded;
+  if (!is_array($item) || isset($item[0])) {
+    return null;
+  }
+  if (empty($item['_id']) && empty($item['title'])) {
+    return null;
+  }
+  return $item;
+}
 
 function fetchProfile(string $api, string $type, string $key, string $locale): ?array
 {
@@ -208,8 +272,9 @@ function firstNonEmpty(string ...$values): string
 
 function imageUrl($id, string $api): string
 {
-  if (is_array($id) && isset($id['url'])) {
-    $id = $id['url'];
+  if (is_array($id)) {
+    $nested = isset($id['_doc']) && is_array($id['_doc']) ? $id['_doc'] : [];
+    $id = $id['url'] ?? $id['absolute_url'] ?? ($nested['url'] ?? ($nested['absolute_url'] ?? ''));
   }
   if (!is_string($id) || $id === '') {
     return '';
@@ -252,7 +317,7 @@ function facebookImageUrl(string $raw, string $site): string
     . '&w=1200&h=630&fit=contain&cbg=101010';
 }
 
-function renderOg(string $site, string $url, string $title, string $description, string $image): void
+function renderOg(string $site, string $url, string $title, string $description, string $image, string $ogType = 'profile'): void
 {
   $pageTitle = $title === 'TEDx Damascus' ? $title : ($title . ' | TEDx Damascus');
   $ogImage = facebookImageUrl($image, $site);
@@ -261,6 +326,7 @@ function renderOg(string $site, string $url, string $title, string $description,
   $u = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   $i = htmlspecialchars($ogImage, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
   $siteName = 'TEDx Damascus';
+  $typeAttr = $ogType === 'article' ? 'article' : 'profile';
 
   echo <<<HTML
 <!DOCTYPE html>
@@ -270,7 +336,7 @@ function renderOg(string $site, string $url, string $title, string $description,
   <title>{$t}</title>
   <meta name="description" content="{$d}">
   <link rel="canonical" href="{$u}">
-  <meta property="og:type" content="profile">
+  <meta property="og:type" content="{$typeAttr}">
   <meta property="og:site_name" content="{$siteName}">
   <meta property="og:title" content="{$t}">
   <meta property="og:description" content="{$d}">

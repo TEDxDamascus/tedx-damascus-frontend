@@ -25,6 +25,11 @@
   RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
   RewriteRule ^(en|ar)/organizers/([^/.]+)/?$ /og.php?type=organizer&locale=$1&id=$2 [L]
 
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/articles/detail/?$ /og.php?type=article&locale=$1 [L,QSA]
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|Pinterest|vkShare) [NC]
+  RewriteRule ^(en|ar)/articles/([^/.]+)/?$ /og.php?type=article&locale=$1&slug=$2 [L]
+
   # CMS detail pages are one statically exported shell per type.
   # Pretty URLs cannot exist as real folders with output: "export".
   # External redirect so the browser URL matches the HTML Next exported.

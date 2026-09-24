@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { BlogCardProps } from './types';
 import { articleDetailHref } from '@/lib/article-slug';
+import { formatReadTime } from '@/lib/utils';
 
 export function BlogCard({
   title,
@@ -102,7 +103,7 @@ export function BlogCard({
            <div className="flex flex-wrap items-center gap-2 text-sm text-white/75">
           <span>{date}</span>
           <span>•</span>
-          <span>{read_time} min read</span>
+          <span>{formatReadTime(read_time, locale ?? (isRtl ? 'ar' : 'en'))}</span>
         </div>
             
 
