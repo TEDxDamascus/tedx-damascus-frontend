@@ -105,7 +105,7 @@ export function RelatedArticles({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/75 sm:text-sm">
           <span>{featuredArticle.date}</span>
           <span>•</span>
-          <span>{formatReadTime(featuredArticle.read_time, locale)}</span>
+          <span>{formatReadTime(featuredArticle.read_time, locale ?? (isRtl ? 'ar' : 'en'))}</span>
         </div>
       </div>
     </div>
