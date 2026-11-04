@@ -214,46 +214,52 @@ export function Navbar({ locale, navRef }: NavbarProps) {
         <div dir="ltr">
           <Link
             href={`/${locale}/home`}
+            aria-label="TEDxDamascus, x = independently organized TED event"
             className="sm:hidden inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
           >
+            <span className="sr-only">TEDxDamascus, x = independently organized TED event</span>
             <Image
               src="/images/icons/tedx-logo.png"
-              alt="TEDxDamascus"
+              alt=""
+              aria-hidden="true"
               width={55}
               height={32}
               priority
               className="object-contain [grid-column:1] [grid-row:1]"
             />
-            <span className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
               Damascus
             </span>
-            <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
               x
             </span>
-            <span className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
               = independently organized TED event
             </span>
           </Link>
 
           <Link
             href={`/${locale}/home`}
+            aria-label="TEDxDamascus, x = independently organized TED event"
             className="hidden sm:inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
           >
+            <span className="sr-only">TEDxDamascus, x = independently organized TED event</span>
             <Image
               src="/images/icons/tedx-logo.png"
-              alt="TEDxDamascus"
+              alt=""
+              aria-hidden="true"
               width={100}
               height={58}
               className="object-contain [grid-column:1] [grid-row:1]"
               priority
             />
-            <span className="[grid-column:1] [grid-row:1] ml-[104px] mt-[17px] text-[34px] font-helvetica font-light text-white leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[104px] mt-[17px] text-[34px] font-helvetica font-light text-white leading-none select-none">
               Damascus
             </span>
-            <span className="[grid-column:1] [grid-row:1] ml-[7px] mt-[51px] text-[13px] font-helvetica font-black text-primary leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[7px] mt-[51px] text-[13px] font-helvetica font-black text-primary leading-none select-none">
               x
             </span>
-            <span className="[grid-column:1] [grid-row:1] ml-[17px] mt-[51px] text-[13px] font-helvetica font-bold text-white leading-none select-none">
+            <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[17px] mt-[51px] text-[13px] font-helvetica font-bold text-white leading-none select-none">
               = independently organized TED event
             </span>
           </Link>
@@ -439,22 +445,25 @@ export function Navbar({ locale, navRef }: NavbarProps) {
                     <Link
                       href={`/${locale}/home`}
                       onClick={() => setMobileOpen(false)}
+                      aria-label="TEDxDamascus, x = independently organized TED event"
                       className="inline-grid shrink-0 grid-cols-[max-content] grid-rows-[max-content] place-items-start [direction:ltr]"
                     >
+                      <span className="sr-only">TEDxDamascus, x = independently organized TED event</span>
                       <Image
                         src="/images/icons/tedx-logo.png"
-                        alt="TEDxDamascus"
+                        alt=""
+                        aria-hidden="true"
                         width={55}
                         height={32}
                         className="object-contain [grid-column:1] [grid-row:1]"
                       />
-                      <span className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
+                      <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[57px] mt-[9px] text-[19px] font-helvetica font-light text-white leading-none select-none">
                         Damascus
                       </span>
-                      <span className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
+                      <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[4px] mt-[25px] text-[11px] font-helvetica font-black text-primary leading-none select-none">
                         x
                       </span>
-                      <span className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
+                      <span aria-hidden="true" className="[grid-column:1] [grid-row:1] ml-[14px] mt-[27px] text-[7px] font-helvetica font-bold text-white leading-none select-none">
                         = independently organized TED event
                       </span>
                     </Link>
