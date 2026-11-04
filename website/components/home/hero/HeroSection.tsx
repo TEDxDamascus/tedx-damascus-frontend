@@ -158,7 +158,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
           height: 153,
         }}
       >
-        {/* "WE ARE" / "نحن" */}
+        {/* "WE ARE" / "نحن" — the page's single primary heading. */}
         <h1
           className={[
             'absolute top-0 left-0 w-full font-helvetica font-light leading-[72px] select-none',
@@ -166,6 +166,10 @@ export function HeroSection({ locale }: HeroSectionProps) {
             isRtl ? 'text-center' : 'text-left',
           ].join(' ')}
         >
+          <span className="sr-only">
+            {isRtl ? 'نحن TEDxDamascus' : 'WE ARE TEDxDamascus'}
+          </span>
+          <span aria-hidden="true">
           <SplitText
             text={t('heroWeAre')}
             tag="span"
@@ -179,6 +183,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
             threshold={0.1}
             rootMargin="-80px"
           />
+          </span>
         </h1>
 
         {/* TEDx logo */}
@@ -240,9 +245,10 @@ export function HeroSection({ locale }: HeroSectionProps) {
           className="absolute top-0 left-0 right-0 h-28 pointer-events-none"
           style={{ zIndex: 5, background: 'linear-gradient(to bottom, #101010 0%, transparent 100%)' }}
         />
-        {/* Mobile text */}
+        {/* Mobile text — visual duplicate of the desktop <h1>; kept as a <div>
+            so the document has exactly one <h1> (SEO: single primary heading). */}
         <div className="relative px-6 pb-4 shrink-0">
-          <h1 className="font-helvetica select-none">
+          <div className="font-helvetica select-none" aria-hidden="true">
             <span
               className="block text-[clamp(26px,9vw,36px)] font-light leading-[1.15] text-white"
               dir={isRtl ? 'rtl' : 'ltr'}
@@ -252,7 +258,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
             <span className="flex items-end gap-2" dir="ltr">
               <Image
                 src="/images/hero/tedx-hero.png"
-                alt="TEDx"
+                alt=""
                 width={110}
                 height={31}
                 className="object-contain mb-[2px]"
@@ -261,7 +267,7 @@ export function HeroSection({ locale }: HeroSectionProps) {
               />
               <span className="text-[clamp(26px,9vw,36px)] font-light text-white leading-[1.15]">Damascus</span>
             </span>
-          </h1>
+          </div>
         </div>
 
         {/* Mobile image strips */}

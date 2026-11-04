@@ -5,7 +5,7 @@ import { BlogHero } from '@/components/blog/BlogHero';
 import { BlogSection } from '@/components/blog/BlogSection';
 import { Metadata } from 'next';
 import { blogsService } from '@/lib/api/blogs.service';
-import { getBlogListJsonLdString } from '@/lib/seo';
+import { getBlogListJsonLdString, buildLanguageAlternates } from '@/lib/seo';
 import { Blog } from '@/lib/api/blogs.types';
 
 export function generateStaticParams() {
@@ -58,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           images: ogImage ? [ogImage] : [],
         },
         alternates: {
-          canonical: canonicalUrl,
+          ...buildLanguageAlternates('/blog', locale),
+          ...(canonicalUrl ? { canonical: canonicalUrl } : {}),
         },
       };
     }
@@ -71,6 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: locale === 'ar' 
       ? 'اكتشف أحدث المقالات والأخير من TEDx Damascus'
       : 'Discover the latest articles and news from TEDx Damascus',
+    alternates: buildLanguageAlternates('/blog', locale),
   };
 }
 

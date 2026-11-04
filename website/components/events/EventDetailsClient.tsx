@@ -5,6 +5,7 @@ import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { eventsApi } from '@/lib/api/client';
 import { Navbar } from '@/components/layout';
 import { resolveEventSlug } from '@/lib/event-slug';
+import { getEventJsonLdString, SITE_URL } from '@/lib/seo';
 import { EventDetailsHero } from './EventDetailsHero';
 import { EventDetailsAbout } from './EventDetailsAbout';
 import { EventDetailsSpeakers } from './EventDetailsSpeakers';
@@ -73,69 +74,10 @@ const STATIC_EVENTS: Record<string, ApiEventDetail> = {
       ar: 'منارة للفن والثقافة في قلب دمشق. توفر دار الأوبرا محيطًا رائعًا يتردد صدى موضوعنا عن المرونة والجمال.',
     },
     location_address: { en: 'Umayyeen Square, Damascus, Syria', ar: 'ساحة الأمويين، دمشق، سوريا' },
-    location_email: 'info@tedxdamascus.com',
-    location_phone: '+963 11 123 4567',
     date: '2024-01-16',
     coordinates: [36.2910, 33.5138],
-    speakers: [
-      {
-        _id: 's1',
-        name: { en: 'Jenna Smith', ar: 'جينا سميث' },
-        title: { en: 'AI Ethics & Future Tech', ar: 'أخلاقيات الذكاء الاصطناعي وتكنولوجيا المستقبل' },
-        image: '/images/event-details/speaker-1.png',
-      },
-      {
-        _id: 's2',
-        name: { en: 'Robert P. Stones', ar: 'روبرت ستونز' },
-        title: { en: 'Architectural Innovation', ar: 'الابتكار المعماري' },
-        image: '/images/event-details/speaker-2.png',
-      },
-      {
-        _id: 's3',
-        name: { en: 'Peter Jones', ar: 'بيتر جونز' },
-        title: { en: 'Global Sustainability', ar: 'الاستدامة العالمية' },
-        image: '/images/event-details/speaker-3.png',
-      },
-      {
-        _id: 's4',
-        name: { en: 'Mary Lou', ar: 'ماري لو' },
-        title: { en: 'Doctoral Heritage Tech', ar: 'تكنولوجيا التراث الأكاديمي' },
-        image: '/images/event-details/speaker-4.png',
-      },
-      {
-        _id: 's5',
-        name: { en: 'Jenna Smith', ar: 'جينا سميث' },
-        title: { en: 'AI Ethics & Future Tech', ar: 'أخلاقيات الذكاء الاصطناعي' },
-        image: '/images/event-details/speaker-1.png',
-      },
-      {
-        _id: 's6',
-        name: { en: 'Robert P. Stones', ar: 'روبرت ستونز' },
-        title: { en: 'Architectural Innovation', ar: 'الابتكار المعماري' },
-        image: '/images/event-details/speaker-2.png',
-      },
-      {
-        _id: 's7',
-        name: { en: 'Peter Jones', ar: 'بيتر جونز' },
-        title: { en: 'Global Sustainability', ar: 'الاستدامة العالمية' },
-        image: '/images/event-details/speaker-3.png',
-      },
-      {
-        _id: 's8',
-        name: { en: 'Mary Lou', ar: 'ماري لو' },
-        title: { en: 'Doctoral Heritage Tech', ar: 'تكنولوجيا التراث' },
-        image: '/images/event-details/speaker-4.png',
-      },
-    ],
-    gallery: [
-      '/images/event-details/gallery-1.png',
-      '/images/event-details/gallery-2.png',
-      '/images/event-details/gallery-3.png',
-      '/images/event-details/gallery-4.png',
-      '/images/event-details/gallery-3.png',
-      '/images/event-details/gallery-2.png',
-    ],
-    volunteers_count: 1200,
+    speakers: [],
+    gallery: [],
   },
 
   'tedx-damascus-2026': {
@@ -156,69 +98,10 @@ const STATIC_EVENTS: Record<string, ApiEventDetail> = {
       ar: 'منارة للفن والثقافة في قلب دمشق. توفر دار الأوبرا محيطًا رائعًا يتردد صدى موضوعنا.',
     },
     location_address: { en: 'Umayyeen Square, Damascus, Syria', ar: 'ساحة الأمويين، دمشق، سوريا' },
-    location_email: 'info@tedxdamascus.com',
-    location_phone: '+963 11 123 4567',
     date: '2026-09-01',
     coordinates: [36.2910, 33.5138],
-    speakers: [
-      {
-        _id: 's1',
-        name: { en: 'Jenna Smith', ar: 'جينا سميث' },
-        title: { en: 'AI Ethics & Future Tech', ar: 'أخلاقيات الذكاء الاصطناعي وتكنولوجيا المستقبل' },
-        image: '/images/event-details/speaker-1.png',
-      },
-      {
-        _id: 's2',
-        name: { en: 'Robert P. Stones', ar: 'روبرت ستونز' },
-        title: { en: 'Architectural Innovation', ar: 'الابتكار المعماري' },
-        image: '/images/event-details/speaker-2.png',
-      },
-      {
-        _id: 's3',
-        name: { en: 'Peter Jones', ar: 'بيتر جونز' },
-        title: { en: 'Global Sustainability', ar: 'الاستدامة العالمية' },
-        image: '/images/event-details/speaker-3.png',
-      },
-      {
-        _id: 's4',
-        name: { en: 'Mary Lou', ar: 'ماري لو' },
-        title: { en: 'Doctoral Heritage Tech', ar: 'تكنولوجيا التراث الأكاديمي' },
-        image: '/images/event-details/speaker-4.png',
-      },
-      {
-        _id: 's5',
-        name: { en: 'Jenna Smith', ar: 'جينا سميث' },
-        title: { en: 'AI Ethics & Future Tech', ar: 'أخلاقيات الذكاء الاصطناعي' },
-        image: '/images/event-details/speaker-1.png',
-      },
-      {
-        _id: 's6',
-        name: { en: 'Robert P. Stones', ar: 'روبرت ستونز' },
-        title: { en: 'Architectural Innovation', ar: 'الابتكار المعماري' },
-        image: '/images/event-details/speaker-2.png',
-      },
-      {
-        _id: 's7',
-        name: { en: 'Peter Jones', ar: 'بيتر جونز' },
-        title: { en: 'Global Sustainability', ar: 'الاستدامة العالمية' },
-        image: '/images/event-details/speaker-3.png',
-      },
-      {
-        _id: 's8',
-        name: { en: 'Mary Lou', ar: 'ماري لو' },
-        title: { en: 'Doctoral Heritage Tech', ar: 'تكنولوجيا التراث' },
-        image: '/images/event-details/speaker-4.png',
-      },
-    ],
-    gallery: [
-      '/images/event-details/gallery-1.png',
-      '/images/event-details/gallery-2.png',
-      '/images/event-details/gallery-3.png',
-      '/images/event-details/gallery-4.png',
-      '/images/event-details/gallery-3.png',
-      '/images/event-details/gallery-2.png',
-    ],
-    volunteers_count: 1200,
+    speakers: [],
+    gallery: [],
   },
 };
 
@@ -338,8 +221,24 @@ export function EventDetailsClient({ locale }: EventDetailsClientProps) {
   const speakers = event.speakers ?? [];
   const gallery = event.gallery ?? [];
 
+  const eventJsonLd = getEventJsonLdString({
+    name: localizeField(event.title, locale),
+    description: localizeField(event.description, locale),
+    startDate: event.start_time ?? event.date,
+    endDate: event.end_time,
+    locationName: localizeField(event.location, locale),
+    locationAddress: localizeField(event.location_address, locale),
+    image: event.event_image,
+    url: `${SITE_URL}/${locale}/events/${slug}`,
+    status: event.status,
+  });
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: eventJsonLd }}
+      />
       <EventDetailsHero locale={locale} slug={slug} event={event} />
       <EventDetailsAbout locale={locale} event={event} />
       {speakers.length > 0 && (

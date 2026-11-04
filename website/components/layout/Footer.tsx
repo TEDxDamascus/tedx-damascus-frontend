@@ -205,7 +205,14 @@ export function Footer({ locale }: FooterProps) {
                     />
                   </div>
                   <p className="font-helvetica text-black break-words text-xs font-normal leading-[18px] tracking-[0.4px]">
-                    {t('license')}
+                    <a
+                      href="https://www.ted.com/tedx"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline underline-offset-2"
+                    >
+                      {t('license')}
+                    </a>
                   </p>
                 </div>
 
@@ -308,7 +315,14 @@ export function Footer({ locale }: FooterProps) {
               </div>
 
               <p className="font-sans font-bold text-black uppercase break-words w-full text-[9px] leading-[13.5px] opacity-70">
-                {t('license')}
+                <a
+                  href="https://www.ted.com/tedx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline underline-offset-2"
+                >
+                  {t('license')}
+                </a>
               </p>
 
               <div className="flex items-center gap-[10px] w-[88px]">

@@ -1,8 +1,15 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import { routing } from '@/routing';
+import { buildLanguageAlternates } from '@/lib/seo';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: buildLanguageAlternates('/home', locale) };
 }
 import { HeroSection } from '@/components/home/hero';
 import { CallForVoices } from '@/components/home/call-for-voices';

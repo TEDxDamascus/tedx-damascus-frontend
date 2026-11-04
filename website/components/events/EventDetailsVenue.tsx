@@ -123,7 +123,7 @@ export function EventDetailsVenue({ locale, event }: EventDetailsVenueProps) {
         ? 'منارة للفن والثقافة في قلب دمشق. توفر بيئة رائعة تعكس موضوعنا.'
         : 'A beacon of art and culture in the heart of Damascus.');
 
-  const email = event?.location_email ?? 'info@tedxdamascus.com';
+  const email = event?.location_email ?? '';
   const phone = event?.location_phone ?? '';
 
   return (
