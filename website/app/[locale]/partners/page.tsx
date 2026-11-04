@@ -1,7 +1,9 @@
 // app/[locale]/partners/page.tsx
 
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { routing } from "@/routing";
+import { buildLanguageAlternates } from "@/lib/seo";
 import PartnersPageClient from "@/components/partners/PartnersPageClient";
 
 type Locale = "en" | "ar";
@@ -15,6 +17,11 @@ type Props = {
     locale: Locale;
   }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: buildLanguageAlternates("/partners", locale) };
+}
 
 export default async function PartnersPage({ params }: Props) {
   const { locale } = await params;

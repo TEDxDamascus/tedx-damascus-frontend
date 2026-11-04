@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
+import { SITE_URL } from '@/lib/seo';
 import '../../styles/globals.css';
 
 const inter   = Inter   ({ subsets: ['latin'],           variable: '--font-inter',   display: 'swap' });
@@ -17,6 +18,7 @@ const almarai = Almarai ({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default:  'TEDx Damascus',
     template: '%s | TEDx Damascus',

@@ -16,6 +16,11 @@ import { extractMediaUrl, getImageUrl, teamApi } from '@/lib/api/client';
 import { getAllOrganizers } from '@/lib/api/organizers';
 import { resolveArticleSlug } from '@/lib/article-slug';
 import { canonicalProfileShareUrl } from '@/lib/share-url';
+import {
+  getArticleJsonLdString,
+  getBreadcrumbJsonLdString,
+  SITE_URL,
+} from '@/lib/seo';
 import { Blog } from '@/lib/api/blogs.types';
 import { BlogReference } from '@/lib/api/blog-references.types';
 
@@ -305,6 +310,31 @@ export function ArticleDetailClient({ locale }: ArticleDetailClientProps) {
       ? canonicalProfileShareUrl(window.location.href)
       : `https://tedxdamascus.sy/${activeLocale}/articles/${encodeURIComponent(slug)}/`;
 
+  const articleUrl = `${SITE_URL}/${activeLocale}/articles/${slug}`;
+
+  // Fall back to a generated Article schema when the backend doesn't supply one.
+  const articleJsonLd = blog.json_ld
+    ? null
+    : getArticleJsonLdString({
+        headline: blog.title,
+        description: blog.description || blog.seo?.meta_description || '',
+        image: getImageUrl(blog.blog_image),
+        datePublished: blog.publishedAt || blog.createdAt,
+        dateModified: blog.updatedAt || blog.publishedAt || blog.createdAt,
+        url: articleUrl,
+        authorName:
+          pickLocaleText(blog.author_name, activeLocale) ||
+          blog.author?.name ||
+          blog.user_name ||
+          undefined,
+      });
+
+  const breadcrumbJsonLd = getBreadcrumbJsonLdString([
+    { name: activeLocale === 'ar' ? 'الرئيسية' : 'Home', url: `${SITE_URL}/${activeLocale}/home` },
+    { name: activeLocale === 'ar' ? 'المدونة' : 'Blog', url: `${SITE_URL}/${activeLocale}/blog` },
+    { name: blog.title, url: articleUrl },
+  ]);
+
   return (
     <main className="bg-black text-white">
       {blog.json_ld && (
@@ -313,6 +343,16 @@ export function ArticleDetailClient({ locale }: ArticleDetailClientProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blog.json_ld) }}
         />
       )}
+      {articleJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: articleJsonLd }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: breadcrumbJsonLd }}
+      />
       <BlogHero locale={activeLocale} />
 
       <div className="mx-auto min-w-0 max-w-[1120px] space-y-[30px] px-4 lg:px-6">

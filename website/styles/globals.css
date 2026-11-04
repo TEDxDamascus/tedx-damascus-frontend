@@ -134,4 +134,33 @@
   ::-webkit-scrollbar-track      { background: #000; }
   ::-webkit-scrollbar-thumb      { background: #E21E2C; border-radius: 5px; }
   ::-webkit-scrollbar-thumb:hover { background: #c01824; }
+
+  /* ── Arabic (RTL) readability — technical audit UX fix ─────────────────
+   * Smoother rendering + a taller line box for Arabic script, and removal of
+   * Latin-style letter-spacing which breaks Arabic ligatures. Scoped to RTL
+   * body copy only, so the Latin brand display type is left untouched. */
+  [dir="rtl"] {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  [dir="rtl"] p,
+  [dir="rtl"] li,
+  [dir="rtl"] blockquote,
+  [dir="rtl"] .font-arabic,
+  [dir="rtl"] .prose p,
+  [dir="rtl"] .prose li {
+    letter-spacing: 0 !important;
+    line-height: 1.9;
+    word-spacing: 0.015em;
+  }
+
+  /* Arabic headings also read better without Latin tracking. */
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4 {
+    letter-spacing: 0 !important;
+  }
 }
